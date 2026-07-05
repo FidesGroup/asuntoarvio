@@ -57,12 +57,11 @@ const LABELS = [
 const LABEL_SET = new Map(LABELS.map((l) => [l.toLowerCase(), l]));
 
 function normalizeNumber(raw: string): number | null {
-	const cleaned = raw
-		.replace(/[  \s]/g, '')
-		.replace(/€|eur|\/m²|\/kk|m²|kuukaudessa/gi, '')
-		.replace(',', '.');
-	const m = cleaned.match(/-?\d+(\.\d+)?/);
-	return m ? Number(m[0]) : null;
+	// Match the FIRST well-formed number (grouped thousands allowed) without
+	// pre-stripping whitespace: repeated values ("54 54 m2") must not merge.
+	const m = raw.match(/-?\d{1,3}(?:[   ]\d{3})*(?:[.,]\d+)?/);
+	if (!m) return null;
+	return Number(m[0].replace(/[   ]/g, '').replace(',', '.'));
 }
 
 function blockText(lines: string[]): string {
@@ -78,7 +77,18 @@ function parseRenovations(lines: string[]): RenovationItem[] {
 	return items;
 }
 
+/** Portal page tails (recommendations, footer) begin at these markers. */
+const CUTOFF_MARKERS = [
+	'Alueen muut kohteet', 'Oikotie suosittelee', 'Muita suosittuja kaupunkeja',
+	'Seuraa meitä', 'Yksityisille ilmoittajille', 'Samankaltaisia kohteita',
+	'Katso myös nämä', 'Evästeasetukset'
+];
+
 export function parseListingText(text: string): ExtractedListing {
+	for (const marker of CUTOFF_MARKERS) {
+		const i = text.indexOf(marker);
+		if (i > 200) text = text.slice(0, i);
+	}
 	const lines = text
 		.split(/\r?\n/)
 		.map((l) => l.replace(/[  ]/g, ' ').trim())
@@ -96,9 +106,16 @@ export function parseListingText(text: string): ExtractedListing {
 		}
 		if (current) blocks.get(current)!.push(line);
 	}
+	// Scalar fields: only the FIRST captured line, hard-capped — a missing
+	// terminator label must never swallow the rest of the page into a value.
 	const val = (label: string): string | null => {
 		const b = blocks.get(label);
-		return b && b.length ? blockText(b) : null;
+		return b && b.length ? b[0].slice(0, 160).trim() : null;
+	};
+	// Prose fields where a later sentence matters (e.g. kiinnitykset).
+	const valLong = (label: string): string | null => {
+		const b = blocks.get(label);
+		return b && b.length ? blockText(b.slice(0, 12)).slice(0, 1200) : null;
 	};
 
 	const sijainti = val('Sijainti') ?? '';
@@ -119,8 +136,11 @@ export function parseListingText(text: string): ExtractedListing {
 	const paaoma = val('Pääomavastike') ? normalizeNumber(val('Pääomavastike')!) : null;
 	const yhteensa = val('Yhtiövastike yhteensä') ? normalizeNumber(val('Yhtiövastike yhteensä')!) : null;
 
-	const taloyhtioInfo = val('Lisätietoa taloyhtiöstä') ?? '';
+	const taloyhtioInfo = valLong('Lisätietoa taloyhtiöstä') ?? '';
 	const kiinnitys = taloyhtioInfo.match(/kiinnitykset[^0-9]*([\d\s  .,]+)\s*€/i);
+
+	const landRaw = val('Tontin omistus');
+	const landOwnership = landRaw === null ? null : /^oma\b/i.test(landRaw) ? 'Oma' : landRaw.slice(0, 80);
 
 	const buildYearRaw = val('Rakennusvuosi') ?? val('Rakennuksen käyttöönottovuosi');
 	const hissiRaw = val('Hissi');
@@ -139,7 +159,7 @@ export function parseListingText(text: string): ExtractedListing {
 		totalChargeEurMo: yhteensa ?? (hoito !== null || paaoma !== null ? (hoito ?? 0) + (paaoma ?? 0) : null),
 		buildYear: buildYearRaw ? normalizeNumber(buildYearRaw) : null,
 		condition: val('Kunto'),
-		landOwnership: val('Tontin omistus'),
+		landOwnership,
 		floor: val('Kerros'),
 		elevator: hissiRaw === null ? null : /kyllä/i.test(hissiRaw),
 		apartmentCount: val('Huoneistojen lukumäärä') ? normalizeNumber(val('Huoneistojen lukumäärä')!) : null,
@@ -171,11 +191,11 @@ export function deriveInsights(x: ExtractedListing): string[] {
 				: `Kunto ilmoituksessa: ${x.condition}.`
 		);
 	}
-	if (x.landOwnership) {
+	if (x.landOwnership === 'Oma') {
+		out.push('Tontti: oma — ei tontinvuokrariskiä.');
+	} else if (x.landOwnership && /vuokra|valinnainen/i.test(x.landOwnership)) {
 		out.push(
-			/vuokra|valinnainen/i.test(x.landOwnership)
-				? `Tontti: ${x.landOwnership} — vuokratontti lisää asumiskustannuksia ja vuokrankorotukset ovat riski. Tarkista vuokrasopimuksen päättymisvuosi.`
-				: 'Tontti: oma — ei tontinvuokrariskiä.'
+			`Tontti: ${x.landOwnership} — vuokratontti lisää asumiskustannuksia ja vuokrankorotukset ovat riski. Tarkista vuokrasopimuksen päättymisvuosi.`
 		);
 	}
 
@@ -191,8 +211,12 @@ export function deriveInsights(x: ExtractedListing): string[] {
 		out.push('Tulevissa remonteissa ei näy suuria hankkeita (putket, julkisivu, katto, ikkunat) — tavanomaista ylläpitoa.');
 	}
 
+	// Studies and plans are not completed renovations: "putkistojen
+	// kuntotutkimus 2011" must not read as putkiremontti 2011.
+	const STUDY = /kuntotutkim|kuntokartoit|kartoitus|selvitys|suunnittelu|tutkimus|kuntoarvio/i;
 	const doneMajor = new Map<string, number>();
 	for (const r of x.renovationsDone) {
+		if (STUDY.test(r.text)) continue;
 		const hit = MAJOR_RENOVATIONS.find(([re]) => re.test(r.text));
 		if (hit && !doneMajor.has(hit[1])) doneMajor.set(hit[1], r.year);
 	}

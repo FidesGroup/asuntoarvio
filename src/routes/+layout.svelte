@@ -1,14 +1,20 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	let { children } = $props();
+	const links = [
+		{ href: '/', label: 'Vertailu' },
+		{ href: '/analyysi', label: 'Ilmoitusanalyysi' },
+		{ href: '/kartta', label: 'Hintakartta' }
+	];
 </script>
 
 <div class="shell">
 	<header>
 		<a class="wordmark" href="/">asunto<span>arvio</span></a>
-		<span class="tagline">Pyyntihinta vastaan toteutuneet kaupat</span>
-		<nav>
-			<a href="/kartta">Hintakartta</a>
-			<a href="/analyysi">Ilmoitusanalyysi</a>
+		<nav aria-label="Päänavigaatio">
+			{#each links as l (l.href)}
+				<a href={l.href} aria-current={page.url.pathname === l.href ? 'page' : undefined}>{l.label}</a>
+			{/each}
 		</nav>
 	</header>
 	<main>
@@ -84,18 +90,18 @@
 		-webkit-font-smoothing: antialiased;
 	}
 	.shell {
-		max-width: 44rem;
+		max-width: 52rem;
 		margin: 0 auto;
-		padding: 1.5rem 1.25rem 4rem;
+		padding: 1.25rem 1.25rem 4rem;
 		display: flex;
 		flex-direction: column;
-		gap: 2.5rem;
+		gap: 2.25rem;
 		min-height: 100vh;
 	}
 	header {
 		display: flex;
 		align-items: baseline;
-		gap: 1rem;
+		gap: 1.5rem;
 		flex-wrap: wrap;
 		border-bottom: 2px solid var(--ink);
 		padding-bottom: 0.75rem;
@@ -110,25 +116,28 @@
 	.wordmark span {
 		color: var(--accent);
 	}
-	.tagline {
-		color: var(--ink-2);
-		font-size: 0.85rem;
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
-	}
 	nav {
 		margin-left: auto;
 		display: flex;
-		gap: 1rem;
+		gap: 1.25rem;
 	}
 	nav a {
-		color: var(--accent);
+		color: var(--ink-2);
 		font-size: 0.85rem;
 		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
 		text-decoration: none;
+		padding-bottom: 0.75rem;
+		margin-bottom: -0.85rem;
+		border-bottom: 2px solid transparent;
 	}
 	nav a:hover {
-		text-decoration: underline;
+		color: var(--ink);
+	}
+	nav a[aria-current='page'] {
+		color: var(--ink);
+		border-bottom-color: var(--accent);
 	}
 	main {
 		flex: 1;

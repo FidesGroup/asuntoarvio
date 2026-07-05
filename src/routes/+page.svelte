@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { data } = $props();
+	let { data, form } = $props();
 </script>
 
 <svelte:head>
@@ -7,14 +7,15 @@
 </svelte:head>
 
 <section class="hero">
+	<p class="eyebrow">Asuntosijoittajan hintaseula</p>
 	<h1>Onko pyyntihinta yli vai alle alueen toteutuneiden kauppojen?</h1>
 	<p>
-		Syötä myynti-ilmoituksen perustiedot. Vertaamme neliöhintaa Tilastokeskuksen julkaisemiin
-		toteutuneisiin kauppahintoihin samalla postinumeroalueella — et pyyntihintoihin.
+		Vertaamme neliöhintaa Tilastokeskuksen <b>toteutuneisiin kauppahintoihin</b> — emme
+		pyyntihintoihin. Koko Suomi, {data.postalCodes.length} postinumeroaluetta.
 	</p>
 </section>
 
-<form method="GET" action="/arvio">
+<form method="GET" action="/arvio" class="bench">
 	<div class="grid">
 		<label>
 			Postinumero
@@ -52,26 +53,78 @@
 		{#each data.postalCodes as pc (pc)}<option value={pc}></option>{/each}
 	</datalist>
 	<button type="submit">Vertaa markkinaan</button>
-	<p class="note">
-		Kattavuus tässä esiversiossa: {data.postalCodes.length} Helsingin postinumeroaluetta.
-		Tarkempi analyysi taloyhtiötiedoilla: <a href="/analyysi">liitä myynti-ilmoitus</a>.
-	</p>
 </form>
 
+<section class="props">
+	<div>
+		<h2>Toteutuneet kaupat</h2>
+		<p>
+			Vertailuarvo lasketaan Tilastokeskuksen julkaisemista toteutuneista kaupoista, painotettuna
+			neljän viimeisimmän neljänneksen kauppamäärillä — ja jokaisen tuloksen mukana kerrotaan,
+			kuinka moneen kauppaan se perustuu.
+		</p>
+	</div>
+	<div>
+		<h2>Taloyhtiö ilmoituksesta</h2>
+		<p>
+			<a href="/analyysi">Ilmoitusanalyysi</a> poimii myynti-ilmoituksesta tontin omistuksen,
+			vastikkeet, yhtiölainat sekä tehdyt ja tulevat remontit — asiat, jotka ratkaisevat
+			sijoituksen, mutta eivät näy hintavertailussa.
+		</p>
+	</div>
+	<div>
+		<h2>Koko Suomi kartalla</h2>
+		<p>
+			<a href="/kartta">Hintakartta</a> näyttää toteutuneet neliöhinnat postinumeroalueittain
+			Hangosta Nuorgamiin. Klikkaus esitäyttää vertailun.
+		</p>
+	</div>
+</section>
+
+<section class="waitlist" id="raportti">
+	<h2>Tulossa: sijoittajaraportti</h2>
+	<p>
+		Maksullinen kohderaportti on rakenteilla: taloyhtiön tilinpäätöksestä louhittu talouskortti
+		(hoitokate, lainat, vastikekehitys, remonttihistoria) yhdistettynä hintavertailuun. Jätä
+		sähköpostisi, niin saat ensimmäisten joukossa kutsun — ei muuta postia.
+	</p>
+	{#if form?.joined}
+		<p class="joined">Kiitos! Olet jonotuslistalla.</p>
+	{:else}
+		<form method="POST" action="?/waitlist">
+			<input type="email" name="email" placeholder="nimi@esimerkki.fi" required autocomplete="email" />
+			<button type="submit">Liity jonotuslistalle</button>
+		</form>
+		{#if form?.waitlistError}<p class="error">{form.waitlistError}</p>{/if}
+	{/if}
+</section>
+
 <style>
+	.hero {
+		margin-bottom: 1.75rem;
+	}
+	.eyebrow {
+		color: var(--accent);
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.09em;
+		margin: 0 0 0.5rem;
+	}
 	.hero h1 {
-		font-size: 1.9rem;
-		line-height: 1.2;
+		font-size: 2rem;
+		line-height: 1.15;
 		letter-spacing: -0.02em;
 		text-wrap: balance;
 		margin: 0 0 0.75rem;
+		max-width: 36rem;
 	}
 	.hero p {
 		color: var(--ink-2);
 		max-width: 38rem;
-		margin: 0 0 2rem;
+		margin: 0;
 	}
-	form {
+	form.bench {
 		background: var(--surface);
 		border: 1px solid var(--line);
 		padding: 1.5rem;
@@ -122,9 +175,70 @@
 		padding: 0.75rem 1.5rem;
 		cursor: pointer;
 	}
-	.note {
-		margin: 1rem 0 0;
-		font-size: 0.8rem;
+	.props {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+		gap: 1px;
+		background: var(--line);
+		border: 1px solid var(--line);
+		margin-top: 2.5rem;
+	}
+	.props div {
+		background: var(--surface);
+		padding: 1.1rem 1.25rem;
+	}
+	.props h2 {
+		font-size: 0.85rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin: 0 0 0.4rem;
+	}
+	.props p {
+		margin: 0;
 		color: var(--ink-2);
+		font-size: 0.9rem;
+	}
+	.props a {
+		color: var(--accent);
+	}
+	.waitlist {
+		margin-top: 2.5rem;
+		border: 1px solid var(--line);
+		border-left: 3px solid var(--accent);
+		background: var(--surface);
+		padding: 1.5rem;
+	}
+	.waitlist h2 {
+		font-size: 1.1rem;
+		letter-spacing: -0.01em;
+		margin: 0 0 0.5rem;
+	}
+	.waitlist p {
+		color: var(--ink-2);
+		max-width: 40rem;
+		margin: 0 0 1rem;
+	}
+	.waitlist form {
+		display: flex;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+		border: none;
+		background: none;
+		padding: 0;
+	}
+	.waitlist input {
+		flex: 1 1 16rem;
+	}
+	.waitlist button {
+		margin-top: 0;
+	}
+	.joined {
+		color: var(--under);
+		font-weight: 700;
+	}
+	.error {
+		color: var(--over);
+		font-size: 0.9rem;
+		margin: 0.5rem 0 0;
 	}
 </style>

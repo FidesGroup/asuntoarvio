@@ -30,3 +30,24 @@ export async function logQuery(row: {
 		// metrics are best-effort by design
 	}
 }
+
+/** Waiting-list signup. Returns true on success; duplicates count as success. */
+export async function addLead(email: string, source = 'landing'): Promise<boolean> {
+	if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return false;
+	try {
+		const res = await fetch(`${env.SUPABASE_URL}/rest/v1/leads`, {
+			method: 'POST',
+			headers: {
+				apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+				authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+				'content-type': 'application/json',
+				prefer: 'return=minimal,resolution=ignore-duplicates'
+			},
+			body: JSON.stringify({ email, source }),
+			signal: AbortSignal.timeout(3000)
+		});
+		return res.ok;
+	} catch {
+		return false;
+	}
+}

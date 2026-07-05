@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PriceMap from '$lib/PriceMap.svelte';
 	let { form } = $props();
 	const fmt = new Intl.NumberFormat('fi-FI');
 	const overUnder = $derived(
@@ -69,6 +70,15 @@
 					Painotus: {#each form.location.areasUsed as a, i (a.pc)}{i > 0 ? ' · ' : ''}{a.nimi || a.pc}
 						{a.km} km ({fmt.format(a.eurM2)} €/m²){/each}
 				</p>
+				{#key `${form.location.lon},${form.location.lat}`}
+					<PriceMap
+						center={[form.location.lon, form.location.lat]}
+						zoom={11.5}
+						height="300px"
+						marker={[form.location.lon, form.location.lat]}
+						showLegend={false}
+					/>
+				{/key}
 			</section>
 		{/if}
 

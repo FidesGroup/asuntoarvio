@@ -72,6 +72,8 @@ export const actions: Actions = {
 		let location: {
 			eurM2: number;
 			deltaPct: number;
+			lon: number;
+			lat: number;
 			areasUsed: { pc: string; nimi: string; eurM2: number; km: number }[];
 		} | null = null;
 		if (extracted.address) {
@@ -82,6 +84,8 @@ export const actions: Actions = {
 					location = {
 						eurM2: lb.eurM2,
 						deltaPct: Math.round((verdict.listingEurM2 / lb.eurM2 - 1) * 1000) / 10,
+						lon: geo.lon,
+						lat: geo.lat,
 						areasUsed: lb.areasUsed
 					};
 				}
