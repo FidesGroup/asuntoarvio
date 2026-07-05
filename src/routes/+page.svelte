@@ -18,7 +18,7 @@
 	<div class="grid">
 		<label>
 			Postinumero
-			<input name="pc" inputmode="numeric" pattern={'[0-9]{5}'} placeholder="00530" required list="known-pc" />
+			<input name="pc" inputmode="numeric" pattern={'[0-9]{5}'} placeholder="00530" required list="known-pc" value={data.prefillPc ?? ''} />
 		</label>
 		<label>
 			Huonetyyppi

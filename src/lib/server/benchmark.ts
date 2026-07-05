@@ -9,6 +9,7 @@
  * never as a naked percentage.
  */
 import seed from './benchmarks.seed.json';
+import centroidsRaw from './centroids.json';
 
 export type RoomsType = 'yksiö' | 'kaksio' | 'kolmio+';
 
@@ -48,6 +49,71 @@ const cells = seed as Record<string, BenchmarkCell>;
 
 export function knownPostalCodes(): string[] {
 	return [...new Set(Object.keys(cells).map((k) => k.split('_')[0]))].sort();
+}
+
+/* ------------------------------------------------------------------ *
+ * Location-weighted benchmark (micro-location v1)
+ *
+ * Inverse-distance-weighted blend of nearby postal-area benchmarks for
+ * the same room class, anchored on the geocoded street address. Softens
+ * hard postal-boundary steps; it does NOT know street-level comps.
+ * ------------------------------------------------------------------ */
+
+interface CentroidCell {
+	c: [number, number]; // lon, lat
+	eur: number | null;
+	n: number;
+	per: Record<string, [number, number]>; // short room key -> [eur_m2, n_4q]
+	nimi: string;
+}
+
+const CENTROIDS = centroidsRaw as unknown as Record<string, CentroidCell>;
+const PER_KEY: Record<RoomsType, string> = { 'yksiö': 'y', kaksio: 'k2', 'kolmio+': 'k3' };
+
+export interface LocationBenchmark {
+	eurM2: number;
+	areasUsed: { pc: string; nimi: string; eurM2: number; km: number }[];
+}
+
+function haversineKm(lon1: number, lat1: number, lon2: number, lat2: number): number {
+	const rad = Math.PI / 180;
+	const dLat = (lat2 - lat1) * rad;
+	const dLon = (lon2 - lon1) * rad;
+	const a =
+		Math.sin(dLat / 2) ** 2 +
+		Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLon / 2) ** 2;
+	return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+export function locationBenchmark(
+	lon: number,
+	lat: number,
+	roomsType: RoomsType,
+	maxKm = 8,
+	k = 8
+): LocationBenchmark | null {
+	const perKey = PER_KEY[roomsType];
+	const cands: { pc: string; nimi: string; eurM2: number; n: number; km: number }[] = [];
+	for (const [pc, cell] of Object.entries(CENTROIDS)) {
+		const per = cell.per?.[perKey];
+		if (!per) continue;
+		const km = haversineKm(lon, lat, cell.c[0], cell.c[1]);
+		if (km <= maxKm) cands.push({ pc, nimi: cell.nimi, eurM2: per[0], n: per[1], km });
+	}
+	cands.sort((a, b) => a.km - b.km);
+	const top = cands.slice(0, k);
+	if (top.length < 2) return null; // one area = no interpolation, fall back to postal cell
+	let wSum = 0;
+	let vSum = 0;
+	for (const c of top) {
+		const w = c.n / Math.max(c.km * c.km, 0.01); // transaction count over squared distance
+		wSum += w;
+		vSum += w * c.eurM2;
+	}
+	return {
+		eurM2: Math.round(vSum / wSum),
+		areasUsed: top.slice(0, 4).map(({ pc, nimi, eurM2, km }) => ({ pc, nimi, eurM2, km: Math.round(km * 10) / 10 }))
+	};
 }
 
 export function lookupCell(postalCode: string, roomsType: RoomsType): BenchmarkCell | null {

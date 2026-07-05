@@ -53,6 +53,25 @@
 			<h2 class="delta none">Ei vertailuarvoa <span>tälle alueelle ja huonetyypille — kohteen neliöhinta {fmt.format(form.verdict.listingEurM2)} €/m²</span></h2>
 		{/if}
 
+		{#if form.location}
+			<section class="loc">
+				<h3>Sijaintipainotettu vertailu <span class="beta">beta</span></h3>
+				<p>
+					Osoitteen ympäristön kaupoilla painotettu vertailuarvo on
+					<b>{fmt.format(form.location.eurM2)} €/m²</b> → kohde on
+					<b class={form.location.deltaPct >= 0 ? 'ov' : 'un'}>
+						{form.location.deltaPct > 0 ? '+' : ''}{String(form.location.deltaPct).replace('.', ',')} %
+						{form.location.deltaPct >= 0 ? 'yli' : 'alle'}
+					</b>
+					sijainnin markkinatason.
+				</p>
+				<p class="areas">
+					Painotus: {#each form.location.areasUsed as a, i (a.pc)}{i > 0 ? ' · ' : ''}{a.nimi || a.pc}
+						{a.km} km ({fmt.format(a.eurM2)} €/m²){/each}
+				</p>
+			</section>
+		{/if}
+
 		{#if form.insights.length}
 			<section>
 				<h3>Taloyhtiö ja kohde — ilmoituksesta poimittua</h3>
@@ -187,6 +206,35 @@
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin: 1.75rem 0 0.5rem;
+	}
+	.loc {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-left: 3px solid var(--accent);
+		padding: 0.9rem 1.1rem;
+		max-width: 42rem;
+	}
+	.loc h3 {
+		margin-top: 0;
+	}
+	.beta {
+		font-size: 0.65rem;
+		background: var(--chip-bg);
+		padding: 0.1rem 0.4rem;
+		vertical-align: middle;
+	}
+	.loc p {
+		margin: 0.4rem 0;
+	}
+	.loc .ov {
+		color: var(--over);
+	}
+	.loc .un {
+		color: var(--under);
+	}
+	.areas {
+		color: var(--ink-2);
+		font-size: 0.8rem;
 	}
 	ul {
 		margin: 0;

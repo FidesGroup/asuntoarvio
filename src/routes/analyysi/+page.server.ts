@@ -1,5 +1,6 @@
 import { fail } from '@sveltejs/kit';
-import { evaluate, type ListingFacts } from '$lib/server/benchmark';
+import { evaluate, locationBenchmark, type ListingFacts } from '$lib/server/benchmark';
+import { geocodeAddress } from '$lib/server/geocode';
 import {
 	allowedListingUrl, deriveInsights, htmlToText, parseListingText,
 	type ExtractedListing
@@ -65,6 +66,27 @@ export const actions: Actions = {
 		}
 
 		const verdict = evaluate(facts);
+
+		// micro-location v1: geocode the street address, blend nearby areas' benchmarks
+		let location: {
+			eurM2: number;
+			deltaPct: number;
+			areasUsed: { pc: string; nimi: string; eurM2: number; km: number }[];
+		} | null = null;
+		if (extracted.address) {
+			const geo = await geocodeAddress(fetch, extracted.address, extracted.postalCode);
+			if (geo) {
+				const lb = locationBenchmark(geo.lon, geo.lat, facts.roomsType);
+				if (lb) {
+					location = {
+						eurM2: lb.eurM2,
+						deltaPct: Math.round((verdict.listingEurM2 / lb.eurM2 - 1) * 1000) / 10,
+						areasUsed: lb.areasUsed
+					};
+				}
+			}
+		}
+
 		// listing data resolves the generic hedges the bare form cannot
 		const resolvedFlags = verdict.flags.filter(
 			(f) =>
@@ -72,7 +94,9 @@ export const actions: Actions = {
 				!f.startsWith('Postinumeroalueen keskiarvo ei erottele')
 		);
 		resolvedFlags.push(
-			'Mikrosijaintia (katu, kerros, näkymä) vertailu ei vielä erottele — se vaatii kauppakohtaista aineistoa.'
+			location
+				? 'Sijaintipainotettu vertailu on naapurialueiden kauppojen etäisyyspainotus (beta) — katu- ja rakennustason kauppahistoriaa se ei vielä sisällä.'
+				: 'Mikrosijaintia (katu, kerros, näkymä) vertailu ei vielä erottele — se vaatii kauppakohtaista aineistoa.'
 		);
 
 		return {
@@ -80,6 +104,7 @@ export const actions: Actions = {
 			facts,
 			verdict: { ...verdict, flags: resolvedFlags },
 			insights: deriveInsights(extracted),
+			location,
 			source
 		};
 	}

@@ -6,6 +6,10 @@
 	<header>
 		<a class="wordmark" href="/">asunto<span>arvio</span></a>
 		<span class="tagline">Pyyntihinta vastaan toteutuneet kaupat</span>
+		<nav>
+			<a href="/kartta">Hintakartta</a>
+			<a href="/analyysi">Ilmoitusanalyysi</a>
+		</nav>
 	</header>
 	<main>
 		{@render children()}
@@ -111,6 +115,20 @@
 		font-size: 0.85rem;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
+	}
+	nav {
+		margin-left: auto;
+		display: flex;
+		gap: 1rem;
+	}
+	nav a {
+		color: var(--accent);
+		font-size: 0.85rem;
+		font-weight: 600;
+		text-decoration: none;
+	}
+	nav a:hover {
+		text-decoration: underline;
 	}
 	main {
 		flex: 1;
