@@ -2,8 +2,7 @@
 	import { page } from '$app/state';
 	let { children } = $props();
 	const links = [
-		{ href: '/', label: 'Vertailu' },
-		{ href: '/analyysi', label: 'Ilmoitusanalyysi' },
+		{ href: '/', label: 'Analyysi' },
 		{ href: '/kartta', label: 'Hintakartta' }
 	];
 	const fidesUrl = 'https://fidesgroup.fi';
