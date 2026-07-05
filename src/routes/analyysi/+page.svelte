@@ -12,7 +12,8 @@
 </svelte:head>
 
 <section class="hero">
-	<h1>Ilmoitusanalyysi: taloyhtiötiedot automaattisesti</h1>
+	<span class="eyebrow">Ilmoitusanalyysi</span>
+	<h1>Poimi taloyhtiötiedot automaattisesti myynti-ilmoituksesta</h1>
 	<p class="lede">
 		Anna myynti-ilmoituksen URL-osoite (Oikotie, Etuovi, välittäjäsivut) tai liitä ilmoituksen
 		teksti suoraan. Tiedot — hinta, vastikkeet, tontti, tehdyt ja tulevat remontit — poimitaan
@@ -59,7 +60,10 @@
 
 		{#if form.location}
 			<section class="loc card">
-				<h3>Sijaintipainotettu vertailu <span class="beta">beta</span></h3>
+				<header class="loc__head">
+					<h3>Sijaintipainotettu vertailu</h3>
+					<span class="beta">beta</span>
+				</header>
 				<p>
 					Osoitteen ympäristön kaupoilla painotettu vertailuarvo on
 					<b>{fmt.format(form.location.eurM2)} €/m²</b> → kohde on
@@ -109,65 +113,84 @@
 {/if}
 
 <style>
+	.eyebrow {
+		display: inline-block;
+		font-size: 0.78rem;
+		font-weight: 500;
+		color: var(--ink-2);
+		letter-spacing: 0.01em;
+		background: var(--chip-bg);
+		padding: 0.35rem 0.7rem;
+		border-radius: var(--radius-pill);
+		margin-bottom: 1.25rem;
+	}
+	.hero {
+		max-width: 44rem;
+		margin-bottom: 2rem;
+	}
 	.hero h1 {
-		font-size: 1.8rem;
-		line-height: 1.2;
-		letter-spacing: -0.02em;
+		font-size: 2.3rem;
+		line-height: 1.15;
+		letter-spacing: -0.03em;
 		text-wrap: balance;
-		margin: 0 0 0.75rem;
+		margin: 0 0 0.95rem;
 		max-width: 38rem;
-		font-weight: 700;
+		font-weight: 500;
 	}
 	.hero .lede {
 		color: var(--ink-2);
 		max-width: 42rem;
-		margin: 0 0 1.75rem;
-		font-size: 1rem;
+		margin: 0;
+		font-size: 1.05rem;
 		line-height: 1.6;
 	}
+
 	form {
 		background: var(--surface);
-		border: 1px solid var(--line);
-		padding: 1.5rem;
+		padding: 2rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.85rem;
+		gap: 1rem;
 		box-shadow: var(--shadow-md);
-		border-radius: 2px;
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--line);
 	}
 	.form-title {
-		font-size: 0.78rem;
-		text-transform: uppercase;
-		letter-spacing: 0.14em;
-		color: var(--ink-2);
-		font-weight: 700;
+		font-size: 0.85rem;
+		font-weight: 600;
+		letter-spacing: 0;
+		color: var(--ink);
 		margin: 0 0 0.25rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 1px solid var(--line);
 	}
 	label {
 		display: flex;
 		flex-direction: column;
-		gap: 0.4rem;
+		gap: 0.45rem;
 	}
 	.lbl {
-		font-size: 0.72rem;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--ink-2);
+		font-size: 0.82rem;
+		font-weight: 500;
+		color: var(--ink);
 	}
 	input,
 	textarea {
 		font: inherit;
 		color: var(--ink);
 		background: var(--bg);
-		border: 1px solid var(--line-2);
-		border-radius: 2px;
-		padding: 0.85rem 0.9rem;
-		min-height: 48px;
-		transition: border-color 0.12s ease, box-shadow 0.12s ease;
+		border: 1px solid transparent;
+		padding: 0.8rem 0.95rem;
+		min-height: 46px;
+		border-radius: var(--radius-md);
+		transition:
+			background 0.15s ease,
+			border-color 0.15s ease,
+			box-shadow 0.15s ease;
 		width: 100%;
+	}
+	input:hover,
+	textarea:hover {
+		background: var(--surface);
+		border-color: var(--line-2);
 	}
 	input::placeholder,
 	textarea::placeholder {
@@ -178,71 +201,86 @@
 		resize: vertical;
 		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 		min-height: 180px;
-		line-height: 1.5;
+		line-height: 1.55;
 	}
 	input:focus-visible,
 	textarea:focus-visible,
 	button:focus-visible {
 		outline: none;
+		background: var(--surface);
 		border-color: var(--ink);
-		box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.08);
+		box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.08);
 	}
 	.or {
 		margin: 0;
 		color: var(--ink-2);
-		font-size: 0.85rem;
+		font-size: 0.88rem;
 	}
 	.actions {
 		display: flex;
 	}
 	button {
 		font: inherit;
-		font-weight: 700;
+		font-weight: 500;
 		background: var(--ink);
-		color: var(--bg);
-		border: 2px solid var(--ink);
-		padding: 1rem 1.6rem;
-		min-height: 52px;
+		color: var(--surface);
+		border: 1px solid var(--ink);
+		padding: 0.95rem 1.75rem;
+		min-height: 50px;
 		cursor: pointer;
-		border-radius: 2px;
-		letter-spacing: 0.02em;
-		transition: background 0.15s ease, color 0.15s ease, transform 0.05s ease;
+		border-radius: var(--radius-pill);
+		letter-spacing: 0.005em;
+		transition:
+			background 0.15s ease,
+			color 0.15s ease,
+			transform 0.05s ease,
+			box-shadow 0.15s ease;
 		width: 100%;
+		box-shadow: 0 1px 2px rgba(17, 24, 39, 0.15), 0 4px 12px rgba(17, 24, 39, 0.1);
 	}
 	button:hover {
-		background: var(--bg);
-		color: var(--ink);
+		transform: translateY(-1px);
+		box-shadow: 0 2px 4px rgba(17, 24, 39, 0.15), 0 8px 20px rgba(17, 24, 39, 0.12);
 	}
 	button:active {
-		transform: translateY(1px);
+		transform: translateY(0);
 	}
 	.error {
 		margin: 0;
-		color: var(--ink);
-		font-size: 0.92rem;
-		font-weight: 600;
-		background: var(--chip-bg);
-		padding: 0.7rem 0.9rem;
-		border-left: 3px solid var(--ink);
+		color: #b91c1c;
+		font-size: 0.9rem;
+		font-weight: 500;
+		background: #fef2f2;
+		padding: 0.85rem 1rem;
+		border-radius: var(--radius-md);
 	}
+	@media (prefers-color-scheme: dark) {
+		.error {
+			background: #2a1414;
+			color: #fca5a5;
+		}
+	}
+
 	article {
 		margin-top: 2.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 	.crumb {
-		color: var(--ink-2);
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		font-size: 0.72rem;
-		margin: 0 0 0.7rem;
-		font-weight: 600;
+		color: var(--ink-3);
+		letter-spacing: 0.01em;
+		font-size: 0.82rem;
+		margin: 0 0 0.5rem;
+		font-weight: 500;
 	}
 	.delta {
 		font-size: 2.6rem;
 		line-height: 1.05;
-		letter-spacing: -0.03em;
-		margin: 0 0 1.5rem;
+		letter-spacing: -0.035em;
+		margin: 0 0 0.5rem;
 		font-variant-numeric: tabular-nums;
-		font-weight: 700;
+		font-weight: 500;
 	}
 	.delta span {
 		display: block;
@@ -250,76 +288,84 @@
 		font-weight: 400;
 		letter-spacing: 0;
 		color: var(--ink-2);
-		margin-top: 0.4rem;
-		max-width: 36rem;
-		line-height: 1.5;
+		margin-top: 0.5rem;
+		max-width: 40rem;
+		line-height: 1.55;
 	}
 	.delta.over,
 	.delta.under {
 		color: var(--ink);
 	}
 	.delta.none {
-		color: var(--ink-2);
+		color: var(--ink);
 		font-size: 1.6rem;
 	}
+
 	h3 {
-		font-size: 0.78rem;
-		text-transform: uppercase;
-		letter-spacing: 0.14em;
-		font-weight: 700;
-		margin: 1.75rem 0 0.6rem;
+		font-size: 0.95rem;
+		font-weight: 600;
+		margin: 0 0 0.6rem;
 		color: var(--ink);
+		letter-spacing: -0.005em;
 	}
 	.card {
 		background: var(--surface);
 		border: 1px solid var(--line);
-		padding: 1.2rem 1.35rem;
+		padding: 1.5rem 1.75rem;
 		box-shadow: var(--shadow-sm);
-		border-radius: 2px;
+		border-radius: var(--radius-lg);
 	}
-	.loc {
-		border-left: 4px solid var(--ink);
-		padding-left: 1.3rem;
+	.loc__head {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin-bottom: 0.75rem;
 	}
-	.loc h3 {
-		margin-top: 0;
+	.loc__head h3 {
+		margin: 0;
 	}
 	.beta {
 		font-size: 0.65rem;
+		font-weight: 500;
 		background: var(--chip-bg);
-		padding: 0.1rem 0.4rem;
-		vertical-align: middle;
-		letter-spacing: 0.05em;
-		text-transform: none;
+		color: var(--ink-2);
+		padding: 0.15rem 0.45rem;
+		border-radius: var(--radius-pill);
+		letter-spacing: 0.04em;
 	}
 	.loc p {
-		margin: 0.4rem 0;
+		margin: 0.5rem 0;
 		line-height: 1.55;
+		color: var(--ink-2);
+	}
+	.loc p b {
+		color: var(--ink);
 	}
 	.loc .ov,
 	.loc .un {
 		color: var(--ink);
 	}
 	.areas {
-		color: var(--ink-2);
+		color: var(--ink-3);
 		font-size: 0.82rem;
 	}
 	ul {
 		margin: 0;
-		padding-left: 1.1rem;
+		padding-left: 1.2rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.45rem;
+		gap: 0.5rem;
 		max-width: 42rem;
-		line-height: 1.5;
+		line-height: 1.55;
+		color: var(--ink-2);
 	}
 	ul.muted {
 		color: var(--ink-2);
 	}
 	details {
-		margin-top: 2rem;
 		font-size: 0.85rem;
 		color: var(--ink-2);
+		margin-top: 0.5rem;
 	}
 	pre {
 		overflow-x: auto;
@@ -327,19 +373,19 @@
 		border: 1px solid var(--line);
 		padding: 1rem;
 		font-size: 0.75rem;
+		border-radius: var(--radius-md);
 	}
 
 	/* ===== Mobile-first ===== */
 	@media (max-width: 720px) {
 		.hero h1 {
-			font-size: 1.5rem;
+			font-size: 1.8rem;
 		}
 		.hero .lede {
-			font-size: 0.95rem;
+			font-size: 0.98rem;
 		}
 		form {
-			padding: 1.1rem;
-			gap: 0.75rem;
+			padding: 1.5rem;
 		}
 		input {
 			padding: 0.95rem 1rem;
@@ -352,14 +398,14 @@
 			font-size: 1rem;
 		}
 		button {
-			min-height: 54px;
+			min-height: 52px;
 			font-size: 1rem;
 		}
 		.delta {
 			font-size: 2rem;
 		}
 		.card {
-			padding: 1rem 1.1rem;
+			padding: 1.25rem 1.4rem;
 		}
 	}
 </style>

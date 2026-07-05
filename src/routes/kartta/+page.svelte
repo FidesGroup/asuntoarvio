@@ -12,7 +12,7 @@
 </svelte:head>
 
 <section class="intro">
-	<p class="eyebrow">Hintakartta</p>
+	<span class="eyebrow">Hintakartta</span>
 	<h1>Toteutuneet neliöhinnat postinumeroalueittain</h1>
 	<p class="lede">
 		Kerrostaloasuntojen toteutuneiden kauppojen keskineliöhinta postinumeroalueittain, painotettuna
@@ -22,38 +22,54 @@
 	</p>
 </section>
 
-<PriceMap onareaclick={(pc) => goto(`/?pc=${pc}`)} />
+<div class="map-shell">
+	<PriceMap onareaclick={(pc) => goto(`/?pc=${pc}`)} />
+</div>
 
 <style>
 	.intro {
-		margin-bottom: 1.25rem;
+		margin-bottom: 1.75rem;
+		max-width: 44rem;
 	}
 	.eyebrow {
+		display: inline-block;
+		font-size: 0.78rem;
+		font-weight: 500;
 		color: var(--ink-2);
-		font-size: 0.72rem;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.18em;
-		margin: 0 0 0.55rem;
+		letter-spacing: 0.01em;
+		background: var(--chip-bg);
+		padding: 0.35rem 0.7rem;
+		border-radius: var(--radius-pill);
+		margin-bottom: 1.1rem;
 	}
 	.intro h1 {
-		font-size: 1.8rem;
-		letter-spacing: -0.02em;
-		margin: 0 0 0.6rem;
-		font-weight: 700;
+		font-size: 2.2rem;
+		letter-spacing: -0.03em;
+		margin: 0 0 0.75rem;
+		font-weight: 500;
 		max-width: 36rem;
 		text-wrap: balance;
+		line-height: 1.15;
 	}
 	.intro .lede {
 		color: var(--ink-2);
 		max-width: 44rem;
-		margin: 0 0 1.25rem;
-		font-size: 0.98rem;
+		margin: 0;
+		font-size: 1.02rem;
 		line-height: 1.6;
 	}
+
+	.map-shell {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-lg);
+		overflow: hidden;
+		box-shadow: var(--shadow-md);
+	}
+
 	@media (max-width: 720px) {
 		.intro h1 {
-			font-size: 1.5rem;
+			font-size: 1.7rem;
 		}
 		.intro .lede {
 			font-size: 0.95rem;
