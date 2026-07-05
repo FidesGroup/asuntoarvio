@@ -1,6 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import { evaluate, locationBenchmark, type ListingFacts } from '$lib/server/benchmark';
 import { geocodeAddress } from '$lib/server/geocode';
+import { logQuery } from '$lib/server/supalog';
 import {
 	allowedListingUrl, deriveInsights, htmlToText, parseListingText,
 	type ExtractedListing
@@ -98,6 +99,15 @@ export const actions: Actions = {
 				? 'Sijaintipainotettu vertailu on naapurialueiden kauppojen etäisyyspainotus (beta) — katu- ja rakennustason kauppahistoriaa se ei vielä sisällä.'
 				: 'Mikrosijaintia (katu, kerros, näkymä) vertailu ei vielä erottele — se vaatii kauppakohtaista aineistoa.'
 		);
+
+		await logQuery({
+			postal_code: facts.postalCode,
+			rooms_type: facts.roomsType,
+			living_area_m2: facts.livingAreaM2,
+			price_eur: facts.priceEur,
+			delta_pct: location?.deltaPct ?? verdict.deltaPct,
+			confidence: verdict.confidence
+		});
 
 		return {
 			extracted,
