@@ -97,7 +97,12 @@
 		}
 	}
 
-	* {
+	/* Must be :global — a bare `*` in a component style only reaches the
+	   layout's own elements, so page-level inputs with width:100% + padding
+	   overflowed their containers. */
+	:global(*),
+	:global(*::before),
+	:global(*::after) {
 		box-sizing: border-box;
 	}
 
