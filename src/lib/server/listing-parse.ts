@@ -51,7 +51,19 @@ const LABELS = [
 	'Uudiskohde', 'Rakennuksen tyyppi', 'Kerroksia', 'Taloyhtiössä on sauna', 'Rakennusmateriaali',
 	'Kattomateriaali', 'Kattotyyppi', 'Energialuokka', 'Energiatodistus', 'Ilmastointijärjestelmä',
 	'Kiinteistön antennijärjestelmä', 'Tontin koko', 'Kiinteistönhoito', 'Isännöinti',
-	'Kaavoitustiedot', 'Kaavatilanne', 'Liikenneyhteydet', 'Lämmitys', 'Lisätietoja lämmityksestä'
+	'Kaavoitustiedot', 'Kaavatilanne', 'Liikenneyhteydet', 'Lämmitys', 'Lisätietoja lämmityksestä',
+	// Etuovi value labels
+	'Huoneistoselitelmä', 'Asuintilojen pinta-ala', 'Kerrokset', 'Asunnon kunto', 'Muuta taloyhtiöstä',
+	// Etuovi section headers & labels captured only to terminate the previous block
+	'Asunnon perustiedot', 'Tyyppi', 'Omistusmuoto', 'Lisätietoja pinta-alasta', 'Vapautuminen',
+	'Hinta ja kustannukset', 'Vastike', 'Lisätietoa maksuista', 'Asunnon lisätiedot',
+	'Kohteen lisätiedot', 'Lisätietoja kunnosta', 'Lämmitysjärjestelmän kuvaus',
+	'Vesihuollon kuvaus', 'Viemäri', 'Asunnon tilat ja materiaalit', 'Keittiön kuvaus',
+	'Kylpyhuoneen kuvaus', 'Olohuoneen kuvaus', 'Makuuhuoneiden kuvaus', 'Säilytystilojen kuvaus',
+	'Taloyhtiö', 'Isännöitsijän yhteystiedot', 'Huolto', 'Huoltoyhtiö', 'Taloyhtiöön kuuluu',
+	'Rakennus- ja pintamateriaalit', 'Kattomateriaalin kuvaus', 'Taloyhtiön autopaikat',
+	'Kaavoitustilanne', 'Palvelut ja liikenneyhteydet', 'Palvelut', 'Muut lisätiedot',
+	'Tiedustelut', 'Parvekkeen kuvaus', 'Tietoliikenne', 'Sauna'
 ];
 
 const LABEL_SET = new Map(LABELS.map((l) => [l.toLowerCase(), l]));
@@ -59,7 +71,10 @@ const LABEL_SET = new Map(LABELS.map((l) => [l.toLowerCase(), l]));
 function normalizeNumber(raw: string): number | null {
 	// Match the FIRST well-formed number (grouped thousands allowed) without
 	// pre-stripping whitespace: repeated values ("54 54 m2") must not merge.
-	const m = raw.match(/-?\d{1,3}(?:[   ]\d{3})*(?:[.,]\d+)?/);
+	// First run is \d+ (not \d{1,3}) so ungrouped values like "1951" parse
+	// whole; the trailing (?!\d) keeps a doubled "1906 1906" from being read
+	// as grouped thousands.
+	const m = raw.match(/-?\d+(?:[   ]\d{3})*(?:[.,]\d+)?(?!\d)/);
 	if (!m) return null;
 	return Number(m[0].replace(/[   ]/g, '').replace(',', '.'));
 }
@@ -71,7 +86,8 @@ function blockText(lines: string[]): string {
 function parseRenovations(lines: string[]): RenovationItem[] {
 	const items: RenovationItem[] = [];
 	for (const line of lines) {
-		const m = line.match(/^\s*(\d{4})(?:\s*[-–]\s*\d{2,4})?\s+(.*\S)/);
+		// Oikotie: "1992 putkiremontti" — Etuovi: "2010: Linjasaneeraus" (also "2018;")
+		const m = line.match(/^\s*(\d{4})(?:\s*[-–]\s*\d{2,4})?\s*[:;.]?\s+(.*\S)/);
 		if (m) items.push({ year: Number(m[1]), text: m[2].trim() });
 	}
 	return items;
@@ -118,16 +134,22 @@ export function parseListingText(text: string): ExtractedListing {
 		return b && b.length ? blockText(b.slice(0, 12)).slice(0, 1200) : null;
 	};
 
-	const sijainti = val('Sijainti') ?? '';
-	const postal = sijainti.match(/\b(\d{5})\b/);
+	// Sijainti is one line on Oikotie ("Malminkatu 40 A, 00100 Helsinki") but a
+	// district line followed by the address line on Etuovi ("Helsinki Ruskeasuo"
+	// / "Raisiontie 6 A, 00280") — take the line that carries the postal code.
+	const sijaintiLines = (blocks.get('Sijainti') ?? []).slice(0, 4).map((l) => l.slice(0, 160));
+	const sijainti = sijaintiLines.find((l) => /\b\d{5}\b/.test(l)) ?? sijaintiLines[0] ?? '';
+	const postal = blockText(sijaintiLines).match(/\b(\d{5})\b/);
 
-	const roomsRaw = val('Huoneiston kokoonpano') ?? val('Huoneita');
+	const roomsRaw = val('Huoneiston kokoonpano') ?? val('Huoneistoselitelmä') ?? val('Huoneita');
 	let rooms: number | null = null;
 	const huoneita = val('Huoneita');
 	if (huoneita && /^\d+/.test(huoneita)) rooms = Number(huoneita.match(/^\d+/)![0]);
-	else if (roomsRaw) {
-		const m = roomsRaw.match(/^(\d+)\s*h/i);
-		if (m) rooms = Number(m[1]);
+	else if (roomsRaw && /^\d+\s*h/i.test(roomsRaw)) rooms = Number(roomsRaw.match(/^(\d+)\s*h/i)![1]);
+	else if (huoneita) {
+		// Etuovi gives a word ("Kaksio") instead of a count
+		rooms = /yksiö/i.test(huoneita) ? 1 : /kaksio/i.test(huoneita) ? 2
+			: /kolmio/i.test(huoneita) ? 3 : /neli[öo]/i.test(huoneita) ? 4 : null;
 	}
 	const roomsType: RoomsType | null =
 		rooms === null ? null : rooms <= 1 ? 'yksiö' : rooms === 2 ? 'kaksio' : 'kolmio+';
@@ -136,7 +158,9 @@ export function parseListingText(text: string): ExtractedListing {
 	const paaoma = val('Pääomavastike') ? normalizeNumber(val('Pääomavastike')!) : null;
 	const yhteensa = val('Yhtiövastike yhteensä') ? normalizeNumber(val('Yhtiövastike yhteensä')!) : null;
 
-	const taloyhtioInfo = valLong('Lisätietoa taloyhtiöstä') ?? '';
+	const taloyhtioInfo = [valLong('Lisätietoa taloyhtiöstä'), valLong('Muuta taloyhtiöstä')]
+		.filter(Boolean)
+		.join(' ');
 	const kiinnitys = taloyhtioInfo.match(/kiinnitykset[^0-9]*([\d\s  .,]+)\s*€/i);
 
 	const landRaw = val('Tontin omistus');
@@ -144,11 +168,12 @@ export function parseListingText(text: string): ExtractedListing {
 
 	const buildYearRaw = val('Rakennusvuosi') ?? val('Rakennuksen käyttöönottovuosi');
 	const hissiRaw = val('Hissi');
+	const areaRaw = val('Asuinpinta-ala') ?? val('Asuintilojen pinta-ala');
 
 	return {
 		address: sijainti ? sijainti.split(/,/)[0].trim() || null : null,
 		postalCode: postal ? postal[1] : null,
-		livingAreaM2: val('Asuinpinta-ala') ? normalizeNumber(val('Asuinpinta-ala')!) : null,
+		livingAreaM2: areaRaw ? normalizeNumber(areaRaw) : null,
 		roomsType,
 		roomsRaw,
 		debtFreePriceEur: val('Velaton hinta') ? normalizeNumber(val('Velaton hinta')!) : null,
@@ -158,9 +183,9 @@ export function parseListingText(text: string): ExtractedListing {
 		capitalChargeEurMo: paaoma,
 		totalChargeEurMo: yhteensa ?? (hoito !== null || paaoma !== null ? (hoito ?? 0) + (paaoma ?? 0) : null),
 		buildYear: buildYearRaw ? normalizeNumber(buildYearRaw) : null,
-		condition: val('Kunto'),
+		condition: val('Kunto') ?? val('Asunnon kunto'),
 		landOwnership,
-		floor: val('Kerros'),
+		floor: val('Kerros') ?? val('Kerrokset'),
 		elevator: hissiRaw === null ? null : /kyllä/i.test(hissiRaw),
 		apartmentCount: val('Huoneistojen lukumäärä') ? normalizeNumber(val('Huoneistojen lukumäärä')!) : null,
 		mortgagesEur: kiinnitys ? normalizeNumber(kiinnitys[1]) : null,
@@ -199,14 +224,20 @@ export function deriveInsights(x: ExtractedListing): string[] {
 		);
 	}
 
-	const upcomingMajor = x.renovationsUpcoming
-		.map((r) => {
-			const hit = MAJOR_RENOVATIONS.find(([re]) => re.test(r.text));
-			return hit ? `${hit[1]} (${r.year})` : null;
-		})
-		.filter(Boolean);
-	if (upcomingMajor.length) {
-		out.push(`Tulossa isoja remontteja: ${[...new Set(upcomingMajor)].join(', ')} — hankesuunnittelu tarkoittaa tyypillisesti merkittävää tulevaa lainaosuutta.`);
+	// Minor upkeep must not read as a major renovation: patching, repainting,
+	// weather-stripping or servicing a facade is not a julkisivuremontti.
+	const MINOR = /paikkaus|maalau|värimääri|tiivist|huolto|tarkastam|puhdistus/i;
+	// ...unless the line itself announces a remontti/saneeraus
+	// ("kuntotutkimus (julkisivun remontti tai kalkkimaalaus)" stays a signal).
+	const minorOnly = (t: string) => MINOR.test(t) && !/remontti|saneeraus/i.test(t);
+	const upcoming = new Map<string, number>();
+	for (const r of x.renovationsUpcoming) {
+		if (minorOnly(r.text)) continue;
+		const hit = MAJOR_RENOVATIONS.find(([re]) => re.test(r.text));
+		if (hit && (!upcoming.has(hit[1]) || r.year < upcoming.get(hit[1])!)) upcoming.set(hit[1], r.year);
+	}
+	if (upcoming.size) {
+		out.push(`Tulossa isoja remontteja: ${[...upcoming.entries()].map(([k, y]) => `${k} (${y})`).join(', ')} — hankesuunnittelu tarkoittaa tyypillisesti merkittävää tulevaa lainaosuutta.`);
 	} else if (x.renovationsUpcoming.length) {
 		out.push('Tulevissa remonteissa ei näy suuria hankkeita (putket, julkisivu, katto, ikkunat) — tavanomaista ylläpitoa.');
 	}
@@ -216,7 +247,7 @@ export function deriveInsights(x: ExtractedListing): string[] {
 	const STUDY = /kuntotutkim|kuntokartoit|kartoitus|selvitys|suunnittelu|tutkimus|kuntoarvio/i;
 	const doneMajor = new Map<string, number>();
 	for (const r of x.renovationsDone) {
-		if (STUDY.test(r.text)) continue;
+		if (STUDY.test(r.text) || minorOnly(r.text)) continue;
 		const hit = MAJOR_RENOVATIONS.find(([re]) => re.test(r.text));
 		if (hit && !doneMajor.has(hit[1])) doneMajor.set(hit[1], r.year);
 	}
@@ -236,8 +267,11 @@ export function deriveInsights(x: ExtractedListing): string[] {
 			out.push(`Hoitovastike ${perM2.toFixed(1)} €/m²/kk on korkea (tyypillisesti 4–6 €/m²/kk) — selvitä syy tilinpäätöksestä.`);
 		}
 	}
-	if (x.mortgagesEur !== null && x.apartmentCount) {
-		out.push(`Taloyhtiön kiinnitykset ${Math.round(x.mortgagesEur).toLocaleString('fi-FI')} € (~${Math.round(x.mortgagesEur / x.apartmentCount).toLocaleString('fi-FI')} €/huoneisto) — kertoo panttauksen ylärajan, ei nostettua lainaa.`);
+	if (x.mortgagesEur !== null) {
+		const perUnit = x.apartmentCount
+			? ` (~${Math.round(x.mortgagesEur / x.apartmentCount).toLocaleString('fi-FI')} €/huoneisto)`
+			: '';
+		out.push(`Taloyhtiön kiinnitykset ${Math.round(x.mortgagesEur).toLocaleString('fi-FI')} €${perUnit} — kertoo panttauksen ylärajan, ei nostettua lainaa.`);
 	}
 	return out;
 }
