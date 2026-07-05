@@ -43,7 +43,7 @@ export const actions: Actions = {
 			}
 			try {
 				const res = await fetch(url, {
-					headers: { 'user-agent': 'asuntoarvio/0.1 (kayttajan oma due diligence -haku, 1 sivu)' },
+					headers: { 'user-agent': 'rehtiarvio/0.1 (kayttajan oma due diligence -haku, 1 sivu)' },
 					signal: AbortSignal.timeout(8000)
 				});
 				if (!res.ok) throw new Error(`HTTP ${res.status}`);

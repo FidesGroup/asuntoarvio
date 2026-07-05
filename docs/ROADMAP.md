@@ -1,4 +1,4 @@
-# Technical roadmap — asuntoarvio (public UI repo)
+# Technical roadmap — RehtiArvio (public UI repo)
 
 Last updated: 2026-07-05. Rules and constraints: see `../CLAUDE.md`.
 This repo is the Vercel-facing UI and the commodity benchmark engine.

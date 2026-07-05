@@ -1,8 +1,8 @@
-# asuntoarvio
+# RehtiArvio
 
 Is the asking price above or below realized sales in the area? Free benchmark
 and listing-analysis tool for Finnish apartment investors — Stage 0 of the
-apartment-investor analytics product. Live at https://asuntoarvio.vercel.app.
+apartment-investor analytics product. Live at https://rehtiarvio.vercel.app.
 
 Compares a listing's €/m² against Statistics Finland's realized old-apartment
 sale prices by postal code (StatFin 13mt, CC BY 4.0) across the whole country,

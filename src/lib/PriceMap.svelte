@@ -8,16 +8,17 @@
 		height = 'min(72vh, 640px)',
 		marker = null as [number, number] | null,
 		showLegend = true,
-		onareaclick = null as ((pc: string) => void) | null
+		onareaclick = null as ((pc: string) => void) | void
 	} = $props();
 
 	let container: HTMLDivElement;
 	let hover: { pc: string; nimi: string; eur: number | null; n: number; x: number; y: number } | null =
 		$state(null);
 
-	// Sequential petrol ramp, light→dark = cheap→expensive (lightness-monotonic).
-	// Breaks ≈ national quantiles p5/p25/p50/p75/p95 of postal-area means.
-	const RAMP = ['#d9ecee', '#a8d2d8', '#74b5bf', '#4295a3', '#1d7386', '#0b4f5c'];
+	// High-contrast grayscale ramp, white→black = cheap→expensive.
+	// Wide lightness gaps so adjacent price tiers are unmistakably distinct.
+	// Still lightness-monotonic and CVD-safe.
+	const RAMP = ['#ffffff', '#d9d9d9', '#a6a6a6', '#6b6b6b', '#2f2f2f', '#000000'];
 	const BREAKS = [800, 1450, 2200, 3400, 5700];
 	const fmt = new Intl.NumberFormat('fi-FI');
 
@@ -47,25 +48,33 @@
 							'step', ['get', 'eur'],
 							RAMP[0], BREAKS[0], RAMP[1], BREAKS[1], RAMP[2], BREAKS[2], RAMP[3], BREAKS[3], RAMP[4], BREAKS[4], RAMP[5]
 						],
-						'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.95, 0.72]
+						'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.92]
 					}
 				});
+				// White halo separator — thin line underneath to crisp up every polygon edge.
 				map.addLayer({
-					id: 'price-nodata',
+					id: 'price-halo',
 					type: 'line',
 					source: 'prices',
-					filter: ['==', ['get', 'eur'], null],
-					paint: { 'line-color': '#9aacaf', 'line-opacity': 0.25, 'line-width': 0.4 }
+					filter: ['!=', ['get', 'eur'], null],
+					paint: { 'line-color': '#ffffff', 'line-opacity': 0.9, 'line-width': 0.6 }
 				});
 				map.addLayer({
 					id: 'price-outline',
 					type: 'line',
 					source: 'prices',
 					filter: ['!=', ['get', 'eur'], null],
-					paint: { 'line-color': '#0b4f5c', 'line-opacity': 0.35, 'line-width': 0.5 }
+					paint: { 'line-color': '#0a0a0a', 'line-opacity': 0.85, 'line-width': 1 }
+				});
+				map.addLayer({
+					id: 'price-nodata',
+					type: 'line',
+					source: 'prices',
+					filter: ['==', ['get', 'eur'], null],
+					paint: { 'line-color': '#666666', 'line-opacity': 0.6, 'line-width': 0.8, 'line-dasharray': [2, 2] }
 				});
 				if (marker) {
-					new maplibregl.Marker({ color: '#0f6a78' }).setLngLat(marker).addTo(map);
+					new maplibregl.Marker({ color: '#0a0a0a' }).setLngLat(marker).addTo(map);
 				}
 
 				let hoveredId: string | null = null;
@@ -165,6 +174,7 @@
 	}
 	.swatch {
 		height: 0.7rem;
+		border: 1px solid #0a0a0a;
 	}
 	.lab {
 		grid-row: 3;

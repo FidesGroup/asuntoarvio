@@ -1,7 +1,7 @@
-# asuntoarvio — rules for agents and humans
+# RehtiArvio — rules for agents and humans
 
 Free benchmark + listing analysis for Finnish apartment investors. Live at
-https://asuntoarvio.vercel.app. This file is the project constitution: the
+https://rehtiarvio.vercel.app. This file is the project constitution: the
 constraints below were each earned the hard way in one intensive build day
 (2026-07-05). Do not relax them without the owner's explicit decision.
 
