@@ -33,30 +33,30 @@
 	}
 	.eyebrow {
 		display: inline-block;
-		font-size: 0.78rem;
+		font-size: var(--text-xs);
 		font-weight: 500;
 		color: var(--ink-2);
-		letter-spacing: 0.01em;
+		letter-spacing: var(--ls-wide);
 		background: var(--chip-bg);
 		padding: 0.35rem 0.7rem;
 		border-radius: var(--radius-pill);
 		margin-bottom: 1.1rem;
 	}
 	.intro h1 {
-		font-size: 2.2rem;
-		letter-spacing: -0.03em;
+		font-size: var(--text-2xl);
+		letter-spacing: var(--ls-tight);
 		margin: 0 0 0.75rem;
-		font-weight: 500;
+		font-weight: 600;
 		max-width: 36rem;
 		text-wrap: balance;
-		line-height: 1.15;
+		line-height: var(--lh-snug);
 	}
 	.intro .lede {
 		color: var(--ink-2);
 		max-width: 44rem;
 		margin: 0;
-		font-size: 1.02rem;
-		line-height: 1.6;
+		font-size: var(--text-md);
+		line-height: var(--lh-body);
 	}
 
 	.map-shell {
@@ -65,14 +65,5 @@
 		border-radius: var(--radius-lg);
 		overflow: hidden;
 		box-shadow: var(--shadow-md);
-	}
-
-	@media (max-width: 720px) {
-		.intro h1 {
-			font-size: 1.7rem;
-		}
-		.intro .lede {
-			font-size: 0.95rem;
-		}
 	}
 </style>

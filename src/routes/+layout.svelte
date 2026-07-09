@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '@fontsource-variable/ibm-plex-sans';
 	import { page } from '$app/state';
 	let { children } = $props();
 	const links = [
@@ -53,47 +54,87 @@
 
 <style>
 	:root {
-		/* Soft modern minimalist — off-white paper, generous elevation */
-		--bg: #f7f6f4;
-		--surface: #ffffff;
-		--ink: #111827;
-		--ink-2: #6b7280;
-		--ink-3: #9ca3af;
-		--line: #ececea;
-		--line-2: #d6d3d1;
-		--accent: #111827;
-		--over: #111827;
-		--under: #111827;
-		--chip-bg: #f3f1ee;
-		--shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.04), 0 1px 3px rgba(17, 24, 39, 0.03);
-		--shadow-md: 0 2px 4px -1px rgba(17, 24, 39, 0.04), 0 8px 24px -6px rgba(17, 24, 39, 0.08);
-		--shadow-lg: 0 4px 8px -2px rgba(17, 24, 39, 0.05), 0 20px 40px -8px rgba(17, 24, 39, 0.1);
-		--radius-sm: 8px;
-		--radius-md: 12px;
-		--radius-lg: 18px;
+		/* Brand — CLAUDE.md rule 10 */
+		--baltic:     #0f6a78;
+		--baltic-2:   #0a525d;
+		--baltic-ink: #ffffff;
+		--copper:     #a4512e;
+		--copper-2:   #8a3f1f;
+		--pine:       #2e6b46;
+		--pine-2:     #1f5234;
+		--over:       var(--copper);
+		--under:      var(--pine);
+		--accent:     var(--baltic);
+
+		/* Neutrals */
+		--bg:         #f7f6f4;
+		--surface:    #ffffff;
+		--ink:        #111827;
+		--ink-2:      #4b5563;
+		--ink-3:      #6b7280;
+		--line:       #ececea;
+		--line-2:     #d6d3d1;
+		--chip-bg:    #f3f1ee;
+
+		/* Tinted shadow ring (focus + drop shadow) */
+		--ring:       rgba(15, 106, 120, 0.18);
+		--shadow-sm:  0 1px 2px rgba(17, 24, 39, 0.04), 0 1px 3px rgba(17, 24, 39, 0.03);
+		--shadow-md:  0 2px 4px -1px rgba(17, 24, 39, 0.04), 0 8px 24px -6px rgba(17, 24, 39, 0.08);
+		--shadow-lg:  0 4px 8px -2px rgba(17, 24, 39, 0.05), 0 20px 40px -8px rgba(17, 24, 39, 0.1);
+		--radius-sm:  8px;
+		--radius-md:  12px;
+		--radius-lg:  18px;
 		--radius-pill: 999px;
-		--fides-ink: #ffffff;
-		--fides-bg: #111827;
+		--fides-ink:  #ffffff;
+		--fides-bg:   #111827;
+
+		/* Type scale — fluid */
+		--text-xs:   clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
+		--text-sm:   clamp(0.83rem, 0.81rem + 0.10vw, 0.88rem);
+		--text-md:   1rem;
+		--text-lg:   clamp(1.06rem, 1.02rem + 0.20vw, 1.13rem);
+		--text-xl:   clamp(1.22rem, 1.15rem + 0.35vw, 1.38rem);
+		--text-2xl:  clamp(1.45rem, 1.30rem + 0.75vw, 1.75rem);
+		--text-3xl:  clamp(1.85rem, 1.50rem + 1.50vw, 2.40rem);
+		--text-4xl:  clamp(2.40rem, 1.80rem + 2.50vw, 3.50rem);
+		--text-hero: clamp(3.00rem, 2.00rem + 4.50vw, 5.00rem);
+
+		/* Line-height */
+		--lh-tight: 1.05;
+		--lh-snug:  1.20;
+		--lh-body:  1.60;
+		--lh-list:  1.55;
+
+		/* Letter-spacing */
+		--ls-tightest: -0.04em;
+		--ls-tight:    -0.025em;
+		--ls-snug:     -0.01em;
+		--ls-normal:   0;
+		--ls-wide:     0.04em;
 	}
 
 	@media (prefers-color-scheme: dark) {
 		:root {
-			--bg: #0b0b0c;
-			--surface: #151517;
-			--ink: #f5f5f4;
-			--ink-2: #a1a1aa;
-			--ink-3: #71717a;
-			--line: #232325;
-			--line-2: #2e2e30;
-			--accent: #f5f5f4;
-			--over: #f5f5f4;
-			--under: #f5f5f4;
-			--chip-bg: #1d1d1f;
-			--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
-			--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.5);
-			--shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.5), 0 20px 40px rgba(0, 0, 0, 0.55);
-			--fides-ink: #0b0b0c;
-			--fides-bg: #f5f5f4;
+			--bg:         #0b0b0c;
+			--surface:    #151517;
+			--ink:        #f5f5f4;
+			--ink-2:      #c8c8cc;
+			--ink-3:      #8a8a90;
+			--line:       #232325;
+			--line-2:     #2e2e30;
+			--chip-bg:    #1d1d1f;
+			--baltic:     #4fb3c0;
+			--baltic-2:   #6fc6d2;
+			--copper:     #d68464;
+			--copper-2:   #e9a384;
+			--pine:       #6cb386;
+			--pine-2:     #8dc9a3;
+			--over:       var(--copper);
+			--under:      var(--pine);
+			--accent:     var(--baltic);
+			--ring:       rgba(79, 179, 192, 0.28);
+			--fides-ink:  #0b0b0c;
+			--fides-bg:   #f5f5f4;
 		}
 	}
 
@@ -110,11 +151,17 @@
 		margin: 0;
 		background: var(--bg);
 		color: var(--ink);
-		font-family: 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
-		line-height: 1.55;
+		font-family: 'IBM Plex Sans Variable', 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+		line-height: var(--lh-body);
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
-		letter-spacing: -0.005em;
+		letter-spacing: var(--ls-snug);
+	}
+
+	:global(:focus-visible) {
+		outline: 2px solid var(--baltic);
+		outline-offset: 3px;
+		border-radius: inherit;
 	}
 
 	.shell {
@@ -142,7 +189,7 @@
 	}
 
 	.fides {
-		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+		font-family: 'IBM Plex Sans Variable', 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 		font-weight: 700;
 		background: var(--fides-bg);
 		color: var(--fides-ink);
@@ -194,17 +241,17 @@
 
 	.wordmark {
 		font-size: 1.45rem;
-		font-weight: 500;
-		letter-spacing: -0.025em;
+		font-weight: 600;
+		letter-spacing: var(--ls-tight);
 		color: var(--ink);
 		text-decoration: none;
 		line-height: 1;
 	}
 
 	.byline {
-		font-size: 0.68rem;
+		font-size: var(--text-xs);
 		color: var(--ink-2);
-		letter-spacing: 0.01em;
+		letter-spacing: var(--ls-snug);
 		font-weight: 400;
 	}
 
@@ -215,7 +262,7 @@
 	}
 	nav a {
 		color: var(--ink-2);
-		font-size: 0.875rem;
+		font-size: var(--text-sm);
 		font-weight: 500;
 		text-decoration: none;
 		padding: 0.5rem 0.85rem;
@@ -227,8 +274,8 @@
 		color: var(--ink);
 	}
 	nav a[aria-current='page'] {
-		background: var(--ink);
-		color: var(--surface);
+		background: var(--baltic);
+		color: var(--baltic-ink);
 	}
 
 	main {
@@ -238,7 +285,7 @@
 	footer {
 		padding-top: 2rem;
 		color: var(--ink-2);
-		font-size: 0.82rem;
+		font-size: var(--text-sm);
 		display: flex;
 		flex-direction: column;
 		gap: 1.25rem;
@@ -255,7 +302,7 @@
 	.footer__copy {
 		color: var(--ink-2);
 		max-width: 38rem;
-		line-height: 1.5;
+		line-height: var(--lh-list);
 	}
 	.footer__copy b {
 		color: var(--ink);
@@ -265,8 +312,8 @@
 	.attr {
 		margin: 0;
 		color: var(--ink-3);
-		font-size: 0.78rem;
-		line-height: 1.5;
+		font-size: var(--text-xs);
+		line-height: var(--lh-list);
 	}
 	footer a {
 		color: var(--ink);
@@ -275,7 +322,7 @@
 		text-decoration-color: var(--ink-3);
 	}
 
-	/* ===== Mobile-first ===== */
+	/* ===== Mobile-first (type is fluid via tokens) ===== */
 	@media (max-width: 640px) {
 		.shell {
 			padding: 1.25rem 1rem 4rem;
@@ -287,9 +334,6 @@
 		}
 		.brand {
 			gap: 0.7rem;
-		}
-		.wordmark {
-			font-size: 1.25rem;
 		}
 		.byline {
 			display: none;
@@ -306,7 +350,6 @@
 		nav a {
 			flex: 1;
 			text-align: center;
-			font-size: 0.85rem;
 			padding: 0.55rem 0.5rem;
 		}
 	}

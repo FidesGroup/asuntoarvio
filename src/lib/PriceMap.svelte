@@ -8,7 +8,7 @@
 		height = 'min(72vh, 640px)',
 		marker = null as [number, number] | null,
 		showLegend = true,
-		onareaclick = null as ((pc: string) => void) | void
+		onareaclick = null as ((pc: string) => void) | null
 	} = $props();
 
 	let container: HTMLDivElement;
@@ -82,9 +82,9 @@
 					if (!map) return;
 					const f = e.features?.[0];
 					if (!f) return;
-					if (hoveredId !== null) map.setFeatureState({ source: 'prices', id: hoveredId }, { hover: false });
-					hoveredId = f.properties.pc;
-					map.setFeatureState({ source: 'prices', id: hoveredId }, { hover: true });
+				if (hoveredId !== null) map.setFeatureState({ source: 'prices', id: hoveredId }, { hover: false });
+				hoveredId = f.properties.pc;
+				if (hoveredId !== null) map.setFeatureState({ source: 'prices', id: hoveredId }, { hover: true });
 					hover = {
 						pc: f.properties.pc, nimi: f.properties.nimi,
 						eur: f.properties.eur, n: f.properties.n,
@@ -145,8 +145,9 @@
 		border: 1px solid var(--line);
 		color: var(--ink);
 		padding: 0.4rem 0.6rem;
-		font-size: 0.8rem;
+		font-size: var(--text-sm);
 		font-variant-numeric: tabular-nums;
+		line-height: var(--lh-body);
 		box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
 		z-index: 5;
 		max-width: 16rem;
@@ -164,12 +165,14 @@
 		display: grid;
 		grid-template-columns: repeat(6, 1.4rem);
 		gap: 2px;
-		font-size: 0.65rem;
+		font-size: var(--text-xs);
+		letter-spacing: var(--ls-wide);
 		color: var(--ink-2);
 	}
 	.legend .title {
 		grid-column: 1 / -1;
-		font-weight: 700;
+		font-size: var(--text-sm);
+		font-weight: 600;
 		color: var(--ink);
 	}
 	.swatch {

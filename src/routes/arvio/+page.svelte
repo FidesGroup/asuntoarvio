@@ -85,8 +85,8 @@
 <style>
 	.crumb {
 		color: var(--ink-3);
-		letter-spacing: 0.01em;
-		font-size: 0.82rem;
+		letter-spacing: var(--ls-wide);
+		font-size: var(--text-xs);
 		margin: 0 0 1.5rem;
 		font-weight: 500;
 	}
@@ -97,10 +97,10 @@
 
 	.eyebrow {
 		display: inline-block;
-		font-size: 0.78rem;
+		font-size: var(--text-xs);
 		font-weight: 500;
 		color: var(--ink-2);
-		letter-spacing: 0.01em;
+		letter-spacing: var(--ls-wide);
 		background: var(--chip-bg);
 		padding: 0.35rem 0.7rem;
 		border-radius: var(--radius-pill);
@@ -108,26 +108,21 @@
 	}
 
 	h1 {
-		font-size: 4.5rem;
-		line-height: 1;
-		letter-spacing: -0.04em;
+		font-size: var(--text-hero);
+		line-height: var(--lh-tight);
+		letter-spacing: var(--ls-tightest);
 		margin: 0 0 0.85rem;
 		font-variant-numeric: tabular-nums;
-		font-weight: 500;
+		font-weight: 600;
 	}
-	h1.over,
-	h1.under {
-		color: var(--ink);
-	}
-	h1.none {
-		color: var(--ink);
-		font-size: 2.4rem;
-	}
+	h1.over { color: var(--over); }
+	h1.under { color: var(--under); }
+	h1.none { color: var(--ink); font-size: var(--text-2xl); }
 
 	.summary {
 		color: var(--ink-2);
-		font-size: 1.1rem;
-		line-height: 1.5;
+		font-size: var(--text-lg);
+		line-height: var(--lh-body);
 		max-width: 36rem;
 		margin: 0;
 	}
@@ -146,27 +141,28 @@
 		box-shadow: var(--shadow-sm);
 	}
 	dt {
-		font-size: 0.78rem;
+		font-size: var(--text-xs);
 		color: var(--ink-2);
 		font-weight: 500;
 		margin-bottom: 0.4rem;
+		letter-spacing: var(--ls-wide);
 	}
 	dd {
 		margin: 0;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
-		font-size: 1.15rem;
-		letter-spacing: -0.02em;
+		font-size: var(--text-xl);
+		letter-spacing: var(--ls-tight);
 	}
 	.unit {
-		font-size: 0.85rem;
+		font-size: var(--text-sm);
 		color: var(--ink-2);
 		font-weight: 500;
 		margin-left: 0.15rem;
 	}
 	.meta {
 		display: block;
-		font-size: 0.78rem;
+		font-size: var(--text-xs);
 		color: var(--ink-3);
 		font-weight: 400;
 		margin-top: 0.25rem;
@@ -180,7 +176,7 @@
 		background: var(--chip-bg);
 		color: var(--ink-2);
 		padding: 0.2rem 0.6rem;
-		font-size: 0.85rem;
+		font-size: var(--text-sm);
 		border-radius: var(--radius-pill);
 		font-weight: 500;
 	}
@@ -198,10 +194,11 @@
 	}
 
 	.flags h2 {
-		font-size: 0.95rem;
+		font-size: var(--text-lg);
 		font-weight: 600;
 		margin: 0 0 0.75rem;
 		color: var(--ink);
+		letter-spacing: var(--ls-snug);
 	}
 	.flags ul {
 		margin: 0;
@@ -211,7 +208,7 @@
 		flex-direction: column;
 		gap: 0.45rem;
 		max-width: 42rem;
-		line-height: 1.5;
+		line-height: var(--lh-list);
 	}
 
 	.back {
@@ -222,7 +219,7 @@
 		color: var(--ink-2);
 		text-decoration: none;
 		font-weight: 500;
-		font-size: 0.95rem;
+		font-size: var(--text-md);
 		padding: 0.5rem 0;
 		transition: color 0.15s ease;
 	}
@@ -230,18 +227,8 @@
 		color: var(--ink);
 	}
 
-	/* ===== Mobile-first ===== */
+	/* ===== Mobile-first layout (type is fluid via tokens) ===== */
 	@media (max-width: 720px) {
-		h1 {
-			font-size: 3rem;
-			margin-bottom: 0.75rem;
-		}
-		h1.none {
-			font-size: 1.8rem;
-		}
-		.summary {
-			font-size: 1rem;
-		}
 		dl {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
@@ -250,9 +237,6 @@
 		}
 	}
 	@media (max-width: 420px) {
-		h1 {
-			font-size: 2.4rem;
-		}
 		dl {
 			grid-template-columns: 1fr;
 		}
