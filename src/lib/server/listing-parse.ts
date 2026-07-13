@@ -11,6 +11,8 @@ export interface RenovationItem {
 	text: string;
 }
 
+export type PropertyClass = 'kerrostalo' | 'rivitalo' | 'omakotitalo' | 'paritalo' | 'muu';
+
 export interface ExtractedListing {
 	address: string | null;
 	postalCode: string | null;
@@ -33,6 +35,9 @@ export interface ExtractedListing {
 	housingCompany: string | null;
 	renovationsDone: RenovationItem[];
 	renovationsUpcoming: RenovationItem[];
+	propertyClass: PropertyClass | null;
+	tonttiAreaM2: number | null;
+	energyClass: string | null;
 }
 
 /** Labels that begin a value block. Order-insensitive; matched per line. */
@@ -99,6 +104,29 @@ const CUTOFF_MARKERS = [
 	'Seuraa meitä', 'Yksityisille ilmoittajille', 'Samankaltaisia kohteita',
 	'Katso myös nämä', 'Evästeasetukset'
 ];
+
+/**
+ * Parse listing from HTML. First attempts JSON-LD / __NEXT_DATA__ extraction,
+ * then falls back to label/value text parsing.
+ */
+export function parseListingHtml(html: string): ExtractedListing {
+	const jsonData = extractJsonFromHtml(html);
+	const textData = parseListingText(htmlToText(html));
+
+	if (jsonData) {
+		const jsonExtract = extractFromJson(jsonData);
+		if (jsonExtract) {
+			// Merge: JSON-LD data fills gaps in text parsing
+			return {
+				...textData,
+				...Object.fromEntries(
+					Object.entries(jsonExtract).filter(([, v]) => v !== null && v !== undefined)
+				)
+			};
+		}
+	}
+	return textData;
+}
 
 export function parseListingText(text: string): ExtractedListing {
 	for (const marker of CUTOFF_MARKERS) {
@@ -170,6 +198,27 @@ export function parseListingText(text: string): ExtractedListing {
 	const hissiRaw = val('Hissi');
 	const areaRaw = val('Asuinpinta-ala') ?? val('Asuintilojen pinta-ala');
 
+	const housingCompanyName = val('Taloyhtiön nimi');
+
+	// Detect property class from labels
+	const asumistyyppi = val('Asumistyyppi') ?? '';
+	const rakennuksenTyyppi = val('Rakennuksen tyyppi') ?? '';
+	const kohdeOn = val('Kohde on') ?? '';
+	const propertyClassRaw = [asumistyyppi, rakennuksenTyyppi, kohdeOn].join(' ').toLowerCase();
+	let propertyClass: PropertyClass | null = null;
+	if (/omakoti|omakotitalo/i.test(propertyClassRaw)) propertyClass = 'omakotitalo';
+	else if (/paritalo|rivi.*talo|rivitalo/i.test(propertyClassRaw)) propertyClass = 'rivitalo';
+	else if (/kerrostalo/i.test(propertyClassRaw)) propertyClass = 'kerrostalo';
+	else if (housingCompanyName) propertyClass = 'kerrostalo'; // default share-based to kerrostalo if no explicit type
+
+	// Extract plot area (tontti)
+	const tonttiAreaRaw = val('Tontin koko') ?? val('Tontin pinta-ala');
+	const tonttiAreaM2 = tonttiAreaRaw ? normalizeNumber(tonttiAreaRaw) : null;
+
+	// Extract energy class
+	const energyClassRaw = val('Energialuokka') ?? val('Energiatodistus');
+	const energyClass = energyClassRaw ? energyClassRaw.slice(0, 40).trim() : null;
+
 	return {
 		address: sijainti ? sijainti.split(/,/)[0].trim() || null : null,
 		postalCode: postal ? postal[1] : null,
@@ -189,9 +238,12 @@ export function parseListingText(text: string): ExtractedListing {
 		elevator: hissiRaw === null ? null : /kyllä/i.test(hissiRaw),
 		apartmentCount: val('Huoneistojen lukumäärä') ? normalizeNumber(val('Huoneistojen lukumäärä')!) : null,
 		mortgagesEur: kiinnitys ? normalizeNumber(kiinnitys[1]) : null,
-		housingCompany: val('Taloyhtiön nimi'),
+		housingCompany: housingCompanyName,
 		renovationsDone: parseRenovations(blocks.get('Tehdyt remontit') ?? []),
-		renovationsUpcoming: parseRenovations(blocks.get('Tulevat remontit') ?? [])
+		renovationsUpcoming: parseRenovations(blocks.get('Tulevat remontit') ?? []),
+		propertyClass,
+		tonttiAreaM2,
+		energyClass
 	};
 }
 
@@ -290,6 +342,69 @@ export function allowedListingUrl(raw: string): URL | null {
 	} catch {
 		return null;
 	}
+}
+
+/** Extract JSON-LD or __NEXT_DATA__ from page HTML. */
+function extractJsonFromHtml(html: string): Record<string, unknown> | null {
+	// Try JSON-LD first
+	const jsonLdMatch = html.match(/<script[^>]+type=['"]application\/ld\+json['"][^>]*>([\s\S]*?)<\/script>/i);
+	if (jsonLdMatch) {
+		try {
+			return JSON.parse(jsonLdMatch[1]);
+		} catch {
+			// Fall through to __NEXT_DATA__
+		}
+	}
+	// Try __NEXT_DATA__
+	const nextDataMatch = html.match(/<script[^>]+id=['"]__NEXT_DATA__['"][^>]*>([\s\S]*?)<\/script>/i);
+	if (nextDataMatch) {
+		try {
+			return JSON.parse(nextDataMatch[1]);
+		} catch {
+			// Fall through to null
+		}
+	}
+	return null;
+}
+
+/** Attempt to extract listing facts from JSON-LD or __NEXT_DATA__. */
+function extractFromJson(data: Record<string, unknown>): Partial<ExtractedListing> | null {
+	try {
+		// JSON-LD property schema
+		if (data['@type'] === 'RealEstateAgent' || data['@type'] === 'Thing') {
+			const res: Partial<ExtractedListing> = {};
+			if (data.name) res.address = String(data.name);
+			if (data.price) {
+				const priceVal = Number(data.price);
+				if (!isNaN(priceVal)) res.askingPriceEur = priceVal;
+			}
+			// livingArea might be in schema as floorSize or similar
+			if (data.floorSize) res.livingAreaM2 = Number(data.floorSize);
+			// Try to find area in description or parse from structured data
+			return Object.keys(res).length > 0 ? res : null;
+		}
+		// Next.js props structure (Oikotie-specific; adjust as needed per actual structure)
+		const props = (data.props as Record<string, unknown>)?.pageProps as Record<string, unknown>;
+		if (props && typeof props === 'object') {
+			const listing = props.listing as Record<string, unknown>;
+			if (listing && typeof listing === 'object') {
+				const res: Partial<ExtractedListing> = {};
+				if (listing.address) res.address = String(listing.address);
+				if (listing.postalCode) res.postalCode = String(listing.postalCode);
+				if (listing.price) res.askingPriceEur = Number(listing.price);
+				if (listing.livingArea) res.livingAreaM2 = Number(listing.livingArea);
+				if (listing.buildYear) res.buildYear = Number(listing.buildYear);
+				if (listing.rooms) {
+					const r = Number(listing.rooms);
+					res.roomsType = r <= 1 ? 'yksiö' : r === 2 ? 'kaksio' : 'kolmio+';
+				}
+				return Object.keys(res).length > 0 ? res : null;
+			}
+		}
+	} catch {
+		// Silently fall through on any parse error
+	}
+	return null;
 }
 
 /** Very small HTML -> text: enough for label/value parsing of SSR pages. */

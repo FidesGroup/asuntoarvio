@@ -9,18 +9,33 @@
  * never as a naked percentage.
  */
 import seed from './benchmarks.seed.json';
+import housesSeed from './houses.seed.json';
 import centroidsRaw from './centroids.json';
+import type { PropertyClass } from './listing-parse';
 
 export type RoomsType = 'yksiö' | 'kaksio' | 'kolmio+';
 
+export interface BenchmarkCell {
+	benchmark_eur_m2: number | null;
+	n_4q: number;
+	series: { q: string; eur_m2: number | null; n: number | null }[];
+}
+
+export interface HouseBenchmarkCell {
+	benchmark_eur_m2: number | null;
+	n_4q: number;
+	series: { q: string; eur_m2: number | null; n: number | null }[];
+}
+
 export interface ListingFacts {
 	postalCode: string;
-	roomsType: RoomsType;
+	roomsType?: RoomsType | null; // optional for detached houses
 	livingAreaM2: number;
 	/** velaton hinta if known, otherwise myyntihinta */
 	priceEur: number;
 	priceIsDebtFree: boolean;
 	buildYear?: number | null;
+	propertyClass?: PropertyClass | null; // optional; defaults to kerrostalo if omitted
 }
 
 export interface BenchmarkCell {
@@ -39,6 +54,16 @@ export interface Verdict {
 	flags: string[];
 }
 
+// Postal code to house region mapping (simplified for Stage 2)
+// In production, this would be a full postal->region lookup table
+const POSTAL_TO_HOUSE_REGION: Record<string, string> = {
+	'00100': 'pks', '00120': 'pks', '00130': 'pks', '00140': 'pks', // Helsinki -> Greater Helsinki
+	'02100': 'pks', '02150': 'pks', '02200': 'pks', '02250': 'pks', // Espoo
+	'01300': 'pks', '01400': 'pks', '01500': 'pks', '01600': 'pks'  // Vantaa
+};
+
+const fallbackRegion = 'SSS'; // Whole country fallback
+
 const TYPE_KEY: Record<RoomsType, string> = {
 	'yksiö': 'yksiöt',
 	'kaksio': 'kaksiot',
@@ -46,9 +71,18 @@ const TYPE_KEY: Record<RoomsType, string> = {
 };
 
 const cells = seed as Record<string, BenchmarkCell>;
+const houseCells = housesSeed as Record<string, HouseBenchmarkCell>;
 
 export function knownPostalCodes(): string[] {
 	return [...new Set(Object.keys(cells).map((k) => k.split('_')[0]))].sort();
+}
+
+export function lookupHouseCell(region: string): HouseBenchmarkCell | null {
+	return houseCells[region] ?? null;
+}
+
+function getHouseRegionForPostal(postalCode: string): string {
+	return POSTAL_TO_HOUSE_REGION[postalCode] ?? fallbackRegion;
 }
 
 /* ------------------------------------------------------------------ *
@@ -120,7 +154,97 @@ export function lookupCell(postalCode: string, roomsType: RoomsType): BenchmarkC
 	return cells[`${postalCode}_${TYPE_KEY[roomsType]}`] ?? null;
 }
 
+/**
+ * New property-class-aware evaluation. Routes apartments/row houses to room-type
+ * cell lookup, and detached houses to municipality-level fallback (not yet implemented).
+ * Backward compatible: propertyClass defaults to kerrostalo if omitted.
+ */
+export function evaluateProperty(facts: ListingFacts): Verdict {
+	const propertyClass = facts.propertyClass ?? 'kerrostalo';
+
+	// For apartments and row houses, use room-type cell lookup
+	if (propertyClass === 'kerrostalo' || propertyClass === 'rivitalo') {
+		if (!facts.roomsType) {
+			return {
+				listingEurM2: Math.round(facts.priceEur / facts.livingAreaM2),
+				benchmarkEurM2: null,
+				deltaPct: null,
+				confidence: 'ei saatavilla',
+				transactions4q: 0,
+				latestQuarter: null,
+				flags: ['Huonetyyppi puuttuu. Vertailua ei voida laskea.']
+			};
+		}
+		return evaluate(facts as Required<Pick<ListingFacts, 'roomsType'>> & ListingFacts);
+	}
+
+	// For detached houses, use regional fallback (Stage 2)
+	if (propertyClass === 'omakotitalo' || propertyClass === 'paritalo') {
+		const region = getHouseRegionForPostal(facts.postalCode);
+		const houseCell = lookupHouseCell(region);
+		const listingEurM2 = Math.round(facts.priceEur / facts.livingAreaM2);
+		const flags: string[] = [
+			'Omakotitalon €/m² on karkea seula — tontin arvo ja talon yksilöllisyys vaihtelevat paljon.'
+		];
+
+		if (!houseCell || houseCell.benchmark_eur_m2 === null) {
+			flags.push('Alueella ei ole riittävästi kauppadata. Vertailua ei voida laskea.');
+			return {
+				listingEurM2,
+				benchmarkEurM2: null,
+				deltaPct: null,
+				confidence: 'ei saatavilla',
+				transactions4q: 0,
+				latestQuarter: null,
+				flags
+			};
+		}
+
+		const deltaPct = Math.round((listingEurM2 / houseCell.benchmark_eur_m2 - 1) * 1000) / 10;
+		const confidence = houseCell.n_4q >= 100 ? 'kohtalainen' : 'matala'; // houses always downgraded vs apartments
+		if (confidence !== 'kohtalainen') {
+			flags.push(
+				`Aluetaso: ${houseCell.n_4q} kauppaa viimeisen neljän tilastoneljänneksen ajalta. Pieni otos.`
+			);
+		}
+
+		return {
+			listingEurM2,
+			benchmarkEurM2: houseCell.benchmark_eur_m2,
+			deltaPct,
+			confidence,
+			transactions4q: houseCell.n_4q,
+			latestQuarter: latestQuarterOf(houseCell),
+			flags
+		};
+	}
+
+	// For unknown property types, return error
+	return {
+		listingEurM2: Math.round(facts.priceEur / facts.livingAreaM2),
+		benchmarkEurM2: null,
+		deltaPct: null,
+		confidence: 'ei saatavilla',
+		transactions4q: 0,
+		latestQuarter: null,
+		flags: ['Tuntematon kohdetyyppi. Vertailua ei voida laskea.']
+	};
+}
+
 export function evaluate(facts: ListingFacts): Verdict {
+	// Ensure roomsType is present for apartment lookup
+	if (!facts.roomsType) {
+		return {
+			listingEurM2: Math.round(facts.priceEur / facts.livingAreaM2),
+			benchmarkEurM2: null,
+			deltaPct: null,
+			confidence: 'ei saatavilla',
+			transactions4q: 0,
+			latestQuarter: null,
+			flags: ['Huonetyyppi puuttuu. Vertailua ei voida laskea.']
+		};
+	}
+
 	const cell = lookupCell(facts.postalCode, facts.roomsType);
 	const listingEurM2 = Math.round(facts.priceEur / facts.livingAreaM2);
 	const flags: string[] = [];

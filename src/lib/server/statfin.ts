@@ -7,7 +7,17 @@
 import type { BenchmarkCell } from './benchmark';
 
 const TABLE_URL = 'https://statfin.stat.fi/PxWeb/api/v1/fi/StatFin/ashi/13mt.px';
+
+// Room types
 const TYPES: Record<string, string> = { '1': 'yksiöt', '2': 'kaksiot', '3': 'kolmiot+' };
+
+// Building types (talotyyppi) — used to separate row houses from apartments
+// Stage 2 toggle: set SPLIT_BY_BUILDING_TYPE to true to enable row house separation
+const SPLIT_BY_BUILDING_TYPE = false; // Phase 2 feature flag
+const BUILDING_TYPES: Record<string, string> = {
+	'1': 'kerrostalo',  // apartment building
+	'2': 'rivitalo'      // row house
+};
 
 export async function fetchLatestQuarters(count = 4): Promise<string[]> {
 	const res = await fetch(TABLE_URL);
@@ -22,11 +32,16 @@ export async function fetchBenchmarks(
 	postalCodes: string[],
 	quarters: string[]
 ): Promise<Record<string, BenchmarkCell>> {
+	const buildingTypesToFetch = SPLIT_BY_BUILDING_TYPE
+		? Object.keys(BUILDING_TYPES)
+		: Object.keys(TYPES); // When disabled, fetch all room types (current behavior)
+
 	const query = {
 		query: [
 			{ code: 'timeperiod_q', selection: { filter: 'item', values: quarters } },
 			{ code: 'postinumeroalue_4_20220101', selection: { filter: 'item', values: postalCodes } },
-			{ code: 'talotyyppi_6_20131021', selection: { filter: 'item', values: Object.keys(TYPES) } }
+			// talotyyppi_6_20131021 can filter by building type (1=kerrostalo, 2=rivitalo) or by room type
+			{ code: 'talotyyppi_6_20131021', selection: { filter: 'item', values: buildingTypesToFetch } }
 		],
 		response: { format: 'json-stat2' }
 	};
@@ -73,21 +88,45 @@ export async function fetchBenchmarks(
 
 	const out: Record<string, BenchmarkCell> = {};
 	for (const post of postalCodes) {
-		for (const [t, name] of Object.entries(TYPES)) {
-			const series = quarters.map((q) => ({
-				q,
-				eur_m2: get(post, t, q, 'keskihinta_aritm_nw'),
-				n: get(post, t, q, 'lkm_julk20')
-			}));
-			const good = series.filter((s) => s.eur_m2 !== null && s.n);
-			const nSum = good.reduce((a, s) => a + (s.n as number), 0);
-			out[`${post}_${name}`] = {
-				benchmark_eur_m2: good.length
-					? Math.round(good.reduce((a, s) => a + (s.eur_m2 as number) * (s.n as number), 0) / nSum)
-					: null,
-				n_4q: nSum,
-				series
-			};
+		if (SPLIT_BY_BUILDING_TYPE) {
+			// Phase 2: separate row houses from apartments
+			for (const [bt, btName] of Object.entries(BUILDING_TYPES)) {
+				for (const [t, typeName] of Object.entries(TYPES)) {
+					const series = quarters.map((q) => ({
+						q,
+						eur_m2: get(post, bt, q, 'keskihinta_aritm_nw'),
+						n: get(post, bt, q, 'lkm_julk20')
+					}));
+					const good = series.filter((s) => s.eur_m2 !== null && s.n);
+					const nSum = good.reduce((a, s) => a + (s.n as number), 0);
+					// Key format: postal_buildingtype_roomtype (e.g., "00100_kerrostalo_kaksiot")
+					out[`${post}_${btName}_${typeName}`] = {
+						benchmark_eur_m2: good.length
+							? Math.round(good.reduce((a, s) => a + (s.eur_m2 as number) * (s.n as number), 0) / nSum)
+							: null,
+						n_4q: nSum,
+						series
+					};
+				}
+			}
+		} else {
+			// Current behavior: blend kerrostalo + rivitalo
+			for (const [t, name] of Object.entries(TYPES)) {
+				const series = quarters.map((q) => ({
+					q,
+					eur_m2: get(post, t, q, 'keskihinta_aritm_nw'),
+					n: get(post, t, q, 'lkm_julk20')
+				}));
+				const good = series.filter((s) => s.eur_m2 !== null && s.n);
+				const nSum = good.reduce((a, s) => a + (s.n as number), 0);
+				out[`${post}_${name}`] = {
+					benchmark_eur_m2: good.length
+						? Math.round(good.reduce((a, s) => a + (s.eur_m2 as number) * (s.n as number), 0) / nSum)
+						: null,
+					n_4q: nSum,
+					series
+				};
+			}
 		}
 	}
 	return out;
