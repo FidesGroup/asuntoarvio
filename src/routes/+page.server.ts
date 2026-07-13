@@ -1,13 +1,15 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { knownPostalCodes, evaluate, locationBenchmark } from '$lib/server/benchmark';
+import { knownPostalCodes, evaluateProperty, locationBenchmark } from '$lib/server/benchmark';
 import { geocodeAddress } from '$lib/server/geocode';
 import { createReport } from '$lib/server/reports';
 import { getSubscriberByToken } from '$lib/server/subscribers';
 import { addLead, logQuery } from '$lib/server/supalog';
 import {
-	allowedListingUrl, deriveInsights, htmlToText, parseListingText,
+	allowedListingUrl, deriveInsights, htmlToText, parseListingText, parseListingHtml,
 	type ExtractedListing
 } from '$lib/server/listing-parse';
+import { resolveValuation } from '$lib/server/valuation';
+import { buildReview } from '$lib/server/review';
 import { estimateRent } from '$lib/server/rents';
 import type { ListingFacts } from '$lib/server/benchmark';
 import type { Actions, PageServerLoad } from './$types';
@@ -21,8 +23,10 @@ export const load: PageServerLoad = async ({ url }) => {
 };
 
 function toFacts(x: ExtractedListing): ListingFacts | { error: string } {
+	const isHouse = x.propertyClass === 'omakotitalo' || x.propertyClass === 'paritalo';
 	if (!x.postalCode) return { error: 'Postinumeroa ei löytynyt ilmoituksesta (Sijainti-kenttä).' };
-	if (!x.roomsType) return { error: 'Huonelukua ei löytynyt ilmoituksesta.' };
+	// Houses have no huonetyyppi cell; apartments/row houses need it for the benchmark.
+	if (!x.roomsType && !isHouse) return { error: 'Huonelukua ei löytynyt ilmoituksesta.' };
 	if (!x.livingAreaM2) return { error: 'Asuinpinta-alaa ei löytynyt ilmoituksesta.' };
 	const price = x.debtFreePriceEur ?? x.askingPriceEur;
 	if (!price) return { error: 'Hintaa ei löytynyt ilmoituksesta.' };
@@ -32,7 +36,8 @@ function toFacts(x: ExtractedListing): ListingFacts | { error: string } {
 		livingAreaM2: x.livingAreaM2,
 		priceEur: price,
 		priceIsDebtFree: x.debtFreePriceEur !== null,
-		buildYear: x.buildYear
+		buildYear: x.buildYear,
+		propertyClass: x.propertyClass
 	};
 }
 
@@ -55,6 +60,7 @@ export const actions: Actions = {
 		const urlRaw = String(fd.get('url') ?? '').trim();
 
 		let text = pasted;
+		let fetchedHtml: string | null = null;
 		let source: string | null = null;
 		let sourceUrl: string | null = null;
 
@@ -73,6 +79,7 @@ export const actions: Actions = {
 				});
 				if (!res.ok) throw new Error(`HTTP ${res.status}`);
 				const html = (await res.text()).slice(0, 2_000_000);
+				fetchedHtml = html;
 				text = htmlToText(html);
 				source = url.hostname;
 				sourceUrl = url.href;
@@ -84,7 +91,8 @@ export const actions: Actions = {
 		}
 		if (!text) return fail(400, { error: 'Liitä ilmoituksen teksti tai anna ilmoituksen osoite.' });
 
-		const extracted = parseListingText(text);
+		// URL path: JSON-LD/__NEXT_DATA__ extraction fills gaps in label parsing.
+		const extracted = fetchedHtml ? parseListingHtml(fetchedHtml) : parseListingText(text);
 		const facts = toFacts(extracted);
 		if ('error' in facts) {
 			return fail(422, {
@@ -92,7 +100,9 @@ export const actions: Actions = {
 			});
 		}
 
-		const verdict = evaluate(facts);
+		const verdict = evaluateProperty(facts);
+		const tier = resolveValuation(extracted);
+		const review = buildReview(extracted, tier);
 
 		let location: {
 			eurM2: number;
@@ -101,7 +111,8 @@ export const actions: Actions = {
 			lat: number;
 			areasUsed: { pc: string; nimi: string; eurM2: number; km: number }[];
 		} | null = null;
-		if (extracted.address) {
+		// Location blend is apartment-only: it interpolates room-type cells.
+		if (extracted.address && facts.roomsType) {
 			const geo = await geocodeAddress(fetch, extracted.address, extracted.postalCode);
 			if (geo) {
 				const lb = locationBenchmark(geo.lon, geo.lat, facts.roomsType);
@@ -130,7 +141,8 @@ export const actions: Actions = {
 
 		await logQuery({
 			postal_code: facts.postalCode,
-			rooms_type: facts.roomsType,
+			// Houses have no room-type cell; log the property class instead.
+			rooms_type: facts.roomsType ?? extracted.propertyClass ?? 'tuntematon',
 			living_area_m2: facts.livingAreaM2,
 			price_eur: facts.priceEur,
 			delta_pct: location?.deltaPct ?? verdict.deltaPct,
@@ -144,6 +156,7 @@ export const actions: Actions = {
 			address: extracted.address,
 			postalCode: facts.postalCode,
 			buildYear: facts.buildYear,
+			propertyClass: extracted.propertyClass,
 			roomsType: facts.roomsType,
 			livingAreaM2: facts.livingAreaM2,
 			priceEur: facts.priceEur,
@@ -166,6 +179,8 @@ export const actions: Actions = {
 			facts,
 			verdict: { ...verdict, flags: resolvedFlags },
 			insights: deriveInsights(extracted),
+			tier,
+			review,
 			location,
 			source,
 			reportPayload

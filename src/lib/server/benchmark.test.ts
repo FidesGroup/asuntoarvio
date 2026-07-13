@@ -128,7 +128,7 @@ describe('parseFacts - backward compatibility', () => {
 			yr: '1985'
 		});
 		const result = parseFacts(params);
-		expect(result).not.toHaveProperty('error');
+		if ('error' in result) throw new Error('expected facts, got error');
 		expect(result.postalCode).toBe('00100');
 		expect(result.roomsType).toBe('kaksio');
 	});

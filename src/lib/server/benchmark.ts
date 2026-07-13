@@ -319,7 +319,10 @@ const ROOMS_ALIASES: Record<string, RoomsType> = {
 	'kolmio+': 'kolmio+', kolmio: 'kolmio+', '3h': 'kolmio+', '3h+': 'kolmio+'
 };
 
-export function parseFacts(params: URLSearchParams): ListingFacts | { error: string } {
+/** Facts from the manual /arvio form: always apartment-shaped (roomsType present). */
+export type ApartmentFacts = ListingFacts & { roomsType: RoomsType };
+
+export function parseFacts(params: URLSearchParams): ApartmentFacts | { error: string } {
 	const postalCode = (params.get('pc') ?? '').trim();
 	const roomsType = ROOMS_ALIASES[(params.get('rt') ?? '').trim().toLowerCase()];
 	const livingAreaM2 = Number(params.get('m2'));

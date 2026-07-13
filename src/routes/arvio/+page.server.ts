@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import {
 	evaluate,
 	parseFacts,
-	type ListingFacts
+	type ApartmentFacts
 } from '$lib/server/benchmark';
 import {
 	computeYield,
@@ -47,7 +47,7 @@ export const load: PageServerLoad = async ({ url }) => {
  */
 function resolveYieldInputs(
 	params: URLSearchParams,
-	facts: ListingFacts
+	facts: ApartmentFacts
 ): { rent: YieldInputs; source: RentSource } | null {
 	const userRentRaw = params.get('rent');
 	if (userRentRaw !== null) {

@@ -2,6 +2,25 @@
 	import { enhance } from '$app/forms';
 	let { data, form } = $props();
 	let activeInput = $state<'url' | 'text' | 'manual'>('url');
+	let beginnerMode = $state(true);
+
+	const CLASS_LABELS: Record<string, string> = {
+		kerrostalo: 'kerrostalo', rivitalo: 'rivitalo',
+		omakotitalo: 'omakotitalo', paritalo: 'paritalo', muu: 'muu kohde'
+	};
+	const TIER_STEPS = ['T1', 'T2', 'T3', 'T4'] as const;
+
+	interface Factor { category: string; title: string; content: string; tier?: string }
+	/** Group the flat review list into topics: each topic starts at a 'what'. */
+	function groupReview(review: Factor[]): { title: string; parts: Factor[] }[] {
+		const groups: { title: string; parts: Factor[] }[] = [];
+		for (const f of review) {
+			if (f.category === 'confidence') continue;
+			if (f.category === 'what') groups.push({ title: f.title, parts: [f] });
+			else if (groups.length) groups[groups.length - 1].parts.push(f);
+		}
+		return groups;
+	}
 
 	function prefillRent(event: SubmitEvent) {
 		const form = event.currentTarget as HTMLFormElement;
@@ -159,8 +178,10 @@
 {#if form?.verdict && activeInput !== 'manual'}
 	<article class="result">
 		<p class="crumb">
-			{form.extracted.address ?? '–'} · {form.facts.postalCode} · {form.facts.roomsType} ·
-			{form.facts.livingAreaM2} m²
+			{form.extracted.address ?? '–'} · {form.facts.postalCode}
+			{#if form.extracted.propertyClass}· {CLASS_LABELS[form.extracted.propertyClass]}{/if}
+			{#if form.facts.roomsType}· {form.facts.roomsType}{/if}
+			· {form.facts.livingAreaM2} m²
 			{#if form.facts.buildYear}· rak. {form.facts.buildYear}{/if}
 			{#if form.source}· lähde {form.source}{/if}
 		</p>
@@ -170,8 +191,55 @@
 				{form.verdict.deltaPct > 0 ? '+' : ''}{String(form.verdict.deltaPct).replace('.', ',')} %
 				<span>{form.verdict.deltaPct >= 0 ? 'yli' : 'alle'} alueen toteutuneiden kauppojen</span>
 			</h2>
+		{:else if form.tier?.tier === 'T4'}
+			<h2 class="delta none">Suuntaa-antava arvio <span>alueen kaupoista ei riittävää vertailua — arvio perustuu kohteen kuntoon</span></h2>
 		{:else}
 			<h2 class="delta none">Ei vertailuarvoa <span>tälle alueelle ja huonetyypille</span></h2>
+		{/if}
+
+		{#if form.tier}
+			<section class="meter card" aria-label="Arvion luotettavuus">
+				<div class="meter__row">
+					<div class="meter__steps" role="img" aria-label="Taso {form.tier.tier}">
+						{#each TIER_STEPS as t (t)}
+							<span class="meter__step" class:on={t === form.tier.tier}>{t}</span>
+						{/each}
+					</div>
+					<div class="meter__text">
+						<b>Luotettavuus: {form.tier.confidenceLabel}</b>
+						<span>
+							{#if form.tier.tier === 'T1'}Postinumeroalueen toteutuneet kaupat ({form.tier.transactionsOrEvidence} kpl / 4 nelj.)
+							{:else if form.tier.tier === 'T3'}Alueen toteutuneet kaupat ({form.tier.transactionsOrEvidence} kpl) — karkeampi taso
+							{:else}Ei riittävästi vertailukauppoja — kunto-perusteinen arvio{/if}
+						</span>
+					</div>
+				</div>
+			</section>
+		{/if}
+
+		{#if form.tier?.tier === 'T4'}
+			<section class="card estimate">
+				<h3>Kunto-perusteinen hinta-arvio <span class="beta">suuntaa-antava</span></h3>
+				<div class="band" role="img" aria-label="Arviohaarukka">
+					<div class="band__edge">
+						<span class="band__eur">{Intl.NumberFormat('fi-FI').format(form.tier.estLowEurM2)} €/m²</span>
+						<span class="band__lbl">alaraja</span>
+					</div>
+					<div class="band__mid">
+						<span class="band__eur band__eur--mid">{Intl.NumberFormat('fi-FI').format(form.tier.estMidEurM2)} €/m²</span>
+						<span class="band__lbl">paras arvio</span>
+					</div>
+					<div class="band__edge">
+						<span class="band__eur">{Intl.NumberFormat('fi-FI').format(form.tier.estHighEurM2)} €/m²</span>
+						<span class="band__lbl">yläraja</span>
+					</div>
+				</div>
+				<p class="estimate__note">
+					Arvio perustuu kohteen kuntoon ja alueen karkeaan hintatasoon, ei toteutuneisiin
+					vertailukauppoihin.
+				</p>
+				<p class="areas">Oletukset: {form.tier.assumptions.join(' · ')}</p>
+			</section>
 		{/if}
 
 		{#if form.location}
@@ -196,12 +264,37 @@
 			</section>
 		{/if}
 
-		{#if form.insights.length}
+		{#if form.review?.length || form.insights.length}
 			<section class="card">
-				<h3>Taloyhtiö ja kohde: ilmoituksesta poimittua</h3>
-				<ul>
-					{#each form.insights as line (line)}<li>{line}</li>{/each}
-				</ul>
+				<header class="review__head">
+					<h3>Kohteen läpikäynti</h3>
+					<label class="toggle">
+						<input type="checkbox" bind:checked={beginnerMode} />
+						<span>Selitä perusteet</span>
+					</label>
+				</header>
+				{#if beginnerMode && form.review?.length}
+					<div class="factors">
+						{#each groupReview(form.review) as g (g.title)}
+							<article class="factor">
+								<h4>{g.title}</h4>
+								{#each g.parts as p, i (i)}
+									<p class="factor__part">
+										{#if p.category === 'what'}<b>Mitä tämä on:</b>
+										{:else if p.category === 'here'}<b>Tässä kohteessa:</b>
+										{:else if p.category === 'why'}<b>Miksi tällä on väliä rahallesi:</b>
+										{:else if p.category === 'check'}<b>Tarkista vielä:</b>{/if}
+										{p.content}
+									</p>
+								{/each}
+							</article>
+						{/each}
+					</div>
+				{:else if form.insights.length}
+					<ul>
+						{#each form.insights as line (line)}<li>{line}</li>{/each}
+					</ul>
+				{/if}
 			</section>
 		{/if}
 
@@ -227,6 +320,26 @@
 		</section>
 	</article>
 {/if}
+
+<section class="trust" aria-label="Luotettavuus">
+	<p class="trust__line">
+		Ei mainoksia · Data: Tilastokeskus (CC BY 4.0) · Emme tallenna osoitteita tai ilmoituksia
+	</p>
+	<div class="stats">
+		<div class="stat">
+			<b>{Intl.NumberFormat('fi-FI').format(data.postalCodes.length)}</b>
+			<span>postinumeroaluetta katettu</span>
+		</div>
+		<div class="stat">
+			<b>4 nelj.</b>
+			<span>toteutuneet kaupat, kauppamäärillä painotettu</span>
+		</div>
+		<div class="stat">
+			<b>0 kpl</b>
+			<span>tallennettuja osoitteita tai ilmoituksia</span>
+		</div>
+	</div>
+</section>
 
 <section class="props">
 	<article class="prop">
@@ -573,6 +686,46 @@
 	}
 	ul.muted { color: var(--ink-2); }
 
+	.trust {
+		margin-top: 2.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.trust__line {
+		margin: 0;
+		text-align: center;
+		font-size: var(--text-sm);
+		color: var(--ink-3);
+		letter-spacing: var(--ls-snug);
+	}
+	.stats {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
+	}
+	.stat {
+		border: 1px solid var(--line);
+		border-radius: var(--radius-lg);
+		background: var(--sky);
+		padding: 1.1rem 1.25rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+	}
+	.stat b {
+		font-size: var(--text-2xl);
+		font-weight: 600;
+		letter-spacing: var(--ls-tight);
+		color: var(--ink);
+		font-variant-numeric: tabular-nums;
+	}
+	.stat span {
+		font-size: var(--text-sm);
+		color: var(--ink-2);
+		line-height: var(--lh-body);
+	}
+
 	.props {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -717,10 +870,132 @@
 		font-size: 0.9rem;
 	}
 
+	/* Tier/confidence meter */
+	.meter__row {
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+		flex-wrap: wrap;
+	}
+	.meter__steps {
+		display: flex;
+		gap: 0.3rem;
+	}
+	.meter__step {
+		font-size: var(--text-xs);
+		font-weight: 600;
+		color: var(--ink-3);
+		border: 1px solid var(--line-2);
+		padding: 0.3rem 0.6rem;
+		border-radius: var(--radius-pill);
+		letter-spacing: var(--ls-wide);
+	}
+	.meter__step.on {
+		background: var(--baltic);
+		border-color: var(--baltic);
+		color: var(--baltic-ink);
+	}
+	.meter__text {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+	}
+	.meter__text b { color: var(--ink); font-weight: 600; }
+	.meter__text span { color: var(--ink-2); font-size: var(--text-sm); }
+
+	/* T4 estimate: dashed border = estimate, not comparable-based verdict */
+	.estimate { border-style: dashed; border-color: var(--line-2); }
+	.band {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 1rem;
+		margin: 0.75rem 0 1rem;
+		padding: 1rem 1.25rem;
+		background: var(--bg);
+		border-radius: var(--radius-md);
+	}
+	.band__edge, .band__mid {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.2rem;
+	}
+	.band__eur {
+		font-variant-numeric: tabular-nums;
+		font-weight: 500;
+		color: var(--ink-2);
+		font-size: var(--text-md);
+	}
+	.band__eur--mid {
+		font-size: var(--text-xl);
+		font-weight: 600;
+		color: var(--ink);
+	}
+	.band__lbl {
+		font-size: var(--text-xs);
+		color: var(--ink-3);
+		letter-spacing: var(--ls-wide);
+	}
+	.estimate__note {
+		margin: 0 0 0.5rem;
+		color: var(--ink-2);
+		font-size: var(--text-sm);
+		line-height: var(--lh-body);
+		font-weight: 500;
+	}
+
+	/* Beginner-mode review */
+	.review__head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+	.toggle {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		font-size: var(--text-sm);
+		color: var(--ink-2);
+		cursor: pointer;
+		user-select: none;
+	}
+	.toggle input { accent-color: var(--baltic); width: 1.05rem; height: 1.05rem; }
+	.factors {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.85rem;
+		margin-top: 0.9rem;
+	}
+	.factor {
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		padding: 1rem 1.1rem;
+	}
+	.factor h4 {
+		margin: 0 0 0.5rem;
+		font-size: var(--text-md);
+		font-weight: 600;
+		letter-spacing: var(--ls-snug);
+		color: var(--ink);
+	}
+	.factor__part {
+		margin: 0 0 0.45rem;
+		font-size: var(--text-sm);
+		line-height: var(--lh-body);
+		color: var(--ink-2);
+	}
+	.factor__part b { color: var(--ink); font-weight: 600; }
+
 	@media (max-width: 860px) {
 		.analyzer { padding: 1.1rem; }
+		.factors { grid-template-columns: 1fr; }
 		.manual-grid { grid-template-columns: 1fr 1fr; }
 		.props { grid-template-columns: 1fr; }
+		.stats { grid-template-columns: 1fr; }
 		.waitlist {
 			grid-template-columns: 1fr;
 			gap: 1.5rem;
