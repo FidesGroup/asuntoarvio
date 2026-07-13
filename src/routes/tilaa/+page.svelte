@@ -11,8 +11,8 @@
 </svelte:head>
 
 <section class="hero">
-	<span class="eyebrow">Tilaus</span>
-	<h1>Asuntocardit sijoittajalle</h1>
+	<span class="eyebrow">Hinnoittelu</span>
+	<h1>Valitse itsellesi sopiva taso.</h1>
 	<p class="lede">
 		Ilmainen analyysi kertoo, mitä ilmoitus väittää. Asuntocard kertoo, mitä siitä löytyy
 		muualta: remonttihistorian ristivarmistus, saman taloyhtiön muut myynnit, tontti- ja
@@ -20,43 +20,81 @@
 	</p>
 </section>
 
-<div class="grid">
-	<section class="card">
-		<h2>Mitä asuntocard sisältää</h2>
-		<ul>
-			<li>Remonttihistorian ristivarmistus julkisista web-lähteistä (putket, julkisivu, katto, ikkunat)</li>
-			<li>Saman taloyhtiön muut kohteet myynnissä, hintavertailu saman yhtiön sisällä</li>
-			<li>Tontin omistuksen ja isännöinnin varmistus</li>
-			<li>Punaiset liput: ristiriidat ilmoituksen ja muiden lähteiden välillä</li>
-			<li>Kaikki löydökset lähde-URL:eineen, ei mustia laatikoita</li>
+<section class="pricing" aria-label="Hinnoittelutasot">
+	<article class="tier">
+		<header>
+			<h2>Ilmainen</h2>
+			<p class="tier__price"><b>0 &euro;</b><span class="tier__period">&mdash; aina ilmainen</span></p>
+		</header>
+		<ul class="tier__features">
+			<li class="ok">Kohdeanalyysi ja hintakartta</li>
+			<li class="ok">Jaettava vertailuraportti (/arvio)</li>
+			<li class="ok">Koko maan hintakartta (1 724 postinumeroa)</li>
+			<li class="ok">Kuntoarvio (suuntaa-antava haarukka)</li>
+			<li class="no">Asuntocard (taloyhtiön syväkatsaus)</li>
+			<li class="no">Saman taloyhtiön muut kohteet</li>
+			<li class="no">Hälytykset uusista ilmoituksista</li>
 		</ul>
-		<p class="fine">
-			Kortti kootaan koneellisesti julkisista web-lähteistä tilauksen jälkeen (tyypillisesti
-			muutamassa minuutissa). Beta: kattavuus vaihtelee taloyhtiön verkkojäljen mukaan.
-		</p>
-	</section>
+		<a class="tier__cta tier__cta--ghost" href="/">Aloita ilmaiseksi</a>
+	</article>
 
-	<section class="card">
-		<h2>Aloita tilaus</h2>
+	<article class="tier tier--featured">
+		<span class="tier__badge">Suosituin</span>
+		<header>
+			<h2>Asuntocard</h2>
+			<p class="tier__price"><b>19 &euro;</b><span class="tier__period">/ kertamaksu</span></p>
+		</header>
+		<ul class="tier__features">
+			<li class="ok">Kaikki ilmaisen ominaisuudet</li>
+			<li class="ok">Remonttihistorian ristivarmistus</li>
+			<li class="ok">Saman taloyhtiön muut myynnit</li>
+			<li class="ok">Tontin ja isännöinnin varmistus</li>
+			<li class="ok">Punaiset liput: ristiriidat lähteissä</li>
+			<li class="ok">PDF-raportti, jokainen löydös lähde-URL:eineen</li>
+			<li class="no">Hälytykset uusista ilmoituksista</li>
+		</ul>
 		{#if data.enabled}
-			<form method="POST">
-				<label>
-					<span class="lbl">Sähköposti</span>
-					<input name="email" type="email" required placeholder="sinä@esimerkki.fi" />
-				</label>
-				<button type="submit">Jatka maksuun</button>
-				{#if form?.error}<p class="error">{form.error}</p>{/if}
+			<form method="POST" class="tier__form">
+				<input type="hidden" name="plan" value="single" />
+				<input type="email" name="email" required placeholder="sinä@esimerkki.fi" class="tier__email" />
+				<button type="submit" class="tier__cta tier__cta--solid">Osta asuntocard &mdash; 19 &euro;</button>
 			</form>
-			<p class="fine">Maksu Stripen kautta. Voit perua milloin tahansa.</p>
-		{:else}
-			<p>
-				Tilaus ei ole vielä avoinna. <a href="/#waitlist">Liity odotuslistalle</a>, niin saat
-				viestin kun asuntocardit julkaistaan.
-			</p>
 			{#if form?.error}<p class="error">{form.error}</p>{/if}
+			<p class="fine">Maksu Stripen kautta. Ei sitoutumista.</p>
+		{:else}
+			<a class="tier__cta tier__cta--solid" href="/#waitlist">Liity odotuslistalle</a>
 		{/if}
-	</section>
-</div>
+	</article>
+
+	<article class="tier">
+		<header>
+			<h2>Sijoittaja Pro</h2>
+			<p class="tier__price">
+				<b>7 &euro;</b><span class="tier__period">/ kk &middot; tai <b>69 &euro;</b> / v</span>
+			</p>
+		</header>
+		<ul class="tier__features">
+			<li class="ok">Kaikki Asuntocard-ominaisuudet</li>
+			<li class="ok">Rajattomat asuntocardit</li>
+			<li class="ok">Hälytykset uusista alueen ilmoituksista</li>
+			<li class="ok">Seurantalista ja vertailutyökalu</li>
+			<li class="ok">API pääsy (beta) &mdash; MCP-integraatio</li>
+			<li class="ok">Vuositilauksella <b>-18 %</b> (69 &euro; vs 84 &euro;)</li>
+			<li class="ok">Peru milloin tahansa</li>
+		</ul>
+		{#if data.enabled}
+			<form method="POST" class="tier__form">
+				<input type="hidden" name="plan" value="pro" />
+				<input type="email" name="email" required placeholder="sinä@esimerkki.fi" class="tier__email" />
+				<button type="submit" class="tier__cta tier__cta--ghost">Aloita Pro &mdash; 7 &euro;/kk</button>
+			</form>
+			{#if form?.error}<p class="error">{form.error}</p>{/if}
+			<p class="fine">Vuosimaksu valittavissa seuraavassa vaiheessa.</p>
+		{:else}
+			<a class="tier__cta tier__cta--ghost" href="/#waitlist">Liity odotuslistalle</a>
+		{/if}
+	</article>
+</section>
 
 <style>
 	.eyebrow {
@@ -78,84 +116,150 @@
 		max-width: 44rem;
 		margin: 0 0 2rem;
 	}
-	.grid {
+	.pricing {
 		display: grid;
-		grid-template-columns: 1.2fr 1fr;
-		gap: 1.25rem;
-		align-items: start;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
+		margin-top: 2rem;
 	}
-	@media (max-width: 720px) {
-		.grid {
-			grid-template-columns: 1fr;
-		}
-	}
-	.card {
+	.tier {
+		position: relative;
 		background: var(--surface);
 		border: 1px solid var(--line);
-		border-radius: var(--radius-md, 0);
-		box-shadow: var(--shadow-sm, none);
-		padding: 1.5rem;
+		border-radius: var(--radius-lg);
+		padding: 1.5rem 1.5rem 1.75rem;
+		box-shadow: var(--shadow-sm);
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
-	.card h2 {
-		font-size: 1.05rem;
-		margin: 0 0 0.9rem;
+	.tier--featured {
+		border-color: var(--baltic);
+		box-shadow: var(--shadow-md);
 	}
-	.card ul {
+	.tier__badge {
+		position: absolute;
+		top: -0.6rem;
+		left: 1.5rem;
+		background: var(--baltic);
+		color: var(--baltic-ink);
+		font-size: var(--text-xs);
+		font-weight: 600;
+		padding: 0.2rem 0.6rem;
+		border-radius: var(--radius-pill);
+		letter-spacing: var(--ls-wide);
+	}
+	.tier h2 {
+		font-size: var(--text-lg);
+		font-weight: 600;
+		margin: 0 0 0.4rem;
+		color: var(--ink);
+		letter-spacing: var(--ls-snug);
+	}
+	.tier__price {
 		margin: 0;
-		padding-left: 1.1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+	}
+	.tier__price b {
+		font-size: var(--text-3xl);
+		font-weight: 600;
+		color: var(--ink);
+		font-variant-numeric: tabular-nums;
+		letter-spacing: var(--ls-tight);
+	}
+	.tier__period {
+		font-size: var(--text-sm);
+		color: var(--ink-2);
+		font-weight: 400;
+	}
+	.tier__features {
+		margin: 0;
+		padding: 0;
+		list-style: none;
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
+		flex: 1;
 	}
-	form {
-		display: flex;
-		flex-direction: column;
-		gap: 0.9rem;
-	}
-	label {
-		display: flex;
-		flex-direction: column;
-		gap: 0.35rem;
-	}
-	.lbl {
-		font-size: 0.8rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
+	.tier__features li {
+		font-size: var(--text-sm);
 		color: var(--ink-2);
+		line-height: var(--lh-list);
+		padding-left: 1.5rem;
+		position: relative;
 	}
-	input {
+	.tier__features li::before {
+		position: absolute;
+		left: 0;
+		top: 0.05em;
+		font-weight: 600;
+		font-size: 1rem;
+	}
+	.tier__features li.ok::before {
+		content: '+';
+		color: var(--under);
+	}
+	.tier__features li.no::before {
+		content: '\2212';
+		color: var(--ink-3);
+	}
+	.tier__features li.no {
+		color: var(--ink-3);
+	}
+	.tier__cta {
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
 		font: inherit;
+		font-weight: 500;
+		padding: 0.75rem 1.1rem;
+		border-radius: var(--radius-pill);
+		text-decoration: none;
+		cursor: pointer;
+		letter-spacing: var(--ls-snug);
+		text-align: center;
+	}
+	.tier__cta--solid {
+		background: var(--baltic);
+		color: var(--baltic-ink);
+		border: 1px solid var(--baltic);
+	}
+	.tier__cta--solid:hover { background: var(--baltic-2); border-color: var(--baltic-2); }
+	.tier__cta--ghost {
+		background: transparent;
+		color: var(--baltic);
+		border: 1px solid var(--baltic);
+	}
+	.tier__cta--ghost:hover { background: var(--baltic); color: var(--baltic-ink); }
+	.tier__form {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-top: auto;
+	}
+	.tier__email {
+		font: inherit;
+		font-size: var(--text-sm);
 		color: var(--ink);
 		background: var(--bg);
 		border: 1px solid var(--line);
-		border-radius: var(--radius-sm, 0);
-		padding: 0.6rem 0.7rem;
+		padding: 0.6rem 0.75rem;
+		border-radius: var(--radius-md);
 	}
-	input:focus-visible,
-	button:focus-visible {
-		outline: 2px solid var(--accent);
-		outline-offset: 1px;
-	}
-	button {
-		align-self: flex-start;
-		font: inherit;
-		font-weight: 700;
-		background: var(--accent);
-		color: var(--bg);
-		border: none;
-		border-radius: var(--radius-sm, 0);
-		padding: 0.7rem 1.4rem;
-		cursor: pointer;
-	}
-	.error {
-		margin: 0;
-		color: var(--over);
-		font-size: 0.9rem;
+	.tier__email:focus-visible {
+		outline: none;
+		border-color: var(--baltic);
+		box-shadow: 0 0 0 3px var(--ring);
 	}
 	.fine {
-		color: var(--ink-3, var(--ink-2));
-		font-size: 0.82rem;
-		margin: 0.9rem 0 0;
+		color: var(--ink-3);
+		font-size: var(--text-xs);
+		margin: 0.5rem 0 0;
+		text-align: center;
+	}
+	@media (max-width: 820px) {
+		.pricing { grid-template-columns: 1fr; }
 	}
 </style>

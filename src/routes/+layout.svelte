@@ -1,14 +1,50 @@
 <script lang="ts">
 	import '@fontsource-variable/ibm-plex-sans';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 	let { children } = $props();
 	const links = [
 		{ href: '/', label: 'Analyysi' },
 		{ href: '/kartta', label: 'Hintakartta' },
-		{ href: '/tilaa', label: 'Asuntocardit' }
+		{ href: '/tilaa', label: 'Asuntocardit' },
+		{ href: '/miksi', label: 'Miksi?' }
 	];
 	const fidesUrl = 'https://fidesgroup.fi';
+
+	let theme = $state<'auto' | 'light' | 'dark'>('auto');
+	onMount(() => {
+		try {
+			const saved = localStorage.getItem('ra_theme');
+			if (saved === 'light' || saved === 'dark' || saved === 'auto') theme = saved;
+		} catch {}
+	});
+	function toggleTheme() {
+		const next = theme === 'dark' ? 'light' : 'dark';
+		theme = next;
+		try {
+			localStorage.setItem('ra_theme', next);
+		} catch {}
+		if (typeof document !== 'undefined') {
+			document.documentElement.dataset.theme = next;
+		}
+	}
 </script>
+
+<svelte:head>
+	<script>
+		// Apply saved theme before paint to avoid a flash. Runs only on client.
+		(function () {
+			try {
+				var saved = localStorage.getItem('ra_theme');
+				var prefers = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				var t = saved || prefers;
+				document.documentElement.dataset.theme = t;
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		})();
+	</script>
+</svelte:head>
 
 <div class="shell">
 	<div class="watermark">RehtiArvio</div>
@@ -22,6 +58,15 @@
 					<span>{l.label}</span>
 				</a>
 			{/each}
+			<button
+				type="button"
+				class="theme-toggle"
+				onclick={toggleTheme}
+				aria-label="Vaihda tumma ja vaalea teema"
+				title="Vaihda teemaa"
+			>
+				{theme === 'dark' ? '☀' : '☾'}
+			</button>
 		</nav>
 	</header>
 	<main>
@@ -38,10 +83,15 @@
 				Toteutuneet hinnat, ei markkinahypetystä.
 			</div>
 		</div>
+		<nav class="footer__nav" aria-label="Alatunnisten linkit">
+			<a href="/miksi">Miksi RehtiArvio?</a>
+			<a href="/#miksi">Miten tämä toimii</a>
+			<a href="https://stat.fi/tilasto/ashi" target="_blank" rel="noopener">Tilastokeskus (CC BY 4.0)</a>
+			<a href={fidesUrl} target="_blank" rel="noopener">Fides Group</a>
+		</nav>
 		<p class="attr">
-			Lähde: <a href="https://stat.fi/tilasto/ashi">Tilastokeskus</a>, vanhojen osakeasuntojen
-			kaupat postinumeroalueittain (CC BY 4.0). Suuntaa antava seula, ei arviolausunto eikä
-			sijoitusneuvontaa.
+			Hinta-aineistot päivitetään Tilastokeskuksen julkaisusta (13mt, 15hw, asvu 13eb, CC BY 4.0).
+			Suuntaa antava seula, ei arviolausunto eikä sijoitusneuvontaa.
 		</p>
 	</footer>
 </div>
@@ -109,7 +159,7 @@
 	}
 
 	@media (prefers-color-scheme: dark) {
-		:root {
+		:root:not([data-theme='light']) {
 			--bg:         #0b0b0c;
 			--surface:    #151517;
 			--ink:        #f5f5f4;
@@ -132,6 +182,29 @@
 			--fides-ink:  #0b0b0c;
 			--fides-bg:   #f5f5f4;
 		}
+	}
+	:root[data-theme='dark'] {
+			--bg:         #0b0b0c;
+			--surface:    #151517;
+			--ink:        #f5f5f4;
+			--ink-2:      #c8c8cc;
+			--ink-3:      #8a8a90;
+			--line:       #232325;
+			--line-2:     #2e2e30;
+			--chip-bg:    #1d1d1f;
+			--baltic:     #4fb3c0;
+			--baltic-2:   #6fc6d2;
+			--copper:     #d68464;
+			--copper-2:   #e9a384;
+			--pine:       #6cb386;
+			--pine-2:     #8dc9a3;
+			--sky:        #132c2c;
+			--over:       var(--copper);
+			--under:      var(--pine);
+			--accent:     var(--baltic);
+			--ring:       rgba(79, 179, 192, 0.28);
+			--fides-ink:  #0b0b0c;
+			--fides-bg:   #f5f5f4;
 	}
 
 	:global(*) { box-sizing: border-box; }
@@ -222,6 +295,46 @@
 	nav a[aria-current='page'] {
 		background: var(--baltic);
 		color: var(--baltic-ink);
+	}
+	.theme-toggle {
+		font: inherit;
+		font-size: 1.05rem;
+		line-height: 1;
+		width: 2.2rem;
+		height: 2.2rem;
+		display: grid;
+		place-items: center;
+		margin-left: 0.4rem;
+		background: transparent;
+		color: var(--ink-2);
+		border: 1px solid transparent;
+		border-radius: var(--radius-pill);
+		cursor: pointer;
+		transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+	}
+	.theme-toggle:hover {
+		color: var(--ink);
+		background: var(--chip-bg);
+		border-color: var(--line);
+	}
+
+	.footer__nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem 1.1rem;
+		font-size: var(--text-sm);
+		color: var(--ink-2);
+	}
+	.footer__nav a {
+		color: var(--ink-2);
+		text-decoration: none;
+		padding: 0.15rem 0;
+		border-bottom: 1px solid var(--line);
+		transition: color 0.15s ease, border-color 0.15s ease;
+	}
+	.footer__nav a:hover {
+		color: var(--ink);
+		border-bottom-color: var(--ink-3);
 	}
 
 	main {

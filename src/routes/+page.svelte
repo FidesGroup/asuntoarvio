@@ -1,8 +1,22 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import MiniMap from '$lib/components/MiniMap.svelte';
 	let { data, form } = $props();
 	let activeInput = $state<'url' | 'text' | 'manual'>('url');
 	let beginnerMode = $state(true);
+	let heroInView = $state(true);
+	let ctaBar: HTMLDivElement | undefined = $state();
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+		const hero = document.querySelector('.hero');
+		if (!hero) return;
+		const io = new IntersectionObserver(
+			([e]) => (heroInView = e.isIntersecting),
+			{ threshold: 0.1 }
+		);
+		io.observe(hero);
+		return () => io.disconnect();
+	});
 
 	const CLASS_LABELS: Record<string, string> = {
 		kerrostalo: 'kerrostalo', rivitalo: 'rivitalo',
@@ -45,13 +59,42 @@
 </svelte:head>
 
 <section class="hero">
-	<span class="eyebrow">Ilmoitusanalyysi</span>
-	<h1>Analysoi myynti-ilmoitus ja selvitä, onko pyyntihinta linjassa toteutuneiden kauppojen kanssa.</h1>
-	<p class="lede">
-		Anna myynti-ilmoituksen URL-osoite (Oikotie, Etuovi, välittäjäsivut) tai liitä ilmoituksen
-		teksti suoraan. Tiedot (hinta, vastikkeet, tontti, tehdyt ja tulevat remontit) poimitaan
-		koneellisesti ja yhdistetään Tilastokeskuksen toteutuneisiin kauppahintoihin.
-	</p>
+	<div class="hero__copy">
+		<span class="eyebrow">Ilmoitusanalyysi</span>
+		<h1>Onko pyyntihinta linjassa toteutuneiden kauppojen kanssa?</h1>
+		<p class="lede">
+			Anna myynti-ilmoituksen URL-osoite tai liitä teksti — saat välittömästi vertailuarvon
+			Tilastokeskuksen toteutuneisiin kauppoihin, kuntoarvion ja selkeän luotettavuusluokituksen.
+		</p>
+		<div class="hero__pills">
+			<span class="pill"><b>{Intl.NumberFormat('fi-FI').format(data.postalCodes.length)}</b> postinumeroa</span>
+			<span class="pill"><b>4</b> neljännestä</span>
+			<span class="pill"><b>0</b> mainosta</span>
+		</div>
+	</div>
+	<aside class="hero__viz">
+		<MiniMap centroids={data.centroids} size={340} />
+		<article class="sample">
+			<header class="sample__head">
+				<span class="crumb">00100 · kaksio · 50 m² · rak. 1985</span>
+				<span class="chip korkea">korkea</span>
+			</header>
+			<div class="sample__row">
+				<div class="sample__metric">
+					<span class="muted">Kohteen neliöhinta</span>
+					<b>7 256 <small>€/m²</small></b>
+				</div>
+				<div class="sample__metric">
+					<span class="muted">Alueen kaupat</span>
+					<b>7 256 <small>€/m²</small></b>
+				</div>
+			</div>
+			<div class="sample__delta under">−0,0 % <span>markkinatasossa</span></div>
+			<footer class="sample__foot muted">
+				151 kauppaa · 2026Q1 · Lähde: Tilastokeskus 13mt
+			</footer>
+		</article>
+	</aside>
 </section>
 
 <div class="analyzer">
@@ -341,33 +384,119 @@
 	</div>
 </section>
 
-<section class="props">
-	<article class="prop">
-		<div class="prop__icon" aria-hidden="true">◆</div>
-		<h3>Toteutuneet kauppahinnat</h3>
-		<p>
-			Vertailuarvo muodostetaan Tilastokeskuksen julkaisemista toteutuneista kaupoista, painotettuna
-			neljän viimeisimmän neljänneksen kauppamäärillä. Jokaisen tuloksen yhteydessä ilmoitetaan
-			taustalla olevien kauppojen lukumäärä.
-		</p>
-	</article>
-	<article class="prop">
-		<div class="prop__icon" aria-hidden="true">◇</div>
-		<h3>Koko maan hintakartta</h3>
-		<p>
-			<a href="/kartta">Hintakartta</a> esittää toteutuneet neliöhinnat postinumeroalueittain
-			Hangosta Nuorgamiin. Klikkaus esitäyttää vertailulomakkeen.
-		</p>
-	</article>
-	<article class="prop">
-		<div class="prop__icon" aria-hidden="true">◈</div>
-		<h3>Yksityisyys etusijalla</h3>
-		<p>
-			Teemme yhden käyttäjän ohjaaman, kertaluonteisen sivun haun vain luotetuilta
-			ilmoituspalveluilta. Mitään listausta tai käyttäjätietoja ei tallenneta palveluun.
-		</p>
-	</article>
+<section class="features" aria-label="Mitä RehtiArvio tekee">
+	<header class="features__head">
+		<span class="eyebrow">Ominaisuudet</span>
+		<h2>Työkalu, joka katsoo toteutuneisiin kauppoihin — ei mielipiteisiin.</h2>
+	</header>
+	<div class="features__grid">
+		<article class="feat">
+			<div class="feat__bar" aria-hidden="true"></div>
+			<h3>Koko maan hintakartta</h3>
+			<p>
+				<a href="/kartta">Hintakartta</a> esittää toteutuneet neliöhinnat postinumeroalueittain
+				Hangosta Nuorgamiin. Klikkaus esitäyttää vertailulomakkeen.
+			</p>
+		</article>
+		<article class="feat">
+			<div class="feat__bar" aria-hidden="true"></div>
+			<h3>Kohdeanalyysi</h3>
+			<p>
+				Liitä Oikotie-, Etuovi- tai välittäjäsivun URL-osoite. Järjestelmä poimii ilmoituksen
+				kentistä hinnan, vastikkeet, tontin, tehdyt ja tulevat remontit.
+			</p>
+		</article>
+		<article class="feat">
+			<div class="feat__bar" aria-hidden="true"></div>
+			<h3>Kuntoarvio</h3>
+			<p>
+				Kun vertailukauppoja on vähän, annamme kuntoon perustuvan hinta-arvion: kuntoluokka,
+				ikä, tehdyt ja tulossa olevat remontit sekä tontin omistus.
+			</p>
+		</article>
+		<article class="feat">
+			<div class="feat__bar" aria-hidden="true"></div>
+			<h3>Vuokratuotto</h3>
+			<p>
+				Brutto- ja nettotuotto Tilastokeskuksen vuokratilastosta (asvu 13eb) tai syöttämälläsi
+				vuokralla. Sisältää varainsiirtoveron 1,5 % ja remonttivarauksen.
+			</p>
+		</article>
+		<article class="feat">
+			<div class="feat__bar" aria-hidden="true"></div>
+			<h3>Toteutuneet vertailukaupat</h3>
+			<p>
+				Vertailuarvo muodostetaan Tilastokeskuksen julkaisemista kaupoista, painotettuna
+				neljän viimeisimmän neljänneksen kauppamäärillä. Kauppojen lukumäärä näkyy aina.
+			</p>
+		</article>
+		<article class="feat">
+			<div class="feat__bar" aria-hidden="true"></div>
+			<h3>Yksityisyys etusijalla</h3>
+			<p>
+				Teemme yhden käyttäjän ohjaaman sivun haun vain luotetuilta ilmoituspalveluilta.
+				Mitään listausta tai käyttäjätietoja ei tallenneta palveluun.
+			</p>
+		</article>
+	</div>
 </section>
+
+<section class="cases" aria-label="Esimerkkitapauksia">
+	<header class="cases__head">
+		<span class="eyebrow">Esimerkkejä</span>
+		<h2>Mitä arvio kertoi ostajalle.</h2>
+	</header>
+	<div class="cases__grid">
+		<article class="case">
+			<span class="crumb">00100 · yksiö</span>
+			<div class="case__delta under">−8,2 % <span>alle alueen</span></div>
+			<p>
+				Ilmoituksen pyyntihinta oli selvästi alueen mediaanin alapuolella. Syyksi paljastui
+				tuleva putkiremontti — ostaja budjetoi 320 €/m² ja teki tarjouksen.
+			</p>
+		</article>
+		<article class="case">
+			<span class="crumb">00200 · kolmio+</span>
+			<div class="case__delta over">+14,7 % <span>yli alueen</span></div>
+			<p>
+				Hinta kuulosti korkealta, mutta naapurialueiden kaupoilla painotettu vertailu osoitti
+				kohteen olevan linjassa mikrosijainnin kanssa. Ostaja jatkoi neuvottelua.
+			</p>
+		</article>
+		<article class="case">
+			<span class="crumb">33100 · rivitalo</span>
+			<div class="case__delta estimate">suuntaa-antava <span>kuntoarvio</span></div>
+			<p>
+				Alueella alle 20 kauppaa neljänneksessä. Kuntoarvio (hyvä kunto, 1998 rakennettu,
+				putket tehty) arvioi hinnan haarukaksi 2 850–3 150 €/m².
+			</p>
+		</article>
+		<article class="case">
+			<span class="crumb">90500 · omakotitalo</span>
+			<div class="case__delta estimate">suuntaa-antava <span>aluevertailu</span></div>
+			<p>
+				Omakotitaloille ei ole kuntakohtaista dataa. Aluevertailu varoittaa: tontin arvo
+				vaihtelee paljon, eikä €/m² yksin riitä hinta-arvioksi.
+			</p>
+		</article>
+	</div>
+</section>
+
+<div class="ctabar" class:visible={!heroInView} bind:this={ctaBar} aria-hidden={heroInView}>
+	<form method="POST" action="?/analyze" use:enhance class="ctabar__form">
+		<span class="ctabar__lead">Liitä uusi ilmoitus →</span>
+		<input
+			type="url"
+			name="url"
+			placeholder="https://asunnot.oikotie.fi/..."
+			autocomplete="off"
+			class="ctabar__input"
+			aria-label="Ilmoituksen URL"
+		/>
+		<button type="submit" class="ctabar__btn">Analysoi</button>
+		<button type="button" class="ctabar__close" aria-label="Sulje" onclick={() => (heroInView = true)}>×</button>
+	</form>
+</div>
 
 <section class="waitlist" id="raportti">
 	<div class="waitlist__body">
@@ -404,25 +533,119 @@
 		margin-bottom: 1.25rem;
 	}
 	.hero {
-		max-width: 48rem;
+		display: grid;
+		grid-template-columns: 1.1fr 1fr;
+		gap: 2rem;
+		align-items: center;
 		padding-top: 0.5rem;
 		margin-bottom: 2rem;
 	}
+	.hero__copy { max-width: 36rem; }
 	.hero h1 {
 		font-size: var(--text-3xl);
 		line-height: var(--lh-snug);
 		letter-spacing: var(--ls-tight);
 		text-wrap: balance;
 		margin: 0 0 1rem;
-		max-width: 42rem;
+		max-width: 36rem;
 		font-weight: 600;
 	}
 	.hero .lede {
 		color: var(--ink-2);
-		max-width: 42rem;
-		margin: 0;
+		max-width: 36rem;
+		margin: 0 0 1.25rem;
 		font-size: var(--text-md);
 		line-height: var(--lh-body);
+	}
+	.hero__pills {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+	.pill {
+		display: inline-flex;
+		gap: 0.35rem;
+		align-items: baseline;
+		font-size: var(--text-sm);
+		color: var(--ink-2);
+		background: var(--chip-bg);
+		border: 1px solid var(--line);
+		padding: 0.35rem 0.7rem;
+		border-radius: var(--radius-pill);
+	}
+	.pill b {
+		color: var(--ink);
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+	.hero__viz {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.85rem;
+	}
+	.sample {
+		background: var(--sky);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-lg);
+		padding: 1.1rem 1.25rem;
+		box-shadow: var(--shadow-md);
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	.sample__head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.sample__row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.85rem;
+	}
+	.sample__metric {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+	}
+	.sample__metric .muted {
+		color: var(--ink-3);
+		font-size: var(--text-xs);
+		letter-spacing: var(--ls-wide);
+		font-weight: 500;
+	}
+	.sample__metric b {
+		font-size: var(--text-xl);
+		font-weight: 600;
+		color: var(--ink);
+		font-variant-numeric: tabular-nums;
+		letter-spacing: var(--ls-tight);
+	}
+	.sample__metric small {
+		font-size: var(--text-sm);
+		color: var(--ink-3);
+		font-weight: 500;
+		margin-left: 0.1rem;
+	}
+	.sample__delta {
+		font-size: var(--text-lg);
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink);
+	}
+	.sample__delta span {
+		display: block;
+		font-size: var(--text-sm);
+		font-weight: 400;
+		color: var(--ink-2);
+		margin-top: 0.1rem;
+	}
+	.sample__foot {
+		font-size: var(--text-xs);
+		color: var(--ink-3);
+		letter-spacing: var(--ls-snug);
 	}
 
 	.analyzer {
@@ -726,49 +949,125 @@
 		line-height: var(--lh-body);
 	}
 
-	.props {
+	.features {
+		margin-top: 3rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+	.features__head { max-width: 42rem; }
+	.features__head h2 {
+		font-size: var(--text-2xl);
+		letter-spacing: var(--ls-tight);
+		margin: 0;
+		font-weight: 600;
+		line-height: var(--lh-snug);
+		text-wrap: balance;
+	}
+	.features__grid {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1rem;
-		margin-top: 3rem;
 	}
-	.prop {
+	.feat {
 		background: var(--sky);
 		border: 1px solid var(--line);
 		border-radius: var(--radius-lg);
-		padding: 1.5rem 1.6rem;
+		padding: 1.4rem 1.5rem;
 		box-shadow: var(--shadow-sm);
 		transition: box-shadow 0.2s ease, transform 0.2s ease;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 	}
-	.prop:hover {
+	.feat:hover {
 		box-shadow: var(--shadow-md);
 		transform: translateY(-2px);
 	}
-	.prop__icon {
-		font-size: 1.4rem;
-		color: var(--ink-3);
-		margin-bottom: 0.85rem;
-		letter-spacing: 0.05em;
+	.feat__bar {
+		width: 28px;
+		height: 3px;
+		background: var(--baltic);
+		border-radius: var(--radius-pill);
+		margin-bottom: 0.4rem;
 	}
-	.prop h3 {
+	.feat h3 {
 		font-size: var(--text-lg);
 		font-weight: 600;
 		letter-spacing: var(--ls-snug);
-		margin: 0 0 0.5rem;
+		margin: 0;
 		color: var(--ink);
 	}
-	.prop p {
+	.feat p {
 		margin: 0;
 		color: var(--ink-2);
 		font-size: var(--text-md);
 		line-height: var(--lh-list);
 	}
-	.prop a {
+	.feat a {
 		color: var(--ink);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 		text-decoration-color: var(--ink-3);
 		text-decoration-thickness: 1px;
+	}
+
+	.cases {
+		margin-top: 3rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+	.cases__head h2 {
+		font-size: var(--text-2xl);
+		letter-spacing: var(--ls-tight);
+		margin: 0;
+		font-weight: 600;
+		line-height: var(--lh-snug);
+	}
+	.cases__grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 1rem;
+	}
+	.case {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-lg);
+		padding: 1.25rem 1.35rem;
+		box-shadow: var(--shadow-sm);
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+	.case .crumb {
+		margin: 0;
+		font-size: var(--text-xs);
+		color: var(--ink-3);
+		letter-spacing: var(--ls-wide);
+		font-weight: 500;
+	}
+	.case__delta {
+		font-size: var(--text-2xl);
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: var(--ls-tight);
+	}
+	.case__delta span {
+		display: block;
+		font-size: var(--text-sm);
+		font-weight: 400;
+		color: var(--ink-2);
+		margin-top: 0.15rem;
+	}
+	.case__delta.under { color: var(--under); }
+	.case__delta.over { color: var(--over); }
+	.case__delta.estimate { color: var(--ink); font-size: var(--text-lg); }
+	.case p {
+		margin: 0;
+		color: var(--ink-2);
+		font-size: var(--text-sm);
+		line-height: var(--lh-list);
 	}
 
 	.waitlist {
@@ -993,9 +1292,14 @@
 	@media (max-width: 860px) {
 		.analyzer { padding: 1.1rem; }
 		.factors { grid-template-columns: 1fr; }
+		.hero { grid-template-columns: 1fr; gap: 1.5rem; }
+		.hero__copy { max-width: none; }
+		.features__grid { grid-template-columns: 1fr 1fr; }
+		.cases__grid { grid-template-columns: 1fr 1fr; }
 		.manual-grid { grid-template-columns: 1fr 1fr; }
-		.props { grid-template-columns: 1fr; }
 		.stats { grid-template-columns: 1fr; }
+		.features__grid { grid-template-columns: 1fr; }
+		.cases__grid { grid-template-columns: 1fr; }
 		.waitlist {
 			grid-template-columns: 1fr;
 			gap: 1.5rem;
@@ -1023,7 +1327,89 @@
 		.waitlist { padding: 1.5rem 1.25rem; }
 		.waitlist__cta form { flex-direction: column; }
 		.waitlist__cta form button { width: 100%; }
-		.prop { padding: 1.25rem 1.4rem; }
 		.card { padding: 1.25rem 1.4rem; }
+	}
+
+	.ctabar {
+		position: fixed;
+		left: 50%;
+		bottom: 1rem;
+		transform: translate(-50%, calc(100% + 1rem));
+		z-index: 50;
+		max-width: 44rem;
+		width: calc(100% - 2rem);
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-pill);
+		box-shadow: var(--shadow-lg);
+		padding: 0.4rem 0.5rem 0.4rem 1rem;
+		transition: transform 0.25s ease, opacity 0.2s ease;
+		opacity: 0;
+		pointer-events: none;
+	}
+	.ctabar.visible {
+		transform: translate(-50%, 0);
+		opacity: 1;
+		pointer-events: auto;
+	}
+	.ctabar__form {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.ctabar__lead {
+		font-size: var(--text-sm);
+		color: var(--ink-2);
+		font-weight: 500;
+		white-space: nowrap;
+	}
+	.ctabar__input {
+		flex: 1 1 auto;
+		min-width: 0;
+		font: inherit;
+		font-size: var(--text-sm);
+		color: var(--ink);
+		background: var(--bg);
+		border: 1px solid transparent;
+		padding: 0.55rem 0.75rem;
+		border-radius: var(--radius-pill);
+	}
+	.ctabar__input:focus-visible {
+		outline: none;
+		background: var(--surface);
+		border-color: var(--baltic);
+		box-shadow: 0 0 0 3px var(--ring);
+	}
+	.ctabar__btn {
+		font: inherit;
+		font-size: var(--text-sm);
+		font-weight: 500;
+		background: var(--baltic);
+		color: var(--baltic-ink);
+		border: 1px solid var(--baltic);
+		padding: 0.55rem 1.1rem;
+		border-radius: var(--radius-pill);
+		cursor: pointer;
+		white-space: nowrap;
+	}
+	.ctabar__btn:hover { background: var(--baltic-2); border-color: var(--baltic-2); }
+	.ctabar__close {
+		flex: 0 0 auto;
+		width: 36px;
+		height: 36px;
+		display: grid;
+		place-items: center;
+		font-size: 1.4rem;
+		line-height: 1;
+		color: var(--ink-3);
+		background: transparent;
+		border: 1px solid transparent;
+		border-radius: var(--radius-pill);
+		cursor: pointer;
+	}
+	.ctabar__close:hover { color: var(--ink); background: var(--chip-bg); }
+	@media (max-width: 560px) {
+		.ctabar__lead { display: none; }
+		.ctabar__btn { padding: 0.55rem 0.9rem; }
 	}
 </style>

@@ -44,106 +44,115 @@
 	<meta name="twitter:image" content={ogImageUrl} />
 </svelte:head>
 
-<article>
+<article class="verdict-page">
 	<p class="crumb">
 		{facts.postalCode} · {facts.roomsType} · {facts.livingAreaM2} m²
 		{#if facts.buildYear}· rak. {facts.buildYear}{/if}
 	</p>
 
-	<div class="hero">
-		{#if verdict.deltaPct !== null}
-			<span class="eyebrow">Analyysin tulos</span>
-			<h1 class={overUnder}>
-				{verdict.deltaPct > 0 ? '+' : ''}{String(verdict.deltaPct).replace('.', ',')} %
-			</h1>
-			<p class="summary">{verdictLabel}</p>
-		{:else}
-			<span class="eyebrow">Analyysin tulos</span>
-			<h1 class="none">Ei vertailuarvoa</h1>
-			<p class="summary">Tälle alueelle ja huonetyypille ei löydy riittävästi toteutuneita kauppoja.</p>
-		{/if}
-	</div>
-
-	<dl>
-		<div>
-			<dt>Kohteen neliöhinta</dt>
-			<dd>{fmt.format(verdict.listingEurM2)} <span class="unit">€/m²</span></dd>
-		</div>
-		<div>
-			<dt>Alueen toteutuneet kaupat</dt>
-			<dd>
-				{#if verdict.benchmarkEurM2}
-					{fmt.format(verdict.benchmarkEurM2)} <span class="unit">€/m²</span>
+	<div class="verdict-grid">
+		<aside class="verdict-side">
+			<div class="hero">
+				{#if verdict.deltaPct !== null}
+					<span class="eyebrow">Analyysin tulos</span>
+					<h1 class={overUnder}>
+						{verdict.deltaPct > 0 ? '+' : ''}{String(verdict.deltaPct).replace('.', ',')} %
+					</h1>
+					<p class="summary">{verdictLabel}</p>
 				{:else}
-					<span class="dash">–</span>
+					<span class="eyebrow">Analyysin tulos</span>
+					<h1 class="none">Ei vertailuarvoa</h1>
+					<p class="summary">Tälle alueelle ja huonetyypille ei löydy riittävästi toteutuneita kauppoja.</p>
 				{/if}
-			</dd>
-		</div>
-		<div>
-			<dt>Kauppoja (4 neljännestä)</dt>
-			<dd>
-				{fmt.format(verdict.transactions4q)}
-				{#if verdict.latestQuarter}<span class="meta">· viimeisin {verdict.latestQuarter}</span>{/if}
-			</dd>
-		</div>
-		<div>
-			<dt>Luotettavuus</dt>
-			<dd><span class="chip {verdict.confidence === 'korkea' ? 'chip--solid' : ''}">{verdict.confidence}</span></dd>
-		</div>
-	</dl>
+			</div>
 
-	<section class="flags card">
-		<h2>Tulkinnan varaukset</h2>
-		<ul>
-			{#each verdict.flags as flag (flag)}
-				<li>{flag}</li>
-			{/each}
-		</ul>
-	</section>
-
-	{#if yieldResult}
-		<section class="yield card">
-			<h2>Vuokratuotto</h2>
-			<dl class="yield-grid">
+			<dl>
 				<div>
-					<dt>Bruttotuotto</dt>
-					<dd>{String(yieldResult.grossYieldPct).replace('.', ',')} <span class="unit">%</span></dd>
+					<dt>Kohteen neliöhinta</dt>
+					<dd>{fmt.format(verdict.listingEurM2)} <span class="unit">€/m²</span></dd>
 				</div>
 				<div>
-					<dt>Nettotuotto</dt>
-					<dd>{String(yieldResult.netYieldPct).replace('.', ',')} <span class="unit">%</span></dd>
+					<dt>Alueen toteutuneet kaupat</dt>
+					<dd>
+						{#if verdict.benchmarkEurM2}
+							{fmt.format(verdict.benchmarkEurM2)} <span class="unit">€/m²</span>
+						{:else}
+							<span class="dash">–</span>
+						{/if}
+					</dd>
 				</div>
 				<div>
-					<dt>Nettokassavirta / kk</dt>
-					<dd>{fmt.format(yieldResult.monthlyNetEur)} <span class="unit">€</span></dd>
+					<dt>Kauppoja (4 neljännestä)</dt>
+					<dd>
+						{fmt.format(verdict.transactions4q)}
+						{#if verdict.latestQuarter}<span class="meta">· viimeisin {verdict.latestQuarter}</span>{/if}
+					</dd>
 				</div>
 				<div>
-					<dt>Remonttivaraus / v</dt>
-					<dd>{fmt.format(yieldResult.reserveEurYr)} <span class="unit">€ (oletus)</span></dd>
+					<dt>Luotettavuus</dt>
+					<dd><span class="chip {verdict.confidence === 'korkea' ? 'chip--solid' : ''}">{verdict.confidence}</span></dd>
 				</div>
 			</dl>
-			<p class="yield-note">
-				Laskelma sisältää varainsiirtoveron 1,5 % (vero.fi 2026). Remonttivaraus on
-				oletusarvo, ei tilastoista laskettu — vähennä se todellisesta tuotosta tai
-				syötä tarkempi luku. {yieldResult.rentSource === 'estimate'
-					? `Vuokra on alueen tilastollinen arvio${rentEstimate?.tier === 'town' ? ' (kunnan taso)' : rentEstimate?.tier === 'mk' ? ' (maakunnan taso)' : ''}${rentEstimate?.latestQuarter ? `, viimeisin ${rentEstimate.latestQuarter}` : ''}.`
-					: ''}
-			</p>
-			{#if yieldResult.flags.length}
-				<ul class="yield-flags">
-					{#each yieldResult.flags as flag (flag)}
+
+			<div class="side-actions">
+				<button class="share" type="button" onclick={copyShareLink}>
+					{#if copyState === 'copied'}Linkki kopioitu{:else if copyState === 'error'}Kopiointi epäonnistui{:else}Kopioi linkki / Jaa{/if}
+				</button>
+			</div>
+		</aside>
+
+		<div class="verdict-main">
+			<section class="flags card">
+				<h2>Tulkinnan varaukset</h2>
+				<ul>
+					{#each verdict.flags as flag (flag)}
 						<li>{flag}</li>
 					{/each}
 				</ul>
-			{/if}
-		</section>
-	{/if}
+			</section>
 
-	<div class="footer-row">
-		<button class="share" type="button" onclick={copyShareLink}>
-			{#if copyState === 'copied'}Linkki kopioitu{:else if copyState === 'error'}Kopiointi epäonnistui{:else}Kopioi linkki / Jaa{/if}
-		</button>
-		<a class="back" href="/">← Takaisin hakuun</a>
+			{#if yieldResult}
+				<section class="yield card">
+					<h2>Vuokratuotto</h2>
+					<dl class="yield-grid">
+						<div>
+							<dt>Bruttotuotto</dt>
+							<dd>{String(yieldResult.grossYieldPct).replace('.', ',')} <span class="unit">%</span></dd>
+						</div>
+						<div>
+							<dt>Nettotuotto</dt>
+							<dd>{String(yieldResult.netYieldPct).replace('.', ',')} <span class="unit">%</span></dd>
+						</div>
+						<div>
+							<dt>Nettokassavirta / kk</dt>
+							<dd>{fmt.format(yieldResult.monthlyNetEur)} <span class="unit">€</span></dd>
+						</div>
+						<div>
+							<dt>Remonttivaraus / v</dt>
+							<dd>{fmt.format(yieldResult.reserveEurYr)} <span class="unit">€ (oletus)</span></dd>
+						</div>
+					</dl>
+					<p class="yield-note">
+						Laskelma sisältää varainsiirtoveron 1,5 % (vero.fi 2026). Remonttivaraus on
+						oletusarvo, ei tilastoista laskettu — vähennä se todellisesta tuotosta tai
+						syötä tarkempi luku. {yieldResult.rentSource === 'estimate'
+							? `Vuokra on alueen tilastollinen arvio${rentEstimate?.tier === 'town' ? ' (kunnan taso)' : rentEstimate?.tier === 'mk' ? ' (maakunnan taso)' : ''}${rentEstimate?.latestQuarter ? `, viimeisin ${rentEstimate.latestQuarter}` : ''}.`
+							: ''}
+					</p>
+					{#if yieldResult.flags.length}
+						<ul class="yield-flags">
+							{#each yieldResult.flags as flag (flag)}
+								<li>{flag}</li>
+							{/each}
+						</ul>
+					{/if}
+				</section>
+			{/if}
+
+			<div class="footer-row">
+				<a class="back" href="/">← Takaisin hakuun</a>
+			</div>
+		</div>
 	</div>
 </article>
 
@@ -292,12 +301,52 @@
 		color: var(--ink);
 	}
 
+	.verdict-page {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.verdict-grid {
+		display: grid;
+		grid-template-columns: minmax(18rem, 22rem) 1fr;
+		gap: 1.5rem;
+		align-items: start;
+	}
+	.verdict-side {
+		position: sticky;
+		top: 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		padding: 1.5rem 1.5rem 1.75rem;
+		background: var(--sky);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-lg);
+		box-shadow: var(--shadow-md);
+	}
+	.verdict-side .hero {
+		margin: 0;
+	}
+	.verdict-main {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.side-actions {
+		display: flex;
+		gap: 0.6rem;
+		margin-top: 0.5rem;
+	}
+	.side-actions .share {
+		flex: 1;
+		text-align: center;
+	}
 	.footer-row {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		gap: 1rem;
-		margin-top: 2rem;
+		margin-top: 1rem;
 		flex-wrap: wrap;
 	}
 
@@ -354,6 +403,8 @@
 		.yield-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
+		.verdict-grid { grid-template-columns: 1fr; }
+		.verdict-side { position: static; }
 	}
 	@media (max-width: 420px) {
 		.yield-grid {
