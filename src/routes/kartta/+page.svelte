@@ -1,69 +1,87 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import PageHero from '$lib/components/sections/PageHero.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
 	import PriceMap from '$lib/PriceMap.svelte';
+	import { copy } from '$lib/copy/fi';
 </script>
 
 <svelte:head>
-	<title>Hintakartta | RehtiArvio by Fides</title>
-	<meta
-		name="description"
-		content="Koko Suomen toteutuneet kerrostaloasuntojen neliöhinnat postinumeroalueittain kartalla. Lähde: Tilastokeskus."
-	/>
+	<title>Hintakartta | RehtiArvio</title>
+	<meta name="description" content={copy.kartta.lede} />
 </svelte:head>
 
-<section class="intro">
-	<span class="eyebrow">Hintakartta</span>
-	<h1>Toteutuneet neliöhinnat postinumeroalueittain</h1>
-	<p class="lede">
-		Kerrostaloasuntojen toteutuneiden kauppojen keskineliöhinta postinumeroalueittain, painotettuna
-		neljän viimeisimmän tilastoneljänneksen kaupoilla. Klikkaa aluetta esitäyttääksesi vertailun.
-		Kartan vaaleat ääriviiva-alueet ovat postinumeroita, joilta Tilastokeskus ei julkaise hintaa
-		(alle tilastointirajan kauppoja).
-	</p>
-</section>
+<PageHero
+	eyebrow={copy.kartta.title}
+	h1={copy.kartta.h1}
+	lede={copy.kartta.lede}
+/>
 
-<div class="map-shell">
+<Card padded={false} variant="raised">
 	<PriceMap onareaclick={(pc) => goto(`/?pc=${pc}`)} />
+</Card>
+
+<div class="legend">
+	<div class="legend__item">
+		<span class="legend__dot legend__dot--filled"></span>
+		<div>
+			<strong>{copy.kartta.legendTitle}</strong>
+			<span>{copy.kartta.legend1}</span>
+		</div>
+	</div>
+	<div class="legend__item">
+		<span class="legend__dot legend__dot--outline"></span>
+		<div>
+			<strong>Ei dataa</strong>
+			<span>{copy.kartta.legend2}</span>
+		</div>
+	</div>
 </div>
 
+<p class="attr">{copy.kartta.attribution}</p>
+
 <style>
-	.intro {
-		margin-bottom: 1.75rem;
-		max-width: 44rem;
-	}
-	.eyebrow {
-		display: inline-block;
-		font-size: var(--text-xs);
-		font-weight: 500;
-		color: var(--ink-2);
-		letter-spacing: var(--ls-wide);
-		background: var(--chip-bg);
-		padding: 0.35rem 0.7rem;
-		border-radius: var(--radius-pill);
-		margin-bottom: 1.1rem;
-	}
-	.intro h1 {
-		font-size: var(--text-2xl);
-		letter-spacing: var(--ls-tight);
-		margin: 0 0 0.75rem;
-		font-weight: 600;
-		max-width: 36rem;
-		text-wrap: balance;
-		line-height: var(--lh-snug);
-	}
-	.intro .lede {
-		color: var(--ink-2);
-		max-width: 44rem;
-		margin: 0;
-		font-size: var(--text-md);
-		line-height: var(--lh-body);
+	.legend {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.85rem;
+		margin-top: var(--space-5);
+		max-width: var(--container-prose);
 	}
 
-	.map-shell {
+	.legend__item {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.7rem;
 		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: var(--radius-lg);
-		overflow: hidden;
-		box-shadow: var(--shadow-md);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 0.85rem 1rem;
+	}
+
+	.legend__item div { display: flex; flex-direction: column; gap: 0.15rem; }
+	.legend__item strong { font-weight: 600; color: var(--ink); }
+	.legend__item span { color: var(--ink-2); font-size: var(--text-sm); }
+
+	.legend__dot {
+		width: 14px;
+		height: 14px;
+		border-radius: var(--radius-full);
+		flex-shrink: 0;
+		margin-top: 0.15rem;
+	}
+
+	.legend__dot--filled { background: var(--brand); }
+	.legend__dot--outline { background: transparent; border: 1.5px solid var(--ink-3); }
+
+	.attr {
+		margin: var(--space-5) 0 0;
+		color: var(--ink-3);
+		font-size: var(--text-sm);
+		max-width: var(--container-prose);
+	}
+
+	@media (max-width: 560px) {
+		.legend { grid-template-columns: 1fr; }
 	}
 </style>

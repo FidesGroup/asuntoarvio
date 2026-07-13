@@ -3,12 +3,24 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="description" content="RehtiArvio — markkinahinta-analyysi asuntokauppaan. Vertaa kohteen pyyntihintaa Tilastokeskuksen toteutuneisiin kauppahintoihin postinumeroalueittain. Fides Group." />
+		<meta name="description" content="RehtiArvio — ilmainen markkinahinta-analyysi asuntokauppaan. Vertaa kohteen pyyntihintaa Tilastokeskuksen toteutuneisiin kauppoihin. Fides Group." />
 		<meta name="theme-color" content="#0f6a78" media="(prefers-color-scheme: light)" />
 		<meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)" />
+		<link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin />
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
+		<script>
+			(function () {
+				try {
+					var saved = localStorage.getItem('ra_theme');
+					var t = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+					document.documentElement.dataset.theme = t;
+				} catch (e) {
+					document.documentElement.dataset.theme = 'light';
+				}
+			})();
+		</script>
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>
