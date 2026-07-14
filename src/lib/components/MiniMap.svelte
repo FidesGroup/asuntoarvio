@@ -43,14 +43,19 @@
 	}
 
 	function fillFor(eur: number | null): string {
-		if (eur === null || eur <= 0) return 'var(--border-2)';
+		if (eur === null || eur <= 0) return 'var(--ink-3)';
 		const t = lightness(eur);
 		// 5-step sequential ramp on the ink axis. --brand is now publication
 		// ink (#0a0a0a) so mixing N% of it into --surface (paper white)
-		// yields a paper-to-ink ramp: N=30% → ~#b3b3b3 (clearest against
-		// the card). Floor kept at 30% so the cheapest-tier dots (majority,
-		// price distribution skews low) don't blend into the --surface card
-		// background. Still lightness-monotonic, single-hue.
+		// yields a paper-to-ink ramp: N=30% → ~#b3b3b3. Card background is
+		// now --ink (dark) instead of --surface (light), so the ramp now
+		// reads as a paper-on-ink scale: cheapest dots are the brightest
+		// (closest to white), most expensive dots are the darkest (blend
+		// into the card) -- and a thin white stroke on every dot (see
+		// the .mmap svg circle below) keeps even the dark dots visible.
+		// Floor kept at 30% so the cheapest-tier dots (majority, price
+		// distribution skews low) don't blend into the --ink card bg.
+		// Still lightness-monotonic, single-hue.
 		if (t < 0.2) return 'color-mix(in srgb, var(--brand) 30%, var(--surface))';
 		if (t < 0.4) return 'color-mix(in srgb, var(--brand) 48%, var(--surface))';
 		if (t < 0.6) return 'color-mix(in srgb, var(--brand) 66%, var(--surface))';
@@ -68,18 +73,21 @@
 		aria-label="Suomen postinumeroalueiden neliöhinnat"
 	>
 		<g>
-			{#each points as p (p.pc)}
-				<circle
-					cx={p.x}
-					cy={p.y}
-					r={hovered?.pc === p.pc ? p.r * 1.8 : p.r}
-					fill={fillFor(p.eur)}
-					opacity={p.eur !== null && p.eur > 0 ? 0.98 : 0.55}
-					onmouseenter={() => (hovered = p)}
-					onmouseleave={() => (hovered = null)}
-					role="presentation"
-				/>
-			{/each}
+		{#each points as p (p.pc)}
+			<circle
+				cx={p.x}
+				cy={p.y}
+				r={hovered?.pc === p.pc ? p.r * 1.8 : p.r}
+				fill={fillFor(p.eur)}
+				stroke="#fafaf7"
+				stroke-width="0.5"
+				stroke-opacity={p.eur !== null && p.eur > 0 ? 0.65 : 0.35}
+				opacity={p.eur !== null && p.eur > 0 ? 0.98 : 0.7}
+				onmouseenter={() => (hovered = p)}
+				onmouseleave={() => (hovered = null)}
+				role="presentation"
+			/>
+		{/each}
 		</g>
 	</svg>
 	<div class="mmap__legend">
@@ -113,9 +121,9 @@
 		width: var(--mmap-size);
 		height: calc(var(--mmap-size) * 1.33);
 		max-width: 100%;
-		border: 1px solid var(--border);
+		border: 1px solid var(--border-2);
 		border-radius: var(--radius-lg);
-		background: var(--surface);
+		background: var(--ink);
 		box-shadow: var(--shadow-md);
 		overflow: hidden;
 	}
@@ -125,8 +133,10 @@
 		display: block;
 	}
 	.mmap svg g {
-		/* Subtle depth cue so dots sit forward of the flat card background. */
-		filter: drop-shadow(0 0.5px 0.9px rgba(9, 15, 20, 0.35));
+		/* Light halo on dark card so the white dots glow forward of the
+		   ink background and the dark dots pick up a subtle white fringe
+		   that reinforces the per-circle white stroke. */
+		filter: drop-shadow(0 0.4px 0.7px rgba(250, 250, 247, 0.22));
 	}
 	.mmap__legend {
 		position: absolute;
@@ -137,7 +147,7 @@
 		gap: 0.4rem;
 		padding: 0.4rem 0.7rem;
 		background: var(--surface);
-		border: 1px solid var(--border);
+		border: 1px solid var(--border-2);
 		border-radius: var(--radius-full);
 		box-shadow: var(--shadow-sm);
 		font-size: var(--text-xs);
