@@ -106,6 +106,16 @@ export const copy = {
 			]
 		},
 
+		market: {
+			eyebrow: 'Markkinat nyt',
+			transactions: 'Kauppoja / 4 nelj.',
+			median: 'Mediaanihinta',
+			areas: 'Aluetta, joilla julkaistu hinta',
+			mostExpensive: 'Kallein alue',
+			cheapest: 'Edullisin alue',
+			source: 'Lähde: Tilastokeskus 13mt'
+		},
+
 		waitlist: {
 			eyebrow: 'Tulossa',
 			title: 'Taloyhtiöraportti',
@@ -167,6 +177,12 @@ export const copy = {
 		tapHint: 'Napauta aluetta nähdäksesi hinnan.',
 		panelUse: 'Käytä vertailussa',
 		panelClose: 'Sulje tietoruutu',
+		topExpensive: 'Kalleimmat alueet',
+		topCheapest: 'Edullisimmat alueet',
+		topHint: 'Vähintään 10 kauppaa neljällä neljänneksellä. Klikkaa riviä esitäyttääksesi vertailun.',
+		colArea: 'Alue',
+		colPrice: '€/m²',
+		colN: 'Kauppoja',
 		attribution: 'Lähde: Tilastokeskus (13mt, CC BY 4.0).'
 	},
 

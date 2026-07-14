@@ -14,6 +14,8 @@
 
 	let pending = $state(false);
 
+	const fmtNum = new Intl.NumberFormat('fi-FI');
+
 	const hasResult = $derived(!!form?.verdict);
 
 	const tier = $derived(form?.tier ?? null);
@@ -44,6 +46,31 @@
 {#if hasResult && form?.facts && form?.verdict}
 	<VerdictBlock verdict={form.verdict} {tier} facts={form.facts} />
 {/if}
+
+<section class="market" aria-label={copy.landing.market.eyebrow}>
+	<p class="market__eyebrow">{copy.landing.market.eyebrow}</p>
+	<div class="market__grid">
+		<div class="mstat">
+			<span class="mstat__lbl">{copy.landing.market.transactions}</span>
+			<span class="mstat__val num">{fmtNum.format(data.market.totalTransactions)}</span>
+		</div>
+		<div class="mstat">
+			<span class="mstat__lbl">{copy.landing.market.median}</span>
+			<span class="mstat__val num">{fmtNum.format(data.market.medianEurM2)} <span class="mstat__unit">€/m²</span></span>
+		</div>
+		<div class="mstat">
+			<span class="mstat__lbl">{copy.landing.market.mostExpensive}</span>
+			<span class="mstat__val num">{fmtNum.format(data.market.topExpensive[0].eur)} <span class="mstat__unit">€/m²</span></span>
+			<span class="mstat__sub">{data.market.topExpensive[0].pc} {data.market.topExpensive[0].nimi}</span>
+		</div>
+		<div class="mstat">
+			<span class="mstat__lbl">{copy.landing.market.cheapest}</span>
+			<span class="mstat__val num">{fmtNum.format(data.market.topCheapest[0].eur)} <span class="mstat__unit">€/m²</span></span>
+			<span class="mstat__sub">{data.market.topCheapest[0].pc} {data.market.topCheapest[0].nimi}</span>
+		</div>
+	</div>
+	<p class="market__src">{copy.landing.market.source}</p>
+</section>
 
 <FeatureGrid />
 
@@ -137,6 +164,78 @@
 		/* Mobile gets no landing map — /kartta is the map surface there. */
 		.hero-grid__map {
 			display: none;
+		}
+	}
+
+	.market {
+		display: flex;
+		flex-direction: column;
+		gap: 0.85rem;
+		margin-top: var(--space-9);
+		max-width: var(--container-prose);
+	}
+
+	.market__eyebrow {
+		font-size: var(--text-xs);
+		font-weight: 600;
+		color: var(--brand);
+		letter-spacing: var(--ls-wide);
+		text-transform: uppercase;
+		margin: 0;
+	}
+
+	.market__grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 1rem;
+		padding-top: 1rem;
+		border-top: 1px solid var(--border);
+	}
+
+	.mstat {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+	}
+
+	.mstat__lbl {
+		font-size: var(--text-xs);
+		font-weight: 500;
+		color: var(--ink-3);
+		letter-spacing: var(--ls-wide);
+		text-transform: uppercase;
+	}
+
+	.mstat__val {
+		font-size: var(--text-xl);
+		font-weight: 600;
+		letter-spacing: var(--ls-tight);
+	}
+
+	.mstat__unit {
+		font-size: var(--text-sm);
+		font-weight: 500;
+		color: var(--ink-2);
+	}
+
+	.mstat__sub {
+		font-size: var(--text-xs);
+		color: var(--ink-2);
+	}
+
+	.market__src {
+		margin: 0;
+		font-size: var(--text-xs);
+		color: var(--ink-3);
+		letter-spacing: var(--ls-wide);
+		text-transform: uppercase;
+	}
+
+	@media (max-width: 720px) {
+		.market__grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1rem 1.25rem;
 		}
 	}
 

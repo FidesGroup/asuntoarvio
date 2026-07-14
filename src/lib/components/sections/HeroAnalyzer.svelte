@@ -14,7 +14,6 @@
 		data: {
 			postalCodes: string[];
 			prefillPc?: string | null;
-			centroids: Record<string, any>;
 		};
 		form: any;
 		pending?: boolean;

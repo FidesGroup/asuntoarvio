@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { knownPostalCodes, evaluateProperty, locationBenchmark } from '$lib/server/benchmark';
-import centroids from '$lib/server/centroids.json';
+import { marketStats } from '$lib/server/marketstats';
 import { geocodeAddress } from '$lib/server/geocode';
 import { createReport } from '$lib/server/reports';
 import { getSubscriberByToken } from '$lib/server/subscribers';
@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ url }) => {
 	return {
 		postalCodes: knownPostalCodes(),
 		prefillPc: pc && /^\d{5}$/.test(pc) ? pc : null,
-		centroids
+		market: marketStats()
 	};
 };
 

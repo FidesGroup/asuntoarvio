@@ -4,6 +4,13 @@
 	import Card from '$lib/components/ui/Card.svelte';
 	import PriceMap from '$lib/PriceMap.svelte';
 	import { copy } from '$lib/copy/fi';
+
+	let { data } = $props();
+	const fmt = new Intl.NumberFormat('fi-FI');
+	const tops = $derived([
+		{ title: copy.kartta.topExpensive, rows: data.market.topExpensive },
+		{ title: copy.kartta.topCheapest, rows: data.market.topCheapest }
+	]);
 </script>
 
 <svelte:head>
@@ -27,6 +34,33 @@
 	<span class="note__dot" aria-hidden="true"></span>
 	{copy.kartta.legendNoData}
 </p>
+
+<div class="tops">
+	{#each tops as top (top.title)}
+		<div class="top">
+			<h2 class="top__title">{top.title}</h2>
+			<table class="top__table num">
+				<thead>
+					<tr><th>{copy.kartta.colArea}</th><th class="r">{copy.kartta.colPrice}</th><th class="r">{copy.kartta.colN}</th></tr>
+				</thead>
+				<tbody>
+					{#each top.rows as r (r.pc)}
+						<tr>
+							<td>
+								<button type="button" class="top__link" onclick={() => goto(`/?pc=${r.pc}`)}>
+									{r.pc} {r.nimi}
+								</button>
+							</td>
+							<td class="r">{fmt.format(r.eur)}</td>
+							<td class="r">{fmt.format(r.n)}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	{/each}
+</div>
+<p class="note">{copy.kartta.topHint}</p>
 
 <p class="attr">{copy.kartta.attribution}</p>
 
@@ -59,6 +93,75 @@
 		background: transparent;
 		border: 1.5px dashed var(--ink-3);
 		flex-shrink: 0;
+	}
+
+	.tops {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--space-7);
+		margin-top: var(--space-7);
+		max-width: var(--container-app);
+	}
+
+	.top__title {
+		font-size: var(--text-lg);
+		font-weight: 600;
+		margin: 0 0 0.6rem;
+	}
+
+	.top__table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: var(--text-sm);
+	}
+
+	.top__table th {
+		text-align: left;
+		font-size: var(--text-xs);
+		font-weight: 600;
+		color: var(--ink-2);
+		letter-spacing: var(--ls-wide);
+		text-transform: uppercase;
+		padding: 0.45rem 0.5rem;
+		border-bottom: 1px solid var(--border-2);
+	}
+
+	.top__table td {
+		padding: 0.35rem 0.5rem;
+		border-bottom: 1px solid var(--border);
+		color: var(--ink-2);
+	}
+
+	.top__table .r {
+		text-align: right;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.top__link {
+		font: inherit;
+		color: var(--ink);
+		background: transparent;
+		border: none;
+		padding: 0.35rem 0;
+		min-height: 40px;
+		display: inline-flex;
+		align-items: center;
+		cursor: pointer;
+		text-align: left;
+		text-decoration: underline;
+		text-decoration-color: var(--border-2);
+		text-underline-offset: 3px;
+	}
+
+	.top__link:hover {
+		text-decoration-color: var(--ink);
+	}
+
+	@media (max-width: 720px) {
+		.tops {
+			grid-template-columns: 1fr;
+			gap: var(--space-5);
+		}
 	}
 
 	.attr {
