@@ -91,6 +91,7 @@
 	/>
 
 	<header class="head">
+		<p class="head__source">Lähde: Tilastokeskus 13mt · 4 viimeistä neljännestä</p>
 		<DeltaBadge delta={verdict.deltaPct} size="hero" />
 		<p class="head__summary">{verdictLabel}</p>
 		<ConfidenceChip
@@ -186,12 +187,25 @@
 		align-items: flex-start;
 	}
 
+	.head__source {
+		font-size: var(--text-xs);
+		font-weight: 500;
+		color: var(--ink-3);
+		letter-spacing: var(--ls-wide);
+		text-transform: uppercase;
+		margin: 0;
+		padding-top: 0.85rem;
+		border-top: 1px solid var(--border);
+		align-self: stretch;
+	}
+
 	.head__summary {
 		color: var(--ink-2);
 		font-size: var(--text-lg);
 		line-height: var(--lh-body);
 		max-width: 38rem;
 		margin: 0;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.metrics {
