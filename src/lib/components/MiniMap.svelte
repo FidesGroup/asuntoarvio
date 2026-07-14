@@ -25,7 +25,7 @@
 		const [lon, lat] = c.c;
 		const x = ((lon - LON_MIN) / (LON_MAX - LON_MIN)) * W;
 		const y = H - ((lat - LAT_MIN) / (LAT_MAX - LAT_MIN)) * H;
-		return { pc, nimi: c.nimi, eur: c.eur, x, y, r: c.n > 0 ? 2.4 : 1.5 };
+		return { pc, nimi: c.nimi, eur: c.eur, x, y, r: c.n > 0 ? 2.7 : 1.7 };
 	}));
 
 	const eurs = $derived(points.map((p) => p.eur).filter((e): e is number => e !== null && e > 0));
@@ -42,11 +42,13 @@
 	function fillFor(eur: number | null): string {
 		if (eur === null || eur <= 0) return 'var(--border-2)';
 		const t = lightness(eur);
-		// 5-step sequential ramp on the Baltic petrol hue.
-		if (t < 0.2) return 'color-mix(in srgb, var(--brand) 18%, var(--surface))';
-		if (t < 0.4) return 'color-mix(in srgb, var(--brand) 38%, var(--surface))';
-		if (t < 0.6) return 'color-mix(in srgb, var(--brand) 58%, var(--surface))';
-		if (t < 0.8) return 'color-mix(in srgb, var(--brand) 78%, var(--surface))';
+		// 5-step sequential ramp on the Baltic petrol hue. Floor raised from 18%→30%
+		// so the cheapest-tier dots (majority, price distribution skews low) don't
+		// blend into the --surface card background. Still lightness-monotonic, single-hue.
+		if (t < 0.2) return 'color-mix(in srgb, var(--brand) 30%, var(--surface))';
+		if (t < 0.4) return 'color-mix(in srgb, var(--brand) 48%, var(--surface))';
+		if (t < 0.6) return 'color-mix(in srgb, var(--brand) 66%, var(--surface))';
+		if (t < 0.8) return 'color-mix(in srgb, var(--brand) 84%, var(--surface))';
 		return 'var(--brand)';
 	}
 
@@ -66,7 +68,7 @@
 					cy={p.y}
 					r={hovered?.pc === p.pc ? p.r * 1.8 : p.r}
 					fill={fillFor(p.eur)}
-					opacity={p.eur !== null && p.eur > 0 ? 0.95 : 0.45}
+					opacity={p.eur !== null && p.eur > 0 ? 0.98 : 0.55}
 					onmouseenter={() => (hovered = p)}
 					onmouseleave={() => (hovered = null)}
 					role="presentation"
@@ -116,6 +118,10 @@
 		height: 100%;
 		display: block;
 	}
+	.mmap svg g {
+		/* Subtle depth cue so dots sit forward of the flat card background. */
+		filter: drop-shadow(0 0.5px 0.9px rgba(9, 15, 20, 0.35));
+	}
 	.mmap__legend {
 		position: absolute;
 		left: 0.85rem;
@@ -138,10 +144,10 @@
 		border-radius: var(--radius-full);
 		background: linear-gradient(
 			to right,
-			color-mix(in srgb, var(--brand) 18%, var(--surface)),
-			color-mix(in srgb, var(--brand) 38%, var(--surface)),
-			color-mix(in srgb, var(--brand) 58%, var(--surface)),
-			color-mix(in srgb, var(--brand) 78%, var(--surface)),
+			color-mix(in srgb, var(--brand) 30%, var(--surface)),
+			color-mix(in srgb, var(--brand) 48%, var(--surface)),
+			color-mix(in srgb, var(--brand) 66%, var(--surface)),
+			color-mix(in srgb, var(--brand) 84%, var(--surface)),
 			var(--brand)
 		);
 		border: 1px solid var(--border);
