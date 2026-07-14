@@ -247,7 +247,7 @@ export function parseListingText(text: string): ExtractedListing {
 	};
 }
 
-const MAJOR_RENOVATIONS: [RegExp, string][] = [
+export const MAJOR_RENOVATIONS: [RegExp, string][] = [
 	[/putki|linjasaneeraus|viemäri|käyttövesi/i, 'putkiremontti'],
 	[/julkisivu/i, 'julkisivuremontti'],
 	[/ikkun/i, 'ikkunaremontti'],
@@ -256,6 +256,17 @@ const MAJOR_RENOVATIONS: [RegExp, string][] = [
 	[/lämmitysjärjestelm|maalämpö|kaukolämpölait/i, 'lämmitysjärjestelmä'],
 	[/sähkönousu|sähköjärjestelm|sähköpääkeskus/i, 'sähköremontti']
 ];
+
+// Minor upkeep must not read as a major renovation: patching, repainting,
+// weather-stripping or servicing a facade is not a julkisivuremontti...
+const MINOR_RE = /paikkaus|maalau|värimääri|tiivist|huolto|tarkastam|puhdistus/i;
+// ...unless the line itself announces a remontti/saneeraus
+// ("kuntotutkimus (julkisivun remontti tai kalkkimaalaus)" stays a signal).
+export const minorOnly = (t: string) => MINOR_RE.test(t) && !/remontti|saneeraus/i.test(t);
+
+// Studies and plans are not completed renovations: "putkistojen
+// kuntotutkimus 2011" must not read as putkiremontti 2011.
+export const STUDY_RE = /kuntotutkim|kuntokartoit|kartoitus|selvitys|suunnittelu|tutkimus|kuntoarvio/i;
 
 /** Insight lines derived deterministically from the extracted listing. */
 export function deriveInsights(x: ExtractedListing): string[] {
@@ -276,12 +287,6 @@ export function deriveInsights(x: ExtractedListing): string[] {
 		);
 	}
 
-	// Minor upkeep must not read as a major renovation: patching, repainting,
-	// weather-stripping or servicing a facade is not a julkisivuremontti.
-	const MINOR = /paikkaus|maalau|värimääri|tiivist|huolto|tarkastam|puhdistus/i;
-	// ...unless the line itself announces a remontti/saneeraus
-	// ("kuntotutkimus (julkisivun remontti tai kalkkimaalaus)" stays a signal).
-	const minorOnly = (t: string) => MINOR.test(t) && !/remontti|saneeraus/i.test(t);
 	const upcoming = new Map<string, number>();
 	for (const r of x.renovationsUpcoming) {
 		if (minorOnly(r.text)) continue;
@@ -294,12 +299,9 @@ export function deriveInsights(x: ExtractedListing): string[] {
 		out.push('Tulevissa remonteissa ei näy suuria hankkeita (putket, julkisivu, katto, ikkunat), vain tavanomaista ylläpitoa.');
 	}
 
-	// Studies and plans are not completed renovations: "putkistojen
-	// kuntotutkimus 2011" must not read as putkiremontti 2011.
-	const STUDY = /kuntotutkim|kuntokartoit|kartoitus|selvitys|suunnittelu|tutkimus|kuntoarvio/i;
 	const doneMajor = new Map<string, number>();
 	for (const r of x.renovationsDone) {
-		if (STUDY.test(r.text) || minorOnly(r.text)) continue;
+		if (STUDY_RE.test(r.text) || minorOnly(r.text)) continue;
 		const hit = MAJOR_RENOVATIONS.find(([re]) => re.test(r.text));
 		if (hit && !doneMajor.has(hit[1])) doneMajor.set(hit[1], r.year);
 	}
