@@ -1,17 +1,11 @@
 <script lang="ts">
 	import '../app.css';
-	import { onMount } from 'svelte';
 	import Header from '$lib/components/chrome/Header.svelte';
 	import Footer from '$lib/components/chrome/Footer.svelte';
 	import Toaster from '$lib/components/ui/Toaster.svelte';
-	import { theme } from '$lib/styles/theme.svelte';
 	import { copy } from '$lib/copy/fi';
 
 	let { children } = $props();
-
-	onMount(() => {
-		theme.init();
-	});
 </script>
 
 <svelte:head>

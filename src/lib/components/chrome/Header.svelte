@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { theme } from '$lib/styles/theme.svelte';
-	import { onMount } from 'svelte';
 	import { copy } from '$lib/copy/fi';
 
 	const links = [
@@ -18,10 +16,6 @@
 		if (href === '/') return path === '/';
 		return path === href || path.startsWith(href + '/');
 	}
-
-	onMount(() => {
-		theme.init();
-	});
 
 	function close() { menuOpen = false; }
 </script>
@@ -47,37 +41,6 @@
 	</nav>
 
 	<div class="actions">
-		<button
-			type="button"
-			class="iconbtn"
-			aria-label="Vaihda teemaa"
-			title="Vaihda teemaa"
-			onclick={() => theme.toggle()}
-		>
-			{#if theme.pref === 'dark'}
-				<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-					<circle cx="12" cy="12" r="4" fill="currentColor" />
-					<g stroke="currentColor" stroke-width="2" stroke-linecap="round">
-						<line x1="12" y1="2" x2="12" y2="5" />
-						<line x1="12" y1="19" x2="12" y2="22" />
-						<line x1="2" y1="12" x2="5" y2="12" />
-						<line x1="19" y1="12" x2="22" y2="12" />
-						<line x1="4.6" y1="4.6" x2="6.7" y2="6.7" />
-						<line x1="17.3" y1="17.3" x2="19.4" y2="19.4" />
-						<line x1="4.6" y1="19.4" x2="6.7" y2="17.3" />
-						<line x1="17.3" y1="6.7" x2="19.4" y2="4.6" />
-					</g>
-				</svg>
-			{:else}
-				<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-					<path
-						d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"
-						fill="currentColor"
-					/>
-				</svg>
-			{/if}
-		</button>
-
 		<button
 			type="button"
 			class="iconbtn burger"
