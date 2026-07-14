@@ -13,7 +13,10 @@
 		n: number;
 	}
 	let {
-		history
+		history,
+		priceTitle = copy.arvio.history.priceTitle,
+		volumeTitle = copy.arvio.history.volumeTitle,
+		source = copy.arvio.history.source
 	}: {
 		history: {
 			years: YearPoint[];
@@ -21,6 +24,9 @@
 			last12moChangePct?: number | null;
 			next12moTrendPct?: number | null;
 		};
+		priceTitle?: string;
+		volumeTitle?: string;
+		source?: string;
 	} = $props();
 
 	const SERIES = [
@@ -133,13 +139,13 @@
 {#if years.length >= 3}
 	<div class="hist">
 		<div class="hist__head">
-			<h3 class="hist__title">{copy.arvio.history.priceTitle}</h3>
+			<h3 class="hist__title">{priceTitle}</h3>
 			<span class="hist__unit">{copy.arvio.history.priceUnit}</span>
 		</div>
 		<svg
 			viewBox="0 0 {W} {H}"
 			role="img"
-			aria-label={copy.arvio.history.priceTitle}
+			aria-label={priceTitle}
 			onpointermove={onMove}
 			onpointerleave={() => (hoverYear = null)}
 		>
@@ -208,13 +214,13 @@
 		{/if}
 
 		<div class="hist__head hist__head--second">
-			<h3 class="hist__title">{copy.arvio.history.volumeTitle}</h3>
+			<h3 class="hist__title">{volumeTitle}</h3>
 			<span class="hist__unit">{copy.arvio.history.volumeUnit}</span>
 		</div>
 		<svg
 			viewBox="0 0 {W} {VH}"
 			role="img"
-			aria-label={copy.arvio.history.volumeTitle}
+			aria-label={volumeTitle}
 			onpointermove={onMove}
 			onpointerleave={() => (hoverYear = null)}
 		>
@@ -238,7 +244,7 @@
 				<b>{hovered.year}</b><span>{fmt.format(hovered.n)} kauppaa</span>
 			</div>
 		{/if}
-		<p class="hist__src">{copy.arvio.history.source} · {copy.arvio.history.partialNote}</p>
+		<p class="hist__src">{source} · {copy.arvio.history.partialNote}</p>
 	</div>
 {/if}
 

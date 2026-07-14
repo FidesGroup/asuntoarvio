@@ -4,6 +4,7 @@
 	import Card from '$lib/components/ui/Card.svelte';
 	import PriceMap from '$lib/PriceMap.svelte';
 	import PriceBandsChart from '$lib/components/sections/PriceBandsChart.svelte';
+	import HistoryCharts from '$lib/components/sections/HistoryCharts.svelte';
 	import { copy } from '$lib/copy/fi';
 
 	let { data } = $props();
@@ -45,6 +46,21 @@
 </p>
 
 <PriceBandsChart bands={data.market.bands} />
+
+{#await data.lazy.countryHistory then ch}
+	{#if ch}
+		<div class="country">
+			<Card>
+				<HistoryCharts
+					history={ch}
+					priceTitle={copy.kartta.countryPriceTitle}
+					volumeTitle={copy.kartta.countryVolumeTitle}
+					source={copy.kartta.countrySource}
+				/>
+			</Card>
+		</div>
+	{/if}
+{/await}
 
 <div class="tops">
 	{#each tops as top (top.title)}
@@ -125,6 +141,11 @@
 		background: transparent;
 		border: 1.5px dashed var(--ink-3);
 		flex-shrink: 0;
+	}
+
+	.country {
+		max-width: var(--container-app);
+		margin-top: var(--space-7);
 	}
 
 	.tops {

@@ -50,8 +50,7 @@ export async function fetchAreaHistory(postalCode: string): Promise<AreaHistory 
 }
 
 async function fetchUncached(postalCode: string): Promise<AreaHistory | null> {
-	const signal = AbortSignal.timeout(4000);
-	const metaRes = await fetch(TABLE_URL, { signal });
+	const metaRes = await fetch(TABLE_URL, { signal: AbortSignal.timeout(6000) });
 	if (!metaRes.ok) return null;
 	const meta = (await metaRes.json()) as { variables: { code: string; values: string[] }[] };
 	const quarters = meta.variables.find((v) => v.code === 'timeperiod_q')?.values ?? [];
@@ -69,7 +68,7 @@ async function fetchUncached(postalCode: string): Promise<AreaHistory | null> {
 		method: 'POST',
 		headers: { 'content-type': 'application/json' },
 		body: JSON.stringify(query),
-		signal
+		signal: AbortSignal.timeout(6000)
 	});
 	if (!res.ok) return null;
 	const d = (await res.json()) as {
