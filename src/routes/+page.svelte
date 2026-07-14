@@ -31,7 +31,7 @@
 	<HeroAnalyzer {data} {form} />
 	<aside class="hero-grid__map" aria-label={copy.landing.priceMap.title}>
 		<figure class="mapfig">
-			<PriceMap height="26rem" zoom={3.4} center={[26, 64.6]} showLegend={false} onareaclick={(pc) => goto(`/?pc=${pc}`)} />
+			<PriceMap height="26rem" zoom={4.6} center={[25.2, 61.4]} showLegend={false} onareaclick={(pc) => goto(`/?pc=${pc}`)} />
 			<figcaption class="mapfig__cap">
 				<span class="mapfig__source">{copy.landing.priceMap.source}</span>
 				<span class="mapfig__hint">{copy.landing.priceMap.hint}</span>

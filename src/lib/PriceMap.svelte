@@ -20,10 +20,12 @@
 	let pinned: { pc: string; nimi: string; eur: number | null; n: number } | null = $state(null);
 	let clearPin: () => void = () => (pinned = null);
 
-	// Single-hue ink ramp (publication palette), white→black = cheap→expensive.
-	// Lightness-monotonic and CVD-safe (single hue — discrimination is lightness only).
-	// Endpoints match the editorial palette: paper (#ffffff) to ink (#0a0a0a).
-	const RAMP = ['#ffffff', '#dad6cb', '#b1ab99', '#857c66', '#534a39', '#0a0a0a'];
+	// Classic choropleth ramp: ColorBrewer 6-class YlOrRd, pale yellow →
+	// deep red = cheap → expensive. Sequential, lightness-monotonic and
+	// colorblind-safe per ColorBrewer — owner decision 2026-07-14 replacing
+	// the paper/ink ramp, which read as scary/hard to read on the dark
+	// basemap. Reads instantly as "heat = price" on the light basemap.
+	const RAMP = ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#f03b20', '#bd0026'];
 	const BREAKS = [800, 1450, 2200, 3400, 5700];
 	const fmt = new Intl.NumberFormat('fi-FI');
 
@@ -33,7 +35,9 @@
 			const maplibregl = (await import('maplibre-gl')).default;
 			map = new maplibregl.Map({
 				container,
-				style: 'https://tiles.openfreemap.org/styles/dark',
+				// Light "classic map" basemap (place names, roads, water) so the
+				// choropleth sits on familiar geography instead of a dark void.
+				style: 'https://tiles.openfreemap.org/styles/positron',
 				center,
 				zoom,
 				attributionControl: { compact: true }
@@ -53,36 +57,29 @@
 							'step', ['get', 'eur'],
 							RAMP[0], BREAKS[0], RAMP[1], BREAKS[1], RAMP[2], BREAKS[2], RAMP[3], BREAKS[3], RAMP[4], BREAKS[4], RAMP[5]
 						],
-						'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.92]
+						// Slightly translucent so basemap labels/roads show through and
+						// the map keeps reading as a real map.
+						'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.95, 0.75]
 					}
 				});
-				// White halo separator — thin line underneath to crisp up every polygon edge.
-				// Bright on dark basemap so even the darkest (most expensive) cells have a
-				// visible border per the user instruction: 'most expensive spots according
-				// to the colour theme' stays ink, but every cell gets a bright outline.
-				map.addLayer({
-					id: 'price-halo',
-					type: 'line',
-					source: 'prices',
-					filter: ['!=', ['get', 'eur'], null],
-					paint: { 'line-color': '#ffffff', 'line-opacity': 0.5, 'line-width': 0.6 }
-				});
+				// Soft white borders between cells — the classic atlas look on a
+				// light basemap; enough separation without shouting.
 				map.addLayer({
 					id: 'price-outline',
 					type: 'line',
 					source: 'prices',
 					filter: ['!=', ['get', 'eur'], null],
-					paint: { 'line-color': '#fafaf7', 'line-opacity': 0.85, 'line-width': 1 }
+					paint: { 'line-color': '#ffffff', 'line-opacity': 0.9, 'line-width': 0.8 }
 				});
 				map.addLayer({
 					id: 'price-nodata',
 					type: 'line',
 					source: 'prices',
 					filter: ['==', ['get', 'eur'], null],
-					paint: { 'line-color': '#aaaaaa', 'line-opacity': 0.55, 'line-width': 0.8, 'line-dasharray': [2, 2] }
+					paint: { 'line-color': '#9a9a9a', 'line-opacity': 0.5, 'line-width': 0.7, 'line-dasharray': [2, 2] }
 				});
 				if (marker) {
-					new maplibregl.Marker({ color: '#fafaf7' }).setLngLat(marker).addTo(map);
+					new maplibregl.Marker({ color: '#0a0a0a' }).setLngLat(marker).addTo(map);
 				}
 
 				let hoveredId: string | null = null;
@@ -289,7 +286,7 @@
 	}
 	.swatch {
 		height: 0.7rem;
-		border: 1px solid #0a0a0a;
+		border: 1px solid var(--border);
 	}
 	.lab {
 		grid-row: 3;

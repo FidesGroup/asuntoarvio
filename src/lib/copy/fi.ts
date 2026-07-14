@@ -83,7 +83,7 @@ export const copy = {
 			eyebrow: 'Datasta',
 			title: 'Postinumeroalueiden neliöhinnat',
 			source: 'Lähde: Tilastokeskus 13mt · 4 viimeistä neljännestä',
-			hint: 'Tummempi alue = korkeampi neliöhinta. Klikkaa aluetta esitäyttääksesi vertailun.',
+			hint: 'Keltainen = edullinen, punainen = kallis neliöhinta. Klikkaa aluetta esitäyttääksesi vertailun.',
 			openFull: 'Avaa koko hintakartta →'
 		},
 
