@@ -50,8 +50,13 @@
 
 	.attr {
 		margin: var(--space-3) 0 0;
+		padding-top: 0.7rem;
+		border-top: 1px solid var(--border);
 		color: var(--ink-3);
-		font-size: var(--text-sm);
+		font-size: var(--text-xs);
+		font-weight: 500;
+		letter-spacing: var(--ls-wide);
+		text-transform: uppercase;
 		max-width: var(--container-prose);
 	}
 </style>
