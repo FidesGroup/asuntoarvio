@@ -23,11 +23,11 @@
 			<p class="tier__price"><b>0 €</b><span class="tier__period">— aina ilmainen</span></p>
 		</header>
 		<ul class="tier__features">
-			<li class="ok">Kohdeanalyysi ja hintakartta</li>
+			<li class="ok">Ilmoituksen tarkistus ja hintakartta</li>
 			<li class="ok">Jaettava vertailuraportti</li>
 			<li class="ok">Koko maan hintakartta</li>
 			<li class="ok">Kuntoarvio (suuntaa-antava)</li>
-			<li class="no">Asuntocard</li>
+			<li class="no">{copy.landing.result.asuntocardTitle.split(':')[0]}</li>
 			<li class="no">Taloyhtiön muut myynnit</li>
 		</ul>
 		<Button href="/" variant="ghost" block>{copy.tilaa.cta.startFree}</Button>
@@ -36,7 +36,7 @@
 	<article class="tier tier--featured">
 		<Chip size="sm" tone="brand" >{copy.tilaa.badge}</Chip>
 		<header class="tier__head">
-			<h3 class="tier__title">Asuntocard</h3>
+			<h3 class="tier__title">{copy.landing.result.asuntocardTitle.split(':')[0]}</h3>
 			<p class="tier__price"><b>19 €</b><span class="tier__period">{copy.tilaa.billedOnce}</span></p>
 		</header>
 		<ul class="tier__features">
@@ -70,8 +70,8 @@
 			<p class="tier__price"><b>7 €</b><span class="tier__period">{copy.tilaa.billedMonth} · tai <b>69 €</b>{copy.tilaa.billedYear}</span></p>
 		</header>
 		<ul class="tier__features">
-			<li class="ok">Kaikki Asuntocard-ominaisuudet</li>
-			<li class="ok">Rajattomat asuntocardit</li>
+			<li class="ok">Kaikki Taloyhtiöraportin ominaisuudet</li>
+			<li class="ok">Rajattomat Taloyhtiöraportit</li>
 			<li class="ok">Hälytykset uusista ilmoituksista</li>
 			<li class="ok">Seurantalista ja vertailutyökalu</li>
 			<li class="ok">API & MCP-integraatio (beta)</li>

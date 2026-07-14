@@ -9,10 +9,12 @@ import {
 	allowedListingUrl, deriveInsights, htmlToText, parseListingText, parseListingHtml,
 	type ExtractedListing
 } from '$lib/server/listing-parse';
+import { parseDocsText, deriveDocInsights } from '$lib/server/doc-parse';
 import { resolveValuation } from '$lib/server/valuation';
 import { buildReview } from '$lib/server/review';
 import { estimateRent } from '$lib/server/rents';
 import type { ListingFacts } from '$lib/server/benchmark';
+import { copy } from '$lib/copy/fi';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ url }) => {
@@ -194,12 +196,12 @@ export const actions: Actions = {
 		const sub = token ? await getSubscriberByToken(token) : null;
 		if (!sub || sub.status !== 'active') {
 			return fail(402, {
-				reportError:
-					'Asuntocardit kuuluvat RehtiArvio-tilaukseen. Tilaa /tilaa-sivulta, tai jos olet jo tilannut, avaa /tili samalla selaimella.'
+				reportError: copy.errors.reportNeedSub
 			});
 		}
 
-		const raw = String((await request.formData()).get('payload') ?? '');
+		const fd = await request.formData();
+		const raw = String(fd.get('payload') ?? '');
 		if (!raw || raw.length > 24_000) return fail(400, { reportError: 'Virheellinen pyyntö.' });
 		let payload: Record<string, unknown>;
 		try {
@@ -212,8 +214,25 @@ export const actions: Actions = {
 			(!payload.company && !payload.address)
 		) {
 			return fail(400, {
-				reportError:
-					'Asuntocard tarvitsee taloyhtiön nimen tai osoitteen. Analysoi ilmoitus ensin.'
+				reportError: copy.errors.reportNeedTarget
+			});
+		}
+
+		// Optional buyer-pasted documents (isännöitsijäntodistus / tilinpäätös).
+		// Parsed deterministically here and discarded: only the structured
+		// figures land in `facts` (CLAUDE.md rules 3 and 5) — never the text.
+		const docsText = String(fd.get('docs') ?? '').slice(0, 300_000).trim();
+		if (docsText) {
+			const docs = parseDocsText(docsText);
+			if (docs.fieldsFound === 0) {
+				return fail(422, { reportError: copy.errors.docsUnparsed });
+			}
+			const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
+			payload.docs = docs;
+			payload.docInsights = deriveDocInsights(docs, {
+				livingAreaM2: num(payload.livingAreaM2),
+				priceEur: num(payload.priceEur),
+				buildYear: num(payload.buildYear)
 			});
 		}
 

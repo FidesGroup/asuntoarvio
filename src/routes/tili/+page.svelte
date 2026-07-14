@@ -21,7 +21,7 @@
 
 	const lede = $derived(
 		data.state === 'activated' ? `${copy.tili.activatedLede} (${data.email})` :
-		data.state === 'active' ? `${data.email}. Asuntocardit käytettävissä ilmoitusanalyysin tuloksista.` :
+		data.state === 'active' ? `${data.email}. ${copy.tili.activeLede}` :
 		data.state === 'past_due' ? `${copy.tili.pastDueLede} (${data.email})` :
 		data.state === 'canceled' ? copy.tili.canceled :
 		data.state === 'session-failed' ? copy.tili.sessionFailedLede :

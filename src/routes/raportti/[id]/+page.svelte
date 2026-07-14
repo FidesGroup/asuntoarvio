@@ -18,7 +18,7 @@
 </script>
 
 <svelte:head>
-	<title>Asuntocard | RehtiArvio</title>
+	<title>{copy.raportti.pageTitle}</title>
 	<meta name="robots" content="noindex" />
 	{#if inFlight}
 		<meta http-equiv="refresh" content="12" />
