@@ -19,7 +19,7 @@
 	}: {
 		verdict: { deltaPct: number | null; listingEurM2: number; benchmarkEurM2: number | null; confidence: string; flags: string[]; transactions4q?: number; latestQuarter?: string | null };
 		tier: { tier: Tier; confidenceLabel: string; transactionsOrEvidence: number; estLowEurM2?: number; estMidEurM2?: number; estHighEurM2?: number; assumptions?: string[] } | null;
-		facts: { postalCode: string; livingAreaM2: number; roomsType?: string | null; buildYear?: number | null };
+		facts: { postalCode: string; livingAreaM2: number; priceEur: number; roomsType?: string | null; buildYear?: number | null };
 		location?: {
 			eurM2: number;
 			deltaPct: number;
@@ -35,13 +35,36 @@
 		omakotitalo: 'omakotitalo', paritalo: 'paritalo', muu: 'muu kohde'
 	};
 
+	// Euro difference from the existing deltaPct (in percent units) and priceEur.
+	// Guarded against the no-benchmark (T4) and null-delta cases per CLAUDE.md rule 4.
+	const eurDiff = $derived.by(() => {
+		if (verdict.deltaPct === null) return null;
+		if (tier?.tier === 'T4') return null;
+		if (!facts?.priceEur || !Number.isFinite(facts.priceEur)) return null;
+		const fraction = verdict.deltaPct / 100;
+		if (!Number.isFinite(fraction) || fraction <= -1) return null;
+		const raw = facts.priceEur - facts.priceEur / (1 + fraction);
+		return Math.round(raw / 1000) * 1000;
+	});
+
+	const eurHeadline = $derived.by(() => {
+		if (eurDiff === null) return null;
+		const abs = fmt.format(Math.abs(eurDiff));
+		if (eurDiff === 0) return `Pyyntihinta on linjassa alueen toteutuneiden kauppojen kanssa.`;
+		return eurDiff > 0
+			? copy.landing.result.verdictEurOver(abs)
+			: copy.landing.result.verdictEurUnder(abs);
+	});
+
 	const verdictSentence = $derived.by(() => {
+		if (eurHeadline) return '';
 		if (verdict.deltaPct === null) return copy.landing.result.noVerdictReason;
 		if (tier?.tier === 'T4') return copy.landing.result.estimateReason;
 		return verdict.deltaPct >= 0 ? copy.landing.result.verdictOver : copy.landing.result.verdictUnder;
 	});
 
 	const headline = $derived.by(() => {
+		if (eurHeadline) return eurHeadline;
 		if (verdict.deltaPct === null) return copy.landing.result.noVerdict;
 		if (tier?.tier === 'T4') return copy.landing.result.verdictNeutral;
 		return '';
