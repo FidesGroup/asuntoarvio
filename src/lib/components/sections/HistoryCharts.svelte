@@ -14,7 +14,14 @@
 	}
 	let {
 		history
-	}: { history: { years: YearPoint[]; annualChangePct: number | null } } = $props();
+	}: {
+		history: {
+			years: YearPoint[];
+			annualChangePct: number | null;
+			last12moChangePct?: number | null;
+			next12moTrendPct?: number | null;
+		};
+	} = $props();
 
 	const SERIES = [
 		{ key: 'yksiöt', label: 'Yksiöt', color: '#0a0a0a', dash: '' },
@@ -30,6 +37,9 @@
 	const years = $derived(history.years.filter((y) => y.n > 0));
 	const yearMin = $derived(years[0]?.year ?? 0);
 	const yearMax = $derived(years[years.length - 1]?.year ?? 1);
+	const forecastPct = $derived(history.next12moTrendPct ?? null);
+	/** x-domain end: one extra year when a trend projection is drawn */
+	const xEnd = $derived(forecastPct !== null ? yearMax + 1 : yearMax);
 
 	const eurVals = $derived(
 		years.flatMap((y) => SERIES.map((s) => y.eur[s.key]).filter((e): e is number => e !== null))
@@ -38,8 +48,21 @@
 	const eurMax = $derived(Math.max(...eurVals));
 
 	function x(year: number): number {
-		if (yearMax === yearMin) return PAD.left;
-		return PAD.left + ((year - yearMin) / (yearMax - yearMin)) * (W - PAD.left - PAD.right);
+		if (xEnd === yearMin) return PAD.left;
+		return PAD.left + ((year - yearMin) / (xEnd - yearMin)) * (W - PAD.left - PAD.right);
+	}
+
+	/** projected value one year past the last actual point, per series */
+	function projected(key: string): { from: { x: number; y: number }; to: { x: number; y: number } } | null {
+		if (forecastPct === null) return null;
+		const last = [...years].reverse().find((y) => y.eur[key] !== null);
+		if (!last) return null;
+		const eur = last.eur[key] as number;
+		const proj = eur * (1 + forecastPct / 100);
+		return {
+			from: { x: x(last.year), y: yEur(eur) },
+			to: { x: x(yearMax + 1), y: yEur(Math.max(eurMin * 0.95, Math.min(eurMax * 1.02, proj))) }
+		};
 	}
 	function yEur(eur: number): number {
 		const lo = eurMin * 0.95;
@@ -130,6 +153,10 @@
 			{#if hovered}
 				<line x1={x(hovered.year)} x2={x(hovered.year)} y1={PAD.top} y2={H - PAD.bottom} class="crosshair" />
 			{/if}
+			{#if forecastPct !== null}
+				<rect x={x(yearMax)} y={PAD.top} width={x(yearMax + 1) - x(yearMax)} height={H - PAD.top - PAD.bottom} class="fzone" />
+				<text x={(x(yearMax) + x(yearMax + 1)) / 2} y={PAD.top + 12} class="flabel">{copy.arvio.history.forecastSeries}</text>
+			{/if}
 			{#each SERIES as s (s.key)}
 				{#each segments(s.key) as run, i (i)}
 					<path d={path(run)} fill="none" stroke={s.color} stroke-width="2" stroke-dasharray={s.dash} stroke-linecap="round" />
@@ -137,6 +164,10 @@
 						<text x={run[run.length - 1].x + 6} y={run[run.length - 1].y + 3} class="endlabel" fill={s.color}>{s.label}</text>
 					{/if}
 				{/each}
+				{@const proj = projected(s.key)}
+				{#if proj}
+					<path d="M{proj.from.x},{proj.from.y} L{proj.to.x},{proj.to.y}" fill="none" stroke={s.color} stroke-width="1.5" stroke-dasharray="2 5" opacity="0.7" />
+				{/if}
 				{#if hovered && hovered.eur[s.key] !== null}
 					<circle cx={x(hovered.year)} cy={yEur(hovered.eur[s.key] as number)} r="4" fill={s.color} stroke="var(--surface)" stroke-width="2" />
 				{/if}
@@ -152,11 +183,28 @@
 				{/each}
 			</div>
 		{/if}
-		{#if history.annualChangePct !== null}
-			<p class="hist__trend">
-				{copy.arvio.history.trendLabel}:
-				<b class="num">{history.annualChangePct > 0 ? '+' : ''}{String(history.annualChangePct).replace('.', ',')} %</b>
-			</p>
+		<div class="hist__stats">
+			{#if history.annualChangePct !== null}
+				<p class="hist__trend">
+					{copy.arvio.history.trendLabel}:
+					<b class="num">{history.annualChangePct > 0 ? '+' : ''}{String(history.annualChangePct).replace('.', ',')} %</b>
+				</p>
+			{/if}
+			{#if history.last12moChangePct != null}
+				<p class="hist__trend">
+					{copy.arvio.history.last12Label}:
+					<b class="num">{history.last12moChangePct > 0 ? '+' : ''}{String(history.last12moChangePct).replace('.', ',')} %</b>
+				</p>
+			{/if}
+			{#if forecastPct !== null}
+				<p class="hist__trend">
+					{copy.arvio.history.forecastLabel}:
+					<b class="num">{forecastPct > 0 ? '+' : ''}{String(forecastPct).replace('.', ',')} %</b>
+				</p>
+			{/if}
+		</div>
+		{#if forecastPct !== null}
+			<p class="hist__fnote">{copy.arvio.history.forecastNote}</p>
 		{/if}
 
 		<div class="hist__head hist__head--second">
@@ -255,10 +303,36 @@
 		min-height: 1.4em;
 	}
 	.hist__tip b { color: var(--ink); }
+	.hist__stats {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.2rem 1.5rem;
+	}
+
 	.hist__trend {
 		margin: 0.2rem 0 0;
 		font-size: var(--text-sm);
 		color: var(--ink-2);
+	}
+
+	.hist__fnote {
+		margin: 0.15rem 0 0;
+		font-size: var(--text-xs);
+		color: var(--ink-3);
+		line-height: var(--lh-list);
+	}
+
+	.fzone {
+		fill: var(--surface-2);
+		opacity: 0.6;
+	}
+
+	.flabel {
+		text-anchor: middle;
+		font-size: 10px;
+		fill: var(--ink-3);
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
 	}
 	.hist__src {
 		margin: 0.6rem 0 0;

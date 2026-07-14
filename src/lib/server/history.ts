@@ -23,6 +23,14 @@ export interface AreaHistory {
 	years: YearPoint[];
 	/** average annual €/m² change across all room types, % (null if < 3 populated years) */
 	annualChangePct: number | null;
+	/** last 4 populated quarters vs the 4 before, weighted mean €/m², % */
+	last12moChangePct: number | null;
+	/**
+	 * 12-month trend projection, %: linear regression over the last up to
+	 * 20 quarterly weighted means (≈5 years) extended 4 quarters forward.
+	 * Deterministic and disclosed in the UI as a trend, not a promise.
+	 */
+	next12moTrendPct: number | null;
 }
 
 const cache = new Map<string, { at: number; data: AreaHistory | null }>();
@@ -96,11 +104,15 @@ async function fetchUncached(postalCode: string): Promise<AreaHistory | null> {
 	};
 
 	// Quarterly → yearly: transaction-weighted €/m² per room type, summed n.
+	// Also keep the all-type weighted mean per quarter for the 12-month change.
 	const byYear = new Map<number, { sums: Record<string, number>; ns: Record<string, number>; n: number }>();
+	const qMeans: number[] = [];
 	for (const q of quarters) {
 		const year = Number(q.slice(0, 4));
 		if (!byYear.has(year)) byYear.set(year, { sums: {}, ns: {}, n: 0 });
 		const y = byYear.get(year)!;
+		let qSum = 0;
+		let qN = 0;
 		for (const [t, name] of Object.entries(TYPES)) {
 			const eur = get(t, q, 'keskihinta_aritm_nw');
 			const n = get(t, q, 'lkm_julk20');
@@ -108,7 +120,31 @@ async function fetchUncached(postalCode: string): Promise<AreaHistory | null> {
 				y.sums[name] = (y.sums[name] ?? 0) + eur * n;
 				y.ns[name] = (y.ns[name] ?? 0) + n;
 				y.n += n;
+				qSum += eur * n;
+				qN += n;
 			}
+		}
+		if (qN > 0) qMeans.push(qSum / qN);
+	}
+	let last12moChangePct: number | null = null;
+	if (qMeans.length >= 8) {
+		const recent = qMeans.slice(-4).reduce((a, b) => a + b, 0) / 4;
+		const prev = qMeans.slice(-8, -4).reduce((a, b) => a + b, 0) / 4;
+		if (prev > 0) last12moChangePct = Math.round((recent / prev - 1) * 1000) / 10;
+	}
+
+	let next12moTrendPct: number | null = null;
+	{
+		const N = Math.min(qMeans.length, 20);
+		if (N >= 8) {
+			const ys = qMeans.slice(-N);
+			const xm = (N - 1) / 2;
+			const ym = ys.reduce((a, b) => a + b, 0) / N;
+			const denom = ys.reduce((a, _, i) => a + (i - xm) ** 2, 0);
+			const slope = ys.reduce((a, y, i) => a + (i - xm) * (y - ym), 0) / denom;
+			const lastMean = qMeans.slice(-4).reduce((a, b) => a + b, 0) / 4;
+			const nextMean = lastMean + slope * 4;
+			if (lastMean > 0) next12moTrendPct = Math.round((nextMean / lastMean - 1) * 1000) / 10;
 		}
 	}
 	const years: YearPoint[] = [...byYear.entries()]
@@ -146,5 +182,5 @@ async function fetchUncached(postalCode: string): Promise<AreaHistory | null> {
 		}
 	}
 
-	return { postalCode, years, annualChangePct };
+	return { postalCode, years, annualChangePct, last12moChangePct, next12moTrendPct };
 }

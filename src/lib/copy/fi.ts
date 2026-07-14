@@ -148,12 +148,30 @@ export const copy = {
 		},
 		yield: {
 			title: 'Vuokratuotto',
+			rentRow: 'Vuokra-arvio',
 			gross: 'Bruttotuotto',
 			net: 'Nettotuotto',
 			monthlyNet: 'Nettokassavirta / kk',
 			reserve: 'Remonttivaraus / v',
 			note: 'Sisältää varainsiirtoveron 1,5 % (vero.fi 2026). Remonttivaraus on oletusarvo.',
 			rentIsEstimate: (q?: string | null) => `Vuokra on alueen tilastollinen arvio${q ? ` (${q})` : ''}.`
+		},
+		quarterRange: 'Neljännesvaihtelu',
+		location: {
+			title: 'Sijainti',
+			hint: 'Postinumeroalue hintakartalla. Väri = alueen toteutunut neliöhinta.'
+		},
+		ownRent: {
+			title: 'Omistus vs. vuokraus',
+			unit: '€/kk',
+			rent: 'Vuokra',
+			rentEstimateSuffix: '(tilastollinen arvio)',
+			own: 'Omistus',
+			interest: 'Korkokulu',
+			vastike: 'Hoitovastike',
+			reserve: 'Remonttivaraus',
+			vastikeUnknown: 'Hoitovastiketta ei annettu — omistuksen kulut ovat todellisuudessa suuremmat.',
+			note: 'Korko-oletus 3,5 % velattomasta hinnasta puhtaana kuluna. Ei sisällä lyhennystä eikä arvonmuutosta: lyhennys kasvattaa varallisuutta, arvonmuutos on riski molempiin suuntiin.'
 		},
 		notes: {
 			title: 'Huomioitavaa arviossa',
@@ -169,6 +187,11 @@ export const copy = {
 			volumeTitle: 'Alueen myyntimäärien kehitys',
 			volumeUnit: 'julkaistut kaupat / vuosi',
 			trendLabel: 'Keskimääräinen vuosimuutos',
+			last12Label: 'Edellisen 12 kk hintakehitys',
+			forecastLabel: 'Seuraavan 12 kk trendiennuste',
+			forecastSeries: 'Ennuste',
+			forecastNote:
+				'Trendiennuste on lineaarinen jatke alueen toteutuneista hinnoista (enintään 5 v) — suuntaa antava, ei takuu tulevasta.',
 			source: 'Lähde: Tilastokeskus 13mt',
 			partialNote: 'Viimeisin vuosi voi olla vajaa.'
 		},

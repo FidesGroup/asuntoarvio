@@ -10,10 +10,13 @@
 	import ConfidenceChip from '$lib/components/ui/ConfidenceChip.svelte';
 	import FactorList from '$lib/components/sections/FactorList.svelte';
 	import HistoryCharts from '$lib/components/sections/HistoryCharts.svelte';
+	import OwnVsRent from '$lib/components/sections/OwnVsRent.svelte';
+	import PriceMap from '$lib/PriceMap.svelte';
 	import { copy } from '$lib/copy/fi';
 
 	let { data } = $props();
-	const { facts, verdict, yield: yieldResult, rentEstimate, notes } = $derived(data);
+	const { facts, verdict, yield: yieldResult, rentEstimate, notes, quarterRange, centroid, ownVsRent } =
+		$derived(data);
 
 	const fmt = new Intl.NumberFormat('fi-FI');
 	const overUnder = $derived(verdict.deltaPct === null ? 'none' : verdict.deltaPct >= 0 ? 'over' : 'under');
@@ -124,6 +127,14 @@
 				{#if verdict.latestQuarter}<span class="metric__sub">· viim. {verdict.latestQuarter}</span>{/if}
 			</span>
 		</div>
+		{#if quarterRange}
+			<div class="metric metric--alt">
+				<span class="metric__lbl">{copy.arvio.quarterRange}</span>
+				<span class="metric__val num metric__val--range">
+					{fmt.format(quarterRange.min)}–{fmt.format(quarterRange.max)}<span class="metric__unit">€/m²</span>
+				</span>
+			</div>
+		{/if}
 	</div>
 
 	<div class="share-row">
@@ -168,6 +179,22 @@
 		</ol>
 	</Card>
 
+	{#if centroid}
+		<Card padded={false}>
+			<div class="loc">
+				<h2 class="loc__h">{copy.arvio.location.title}</h2>
+				<PriceMap
+					height="280px"
+					zoom={9.6}
+					center={[centroid[0], centroid[1]]}
+					marker={[centroid[0], centroid[1]]}
+					showLegend={false}
+				/>
+				<p class="loc__hint">{copy.arvio.location.hint}</p>
+			</div>
+		</Card>
+	{/if}
+
 	{#await data.lazy.history then history}
 		{#if history}
 			<Card>
@@ -179,6 +206,15 @@
 	{#if yieldResult}
 		<Card>
 			{#snippet header()}<h2 class="card__h">{copy.arvio.yield.title}</h2>{/snippet}
+			{#if ownVsRent}
+				<p class="rentrow num">
+					{copy.arvio.yield.rentRow}: <b>{fmt.format(ownVsRent.rentEur)} €/kk</b>
+					({String(ownVsRent.rentPerM2).replace('.', ',')} €/m²)
+					{#if ownVsRent.vastikeEur > 0}
+						· {copy.arvio.ownRent.vastike}: <b>−{fmt.format(ownVsRent.vastikeEur)} €/kk</b>
+					{/if}
+				</p>
+			{/if}
 			<div class="yield-grid">
 				<div class="metric">
 					<span class="metric__lbl">{copy.arvio.yield.gross}</span>
@@ -206,6 +242,13 @@
 					{#each yieldResult.flags as f (f)}<li>{f}</li>{/each}
 				</ul>
 			{/if}
+		</Card>
+	{/if}
+
+	{#if ownVsRent}
+		<Card>
+			{#snippet header()}<h2 class="card__h">{copy.arvio.ownRent.title} <span class="card__unit">{copy.arvio.ownRent.unit}</span></h2>{/snippet}
+			<OwnVsRent data={ownVsRent} />
 		</Card>
 	{/if}
 
@@ -251,7 +294,7 @@
 
 	.metrics {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
 		gap: 0.85rem;
 	}
 
@@ -365,6 +408,49 @@
 
 	.back-row {
 		margin-top: var(--space-3);
+	}
+
+	.metric__val--range {
+		font-size: var(--text-lg);
+	}
+
+	.card__unit {
+		font-size: var(--text-xs);
+		font-weight: 500;
+		color: var(--ink-3);
+		letter-spacing: var(--ls-wide);
+		text-transform: uppercase;
+		margin-left: 0.4rem;
+	}
+
+	.rentrow {
+		margin: 0 0 1rem;
+		font-size: var(--text-sm);
+		color: var(--ink-2);
+	}
+
+	.rentrow b {
+		color: var(--ink);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.loc {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.loc__h {
+		font-size: var(--text-lg);
+		font-weight: 600;
+		margin: 0;
+		padding: 1.1rem 1.25rem 0.8rem;
+	}
+
+	.loc__hint {
+		margin: 0;
+		padding: 0.7rem 1.25rem 1rem;
+		font-size: var(--text-xs);
+		color: var(--ink-3);
 	}
 
 	.notes {

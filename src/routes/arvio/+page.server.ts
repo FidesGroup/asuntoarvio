@@ -1,9 +1,11 @@
 import { error } from '@sveltejs/kit';
 import {
 	evaluate,
+	lookupCell,
 	parseFacts,
 	type ApartmentFacts
 } from '$lib/server/benchmark';
+import centroids from '$lib/server/centroids.json';
 import {
 	computeYield,
 	type RentSource,
@@ -17,6 +19,13 @@ import type { PageServerLoad } from './$types';
 
 /** vero.fi, varainsiirtovero (asunto-osakkeet) 1.5%, page updated 2026-01-01. */
 const TRANSFER_TAX_RATE = 0.015;
+
+/**
+ * Interest assumption for the own-vs-rent comparison: annual rate applied
+ * to the full debt-free price, treated as pure cost (no amortization, no
+ * appreciation — both move wealth, not monthly cost). Stated in the UI.
+ */
+const OWN_VS_RENT_INTEREST = 0.035;
 
 /** Typical plumbing-renovation age band for Finnish apartment buildings. */
 function pipeRenovationPhase(buildYear: number | null): 'near' | 'in' | null {
@@ -46,11 +55,37 @@ export const load: PageServerLoad = async ({ url }) => {
 		delta_pct: verdict.deltaPct,
 		confidence: verdict.confidence
 	});
+	// Quarter-to-quarter dispersion of the benchmark cell (real published
+	// means, not a modeled deviation).
+	const cell = lookupCell(facts.postalCode, facts.roomsType);
+	const cellEurs = (cell?.series ?? [])
+		.map((s) => s.eur_m2)
+		.filter((e): e is number => e !== null);
+	const quarterRange =
+		cellEurs.length >= 2 ? { min: Math.min(...cellEurs), max: Math.max(...cellEurs) } : null;
+
+	const centroid =
+		(centroids as Record<string, { c: number[] }>)[facts.postalCode]?.c ?? null;
+
+	const ownVsRent = yieldInput
+		? {
+				rentEur: yieldInput.rent.monthlyRentEur,
+				rentPerM2: Math.round((yieldInput.rent.monthlyRentEur / facts.livingAreaM2) * 10) / 10,
+				rentIsEstimate: yieldInput.source === 'estimate',
+				interestEur: Math.round((facts.priceEur * OWN_VS_RENT_INTEREST) / 12),
+				vastikeEur: Math.round(yieldInput.rent.monthlyVastikeEur),
+				reserveEur: yieldResult ? Math.round(yieldResult.reserveEurYr / 12) : 0
+			}
+		: null;
+
 	return {
 		facts,
 		verdict,
 		yield: yieldResult,
 		rentEstimate,
+		quarterRange,
+		centroid,
+		ownVsRent,
 		notes: {
 			transferTaxEur: Math.round(facts.priceEur * TRANSFER_TAX_RATE),
 			pipeReno: pipeRenovationPhase(facts.buildYear ?? null)
