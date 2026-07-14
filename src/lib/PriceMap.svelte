@@ -28,7 +28,7 @@
 			const maplibregl = (await import('maplibre-gl')).default;
 			map = new maplibregl.Map({
 				container,
-				style: 'https://tiles.openfreemap.org/styles/positron',
+				style: 'https://tiles.openfreemap.org/styles/dark',
 				center,
 				zoom,
 				attributionControl: { compact: true }
@@ -52,29 +52,32 @@
 					}
 				});
 				// White halo separator — thin line underneath to crisp up every polygon edge.
+				// Bright on dark basemap so even the darkest (most expensive) cells have a
+				// visible border per the user instruction: 'most expensive spots according
+				// to the colour theme' stays ink, but every cell gets a bright outline.
 				map.addLayer({
 					id: 'price-halo',
 					type: 'line',
 					source: 'prices',
 					filter: ['!=', ['get', 'eur'], null],
-					paint: { 'line-color': '#ffffff', 'line-opacity': 0.9, 'line-width': 0.6 }
+					paint: { 'line-color': '#ffffff', 'line-opacity': 0.5, 'line-width': 0.6 }
 				});
 				map.addLayer({
 					id: 'price-outline',
 					type: 'line',
 					source: 'prices',
 					filter: ['!=', ['get', 'eur'], null],
-					paint: { 'line-color': '#0a0a0a', 'line-opacity': 0.85, 'line-width': 1 }
+					paint: { 'line-color': '#fafaf7', 'line-opacity': 0.85, 'line-width': 1 }
 				});
 				map.addLayer({
 					id: 'price-nodata',
 					type: 'line',
 					source: 'prices',
 					filter: ['==', ['get', 'eur'], null],
-					paint: { 'line-color': '#666666', 'line-opacity': 0.6, 'line-width': 0.8, 'line-dasharray': [2, 2] }
+					paint: { 'line-color': '#aaaaaa', 'line-opacity': 0.55, 'line-width': 0.8, 'line-dasharray': [2, 2] }
 				});
 				if (marker) {
-					new maplibregl.Marker({ color: '#0a0a0a' }).setLngLat(marker).addTo(map);
+					new maplibregl.Marker({ color: '#fafaf7' }).setLngLat(marker).addTo(map);
 				}
 
 				let hoveredId: string | null = null;
