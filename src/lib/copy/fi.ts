@@ -19,10 +19,7 @@ export const copy = {
 	landing: {
 		eyebrow: 'Ilmainen analyysi',
 		h1: 'Onko asunnon hinta kohdallaan?',
-		lede: 'Liitä ilmoitus, niin saat vertailun alueen toteutuneisiin kauppoihin.',
-		pillCoverage: (n: number) => `${n.toLocaleString('fi-FI')} postinumeroa`,
-		pillQuarters: '4 viimeistä neljännestä',
-		pillNoAds: 'Ei mainoksia',
+		lede: 'Liitä myynti-ilmoitus, niin saat vertailun Tilastokeskuksen toteutuneisiin kauppoihin postinumeroalueittain.',
 
 		tabs: {
 			url: 'Liitä linkki',
@@ -40,6 +37,8 @@ export const copy = {
 		beginnerToggleOff: 'Aloittelijalle: piilota lisäkentät',
 		debtfreeHelper: 'Velaton hinta = myyntihinta + yhtiölainaosuus. Ilmoituksissa on yleensä molemmat.',
 		demoLinkCta: 'Katso esimerkkiarvio',
+		manualLink: 'tai syötä tiedot käsin',
+		manualLinkClose: 'piilota käsin syöttö',
 		independence:
 			'Emme ole välittäjä emmekä hyödy kaupasta. Vertailu perustuu Tilastokeskuksen toteutuneisiin kauppahintoihin.',
 		privacyNote: 'Emme tallenna ilmoituksia emmekä osoitteita.',
@@ -65,77 +64,34 @@ export const copy = {
 				T3: (n: number) => `Perustuu ${n} kauppaan laajemmalta alueelta, joten vertailu on karkeampi`,
 				T4: 'Ei riittävästi vertailukauppoja, joten arvio perustuu kohteen kuntoon'
 			},
-			locationTitle: 'Lähialueen toteutuneet kaupat',
-			locationBeta: 'beta',
-			locationIntro: (eurM2: string) =>
-				`Osoitteen ympäristön kaupoilla painotettu vertailuarvo on ${eurM2} €/m².`,
-			estimateBand: {
-				title: 'Kuntoon perustuva hinta-arvio',
-				beta: 'suuntaa antava',
-				low: 'alaraja',
-				mid: 'paras arvio',
-				high: 'yläraja',
-				note: 'Perustuu kohteen kuntoon ja alueen karkeaan hintatasoon, ei toteutuneisiin kauppoihin.',
-				assumptionsLabel: 'Oletukset'
-			},
-			factorsTitle: 'Miten luku muodostui?',
-			factorsToggle: 'Avaa selitykset',
-			factorsClose: 'Sulje selitykset',
-			flagsTitle: 'Tulkinnan varaukset',
+			statListing: 'Kohteen neliöhinta',
+			statBenchmark: 'Alueen kaupat',
+			statConfidence: 'Luotettavuus',
 			asuntocardTitle: 'Taloyhtiöraportti: syväkatsaus taloyhtiöön',
-			asuntocardBeta: 'beta',
-			asuntocardLede:
-				'Kokoaa remonttihistorian, taloyhtiön muut myynnit ja tonttitiedot julkisista lähteistä. Raportti valmistuu muutamassa minuutissa.',
 			asuntocardCta: 'Tilaa Taloyhtiöraportti',
-			asuntocardNoSub: 'Ei vielä tilausta?',
-			asuntocardDocsLabel: 'Isännöitsijäntodistus ja tilinpäätös',
-			asuntocardDocsHelper:
-				'Liitä asiakirjojen teksti (avaa PDF → Ctrl+A → kopioi). Poimimme talousluvut ja korjaukset koneellisesti. Itse tekstiä ei tallenneta, vain luvut.',
-			asuntocardDocsPlaceholder:
-				'Liitä tähän isännöitsijäntodistuksen ja/tai tilinpäätöksen teksti…'
+			asuntocardNoSub: 'Ei vielä tilausta?'
 		},
 
-		trust: {
-			line: 'Toteutuneet hinnat · Tilastokeskus · 0 € · ei mainoksia',
-			stat1Label: 'Postinumeroaluetta katettu',
-			stat2Label: 'Toteutuneet kaupat, kauppamäärillä painotettu',
-			stat3Label: 'Tallennettuja osoitteita tai ilmoituksia'
+		priceMap: {
+			eyebrow: 'Datasta',
+			title: 'Postinumeroalueiden neliöhinnat',
+			source: 'Lähde: Tilastokeskus 13mt · 4 viimeistä neljännestä',
+			hint: 'Vie hiiri postinumeron päälle nähdäksesi tarkan hinnan.'
 		},
 
 		features: {
-			eyebrow: 'Ominaisuudet',
-			h2: 'Työkalu, joka katsoo toteutuneisiin kauppoihin.',
-			mapTitle: 'Koko maan hintakartta',
-			mapBody: 'Hangosta Nuorgamiin. Klikkaus esitäyttää vertailun.',
-			analyzeTitle: 'Ilmoituksen tarkistus',
-			analyzeBody: 'Liitä URL, niin järjestelmä poimii hinnan, vastikkeet ja remontit.',
-			yieldTitle: 'Remontit ja vastikkeet',
-			yieldBody:
-				'Näet, mitä ilmoitus kertoo remonteista ja kuluista, ja mitä se jättää kertomatta.'
-		},
-
-		cases: {
-			eyebrow: 'Esimerkkejä',
-			h2: 'Mitä arvio kertoi ostajalle.',
-			outcomes: {
-				over: 'yli alueen',
-				under: 'alle alueen',
-				estimate: 'suuntaa antava',
-				estimateArea: 'aluevertailu'
-			}
-		},
-
-		sticky: {
-			lead: 'Liitä uusi ilmoitus',
-			close: 'Sulje',
-			cta: 'Analysoi'
+			eyebrow: 'Mitä saat',
+			items: [
+				'1 724 postinumeroaluetta · Tilastokeskus 13mt',
+				'Vertaa 4 viimeisintä neljännestä',
+				'Lähde: Tilastokeskus · emme ole välittäjä'
+			]
 		},
 
 		waitlist: {
-			h2: 'Tulossa: Taloyhtiöraportti',
-			body:
-				'Taloyhtiöraportti yhdistää taloyhtiön talousluvut ja markkinahintavertailun. Jätä sähköposti, saat kutsun ensimmäisten joukossa.',
-			emailPlaceholder: 'nimi@esimerkki.fi',
+			eyebrow: 'Tulossa',
+			title: 'Taloyhtiöraportti',
+			placeholder: 'nimi@esimerkki.fi',
 			cta: 'Liity jonotuslistalle',
 			success: 'Kiitos! Sähköpostisi on kirjattu.',
 			errorGeneric: 'Tallennus epäonnistui. Yritä hetken kuluttua.',
