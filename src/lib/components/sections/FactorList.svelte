@@ -77,6 +77,8 @@
 				</div>
 			</div>
 		{/if}
+
+		<p class="card__source">Lähde: Tilastokeskus 13mt ja isännöitsijäntodistuksen tiedot</p>
 	</Card>
 {/if}
 
@@ -171,6 +173,17 @@
 
 	@media (max-width: 720px) {
 		.factors { grid-template-columns: 1fr; }
+	}
+
+	.card__source {
+		margin: 1rem 0 0;
+		padding-top: 0.7rem;
+		border-top: 1px solid var(--border);
+		font-size: var(--text-xs);
+		font-weight: 500;
+		color: var(--ink-3);
+		letter-spacing: var(--ls-wide);
+		text-transform: uppercase;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
