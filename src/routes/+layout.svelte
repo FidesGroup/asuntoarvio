@@ -1,11 +1,15 @@
 <script lang="ts">
 	import '../app.css';
+	import { page } from '$app/state';
 	import Header from '$lib/components/chrome/Header.svelte';
 	import Footer from '$lib/components/chrome/Footer.svelte';
 	import Toaster from '$lib/components/ui/Toaster.svelte';
 	import { copy } from '$lib/copy/fi';
 
 	let { children } = $props();
+
+	// Map surfaces get the full wide shell; everything else reads at app width.
+	const wide = $derived(page.route.id === '/kartta');
 </script>
 
 <svelte:head>
@@ -16,7 +20,7 @@
 
 <div class="shell">
 	<Header />
-	<main id="main" class="main">
+	<main id="main" class="main" class:main--wide={wide}>
 		{@render children()}
 	</main>
 	<Footer />
@@ -38,6 +42,12 @@
 	.main {
 		flex: 1;
 		padding-top: var(--space-7);
+		max-width: var(--container-app);
+		width: 100%;
+	}
+
+	.main--wide {
+		max-width: none;
 	}
 
 	@media (max-width: 720px) {

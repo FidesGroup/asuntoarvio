@@ -33,20 +33,28 @@
 	<title>Tili | RehtiArvio</title>
 </svelte:head>
 
-<PageHero eyebrow="Tili" h1={heading} lede={lede} compact />
+<div class="page">
+	<PageHero eyebrow="Tili" h1={heading} lede={lede} compact />
 
-<Card>
-	{#if isActiveState}
-		<Button href="/">{copy.tili.ctaAnalyze}</Button>
-	{:else if isTerminal}
-		<Button href="/tilaa">{copy.tili.ctaResubscribe}</Button>
-	{:else if isProblem}
-		<Button href="/tilaa">{copy.tili.ctaResubscribe}</Button>
-	{:else}
-		<p class="muted">Päivitä maksutapa saamasi sähköpostilinkin kautta.</p>
-	{/if}
-</Card>
+	<Card>
+		{#if isActiveState}
+			<Button href="/">{copy.tili.ctaAnalyze}</Button>
+		{:else if isTerminal}
+			<Button href="/tilaa">{copy.tili.ctaResubscribe}</Button>
+		{:else if isProblem}
+			<Button href="/tilaa">{copy.tili.ctaResubscribe}</Button>
+		{:else}
+			<p class="muted">Päivitä maksutapa saamasi sähköpostilinkin kautta.</p>
+		{/if}
+	</Card>
+</div>
 
 <style>
+	.page {
+		max-width: var(--container-prose);
+		display: flex;
+		flex-direction: column;
+	}
+
 	.muted { color: var(--ink-3); margin: 0; font-size: var(--text-sm); }
 </style>

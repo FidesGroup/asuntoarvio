@@ -11,6 +11,15 @@
 	<meta name="description" content="Miten RehtiArvio toimii, mistä hinnat tulevat ja mitä työkalu ei tee." />
 </svelte:head>
 
-<PageHero h1={copy.miksi.h1} lede={copy.miksi.lede} />
+<div class="page">
+	<PageHero h1={copy.miksi.h1} lede={copy.miksi.lede} />
+	<MethodBlock cover={data.count} />
+</div>
 
-<MethodBlock cover={data.count} />
+<style>
+	.page {
+		max-width: var(--container-prose);
+		display: flex;
+		flex-direction: column;
+	}
+</style>

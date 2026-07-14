@@ -92,7 +92,12 @@
 	--space-12: 5rem;
 	--space-16: 7rem;
 
-	/* Containers. */
+	/* Containers. Policy: prose = text-heavy pages, app = data surfaces
+	   (the <main> default in +layout.svelte), wide = map + chrome only.
+	   Canonical breakpoints (media queries can't read custom properties,
+	   so this is convention): 480px = everything single-column,
+	   720px = chrome/burger + 2-col collapse, 900px = multi-column page
+	   grids engage. Tap-target sizing uses @media (pointer: coarse). */
 	--container-prose: 38rem;
 	--container-app:   62rem;
 	--container-wide:  76rem;

@@ -156,7 +156,7 @@
 
 	.tiers {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
 		gap: 0.85rem;
 		margin: 0;
 	}
@@ -187,7 +187,4 @@
 		line-height: var(--lh-body);
 	}
 
-	@media (max-width: 720px) {
-		.tiers { grid-template-columns: 1fr; }
-	}
 </style>
