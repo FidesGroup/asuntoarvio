@@ -14,7 +14,11 @@
 		n: number;
 		nimi: string;
 	}
-	let { centroids, size = 320 }: { centroids: Record<string, Centroid>; size?: number } = $props();
+	let {
+		centroids,
+		size = 320,
+		compact = false
+	}: { centroids: Record<string, Centroid>; size?: number; compact?: boolean } = $props();
 
 	const LON_MIN = 19.59;
 	const LON_MAX = 31.33;
@@ -28,7 +32,8 @@
 		const [lon, lat] = c.c;
 		const x = ((lon - LON_MIN) / (LON_MAX - LON_MIN)) * W;
 		const y = H - ((lat - LAT_MIN) / (LAT_MAX - LAT_MIN)) * H;
-		return { pc, nimi: c.nimi, eur: c.eur, x, y, r: c.n > 0 ? 2.7 : 1.7 };
+		const r = compact ? (c.n > 0 ? 2.0 : 1.3) : c.n > 0 ? 2.7 : 1.7;
+		return { pc, nimi: c.nimi, eur: c.eur, x, y, r };
 	}));
 
 	const eurs = $derived(points.map((p) => p.eur).filter((e): e is number => e !== null && e > 0));
@@ -66,7 +71,7 @@
 	let hovered = $state<Point | null>(null);
 </script>
 
-<div class="mmap" style="--mmap-size: {size}px">
+<div class="mmap" class:mmap--compact={compact} style="--mmap-size: {size}px">
 	<svg
 		viewBox="0 0 {W} {H}"
 		role="img"
@@ -80,7 +85,7 @@
 				r={hovered?.pc === p.pc ? p.r * 1.8 : p.r}
 				fill={fillFor(p.eur)}
 				stroke="#fafaf7"
-				stroke-width="0.5"
+				stroke-width={compact ? '0.4' : '0.5'}
 				stroke-opacity={p.eur !== null && p.eur > 0 ? 0.65 : 0.35}
 				opacity={p.eur !== null && p.eur > 0 ? 0.98 : 0.7}
 				onmouseenter={() => (hovered = p)}
@@ -90,28 +95,30 @@
 		{/each}
 		</g>
 	</svg>
-	<div class="mmap__legend">
-		<span class="mmap__legend-chip" style="background: var(--surface)"></span>
-		<span class="mmap__legend-label">
-			{Intl.NumberFormat('fi-FI').format(eurMin)} €
-		</span>
-		<span class="mmap__legend-bar"></span>
-		<span class="mmap__legend-label">
-			{Intl.NumberFormat('fi-FI').format(eurMax)} €
-		</span>
-		<span class="mmap__legend-label mmap__legend-sub">/ m²</span>
-	</div>
-	{#if hovered && hovered.eur !== null && hovered.eur > 0}
-		<div class="mmap__tip" role="tooltip">
-			<b>{hovered.nimi || hovered.pc}</b>
-			<span class="muted">{hovered.pc}</span>
-			<span>{Intl.NumberFormat('fi-FI').format(hovered.eur)} €/m²</span>
+	{#if !compact}
+		<div class="mmap__legend">
+			<span class="mmap__legend-chip" style="background: var(--surface)"></span>
+			<span class="mmap__legend-label">
+				{Intl.NumberFormat('fi-FI').format(eurMin)} €
+			</span>
+			<span class="mmap__legend-bar"></span>
+			<span class="mmap__legend-label">
+				{Intl.NumberFormat('fi-FI').format(eurMax)} €
+			</span>
+			<span class="mmap__legend-label mmap__legend-sub">/ m²</span>
 		</div>
-	{:else if hovered}
-		<div class="mmap__tip" role="tooltip">
-			<b>{hovered.nimi || hovered.pc}</b>
-			<span class="muted">ei julkaistua hintaa</span>
-		</div>
+		{#if hovered && hovered.eur !== null && hovered.eur > 0}
+			<div class="mmap__tip" role="tooltip">
+				<b>{hovered.nimi || hovered.pc}</b>
+				<span class="muted">{hovered.pc}</span>
+				<span>{Intl.NumberFormat('fi-FI').format(hovered.eur)} €/m²</span>
+			</div>
+		{:else if hovered}
+			<div class="mmap__tip" role="tooltip">
+				<b>{hovered.nimi || hovered.pc}</b>
+				<span class="muted">ei julkaistua hintaa</span>
+			</div>
+		{/if}
 	{/if}
 </div>
 
@@ -126,6 +133,10 @@
 		background: var(--ink);
 		box-shadow: var(--shadow-md);
 		overflow: hidden;
+	}
+	.mmap--compact {
+		border-radius: var(--radius-md);
+		box-shadow: none;
 	}
 	.mmap svg {
 		width: 100%;
