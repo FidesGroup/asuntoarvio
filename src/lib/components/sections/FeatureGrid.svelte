@@ -38,7 +38,8 @@
 						</svg>
 					{:else if f.icon === 'yield'}
 						<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M12 2v20" /><path d="M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+							<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-5.2 5.2a2 2 0 0 0 2.8 2.8l5.2-5.2a4 4 0 0 0 5.4-5.4l-2.3 2.3-1.7-1.7z" />
+							<path d="M9 14h6" />
 						</svg>
 					{:else}
 						<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
