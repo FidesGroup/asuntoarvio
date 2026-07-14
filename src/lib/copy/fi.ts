@@ -11,7 +11,7 @@ export const copy = {
 	nav: {
 		analyze: 'Analysoi',
 		map: 'Hintakartta',
-		pricing: 'Asuntocardit',
+		pricing: 'Taloyhtiöraportti',
 		why: 'Miksi?',
 		skipToContent: 'Hyppää sisältöön'
 	},
@@ -25,20 +25,32 @@ export const copy = {
 		pillNoAds: 'Ei mainoksia',
 
 		tabs: {
-			url: 'Anna URL',
+			url: 'Liitä linkki',
 			text: 'Liitä teksti',
 			manual: 'Syötä käsin'
 		},
 
 		urlPlaceholder: 'https://asunnot.oikotie.fi/myytavat-asunnot/helsinki/…',
 		textPlaceholder: 'Avaa ilmoitus selaimessa → valitse kaikki (Ctrl+A) → liitä tähän',
+		textPlaceholderTouch: 'Avaa ilmoitus → kopioi ilmoituksen teksti → liitä tähän',
 		analyzeCta: 'Analysoi ilmoitus',
 		manualTitle: 'Anna kohteen perustiedot',
 		supportedSources: 'Tuetut: Oikotie, Etuovi, Kiinteistömaailma, Remax (https).',
+		beginnerToggleOn: 'Sijoittajalle: lisää vuokra ja vastike',
+		beginnerToggleOff: 'Aloittelijalle: piilota lisäkentät',
+		debtfreeHelper: 'Velaton hinta = myyntihinta + yhtiölainaosuus. Ilmoituksissa yleensä molemmat.',
+		demoLinkCta: 'Katso esimerkkiarvio',
+		independence:
+			'Emme ole välittäjä emmekä hyödy kaupasta — vertailu perustuu Tilastokeskuksen toteutuneisiin kauppahintoihin.',
+		privacyNote: 'Emme tallenna ilmoituksia emmekä osoitteita.',
 
 		result: {
 			verdictOver: 'yli alueen toteutuneiden kauppojen',
 			verdictUnder: 'alle alueen toteutuneiden kauppojen',
+			verdictEurOver: (eur: string) =>
+				`Pyyntihinta on noin ${eur} € yli alueen toteutuneiden kauppojen.`,
+			verdictEurUnder: (eur: string) =>
+				`Pyyntihinta on noin ${eur} € alle alueen toteutuneiden kauppojen.`,
 			verdictNeutral: 'Suuntaa-antava arvio',
 			noVerdict: 'Ei vertailuarvoa',
 			noVerdictReason: 'tälle alueelle ja huonetyypille',
@@ -49,11 +61,11 @@ export const copy = {
 				matala: 'matala'
 			},
 			tier: {
-				T1: (n: number) => `Postinumeroalueen kaupat (${n} kpl / 4 nelj.)`,
-				T3: (n: number) => `Alueen kaupat (${n} kpl) — karkeampi taso`,
+				T1: (n: number) => `Perustuu ${n} toteutuneeseen kauppaan tällä postinumeroalueella`,
+				T3: (n: number) => `Perustuu ${n} kauppaan laajemmalta alueelta — karkeampi vertailu`,
 				T4: 'Ei riittävästi vertailukauppoja — kunto-perusteinen arvio'
 			},
-			locationTitle: 'Sijaintipainotettu vertailu',
+			locationTitle: 'Lähialueen toteutuneet kaupat',
 			locationBeta: 'beta',
 			locationIntro: (eurM2: string) =>
 				`Osoitteen ympäristön kaupoilla painotettu vertailuarvo on ${eurM2} €/m².`,
@@ -70,12 +82,17 @@ export const copy = {
 			factorsToggle: 'Avaa selitykset',
 			factorsClose: 'Sulje selitykset',
 			flagsTitle: 'Tulkinnan varaukset',
-			asuntocardTitle: 'Asuntocard: taloyhtiön syväkatsaus',
+			asuntocardTitle: 'Taloyhtiöraportti: syväkatsaus taloyhtiöön',
 			asuntocardBeta: 'beta',
 			asuntocardLede:
-				'Kokoaa remonttihistorian, taloyhtiön muut myynnit ja tonttitiedot julkisista lähteistä. Kortti valmistuu muutamassa minuutissa.',
-			asuntocardCta: 'Kokoa asuntocard',
-			asuntocardNoSub: 'Ei vielä tilausta?'
+				'Kokoaa remonttihistorian, taloyhtiön muut myynnit ja tonttitiedot julkisista lähteistä. Raportti valmistuu muutamassa minuutissa.',
+			asuntocardCta: 'Tilaa Taloyhtiöraportti',
+			asuntocardNoSub: 'Ei vielä tilausta?',
+			asuntocardDocsLabel: 'Isännöitsijäntodistus ja tilinpäätös',
+			asuntocardDocsHelper:
+				'Liitä asiakirjojen teksti (avaa PDF → Ctrl+A → kopioi). Poimimme talousluvut ja korjaukset koneellisesti — itse tekstiä ei tallenneta, vain luvut.',
+			asuntocardDocsPlaceholder:
+				'Liitä tähän isännöitsijäntodistuksen ja/tai tilinpäätöksen teksti…'
 		},
 
 		trust: {
@@ -90,10 +107,11 @@ export const copy = {
 			h2: 'Työkalu, joka katsoo toteutuneisiin kauppoihin.',
 			mapTitle: 'Koko maan hintakartta',
 			mapBody: 'Hangosta Nuorgamiin. Klikkaus esitäyttää vertailun.',
-			analyzeTitle: 'Kohdeanalyysi',
+			analyzeTitle: 'Ilmoituksen tarkistus',
 			analyzeBody: 'Liitä URL — järjestelmä poimii hinnan, vastikkeet ja remontit.',
-			yieldTitle: 'Vuokratuotto',
-			yieldBody: 'Brutto- ja nettotuotto Tilastokeskuksen vuokratilastosta tai syöttämälläsi vuokralla.'
+			yieldTitle: 'Remontit ja vastikkeet',
+			yieldBody:
+				'Näet mitä ilmoitus kertoo remonteista ja kuluista — ja mitä se jättää kertomatta.'
 		},
 
 		cases: {
@@ -114,9 +132,9 @@ export const copy = {
 		},
 
 		waitlist: {
-			h2: 'Tulossa: kohderaportti',
+			h2: 'Tulossa: Taloyhtiöraportti',
 			body:
-				'Kohderaportti yhdistää taloyhtiön talousluvut ja markkinahintavertailun. Jätä sähköposti, saat kutsun ensimmäisten joukossa.',
+				'Taloyhtiöraportti yhdistää taloyhtiön talousluvut ja markkinahintavertailun. Jätä sähköposti, saat kutsun ensimmäisten joukossa.',
 			emailPlaceholder: 'nimi@esimerkki.fi',
 			cta: 'Liity jonotuslistalle',
 			success: 'Kiitos! Sähköpostisi on kirjattu.',
@@ -132,6 +150,7 @@ export const copy = {
 		copyError: 'Kopiointi epäonnistui',
 		shareOnMobile: 'Jaa',
 		transcript: 'Toteutuneet kaupat',
+		noVerdictLabel: 'Ei vertailuarvoa tälle alueelle.',
 		shareRow: {
 			title: 'Jaa arvio',
 			hint: 'Linkki sisältää kaikki arvion tiedot — ei vaadi tiliä.'
@@ -162,13 +181,13 @@ export const copy = {
 	tilaa: {
 		h1: 'Valitse itsellesi sopiva taso.',
 		lede:
-			'Ilmainen analyysi kertoo, mitä ilmoitus väittää. Asuntocard kertoo, mitä siitä löytyy muualta — jokainen väite lähteineen.',
+			'Ilmainen analyysi kertoo, mitä ilmoitus väittää. Taloyhtiöraportti kertoo, mitä siitä löytyy muualta — jokainen väite lähteineen.',
 		billedOnce: 'kertamaksu',
 		billedMonth: '/ kk',
 		billedYear: '/ v',
 		badge: 'Suosituin',
 		cta: {
-			buy: 'Osta asuntocard',
+			buy: 'Osta Taloyhtiöraportti',
 			startPro: 'Aloita Pro',
 			startFree: 'Aloita ilmaiseksi',
 			waitlist: 'Liity odotuslistalle'
@@ -180,8 +199,8 @@ export const copy = {
 			{ q: 'Voinko peruuttaa?', a: 'Kyllä. Pro-tilauksen voi peruuttaa milloin tahansa — veloitus päättyy kuluvan kauden loppuun.' },
 			{ q: 'Mitä tietoja tallennatte?', a: 'Emme tallenna ilmoituksia tai osoitteita. Ainoastaan sähköpostisi tilausta varten.' },
 			{ q: 'Toimiiko laskutus?', a: 'Laskutus menee Stripen kautta. Saat kuitin sähköpostiin.' },
-			{ q: 'Onko kokeilujakso?', a: 'Asuntocard on kertamaksu — ei kokeilua. Pro-tilaukseen lisätään 14 pv kokeilu myöhemmin.' },
-			{ q: 'Voinko viedä datan?', a: 'Kyllä. Kaikki asuntocardit ovat PDF-muodossa, ja Pro-tilaukseen sisältyy JSON-vienti.' }
+			{ q: 'Onko kokeilujakso?', a: 'Taloyhtiöraportti on kertamaksu — ei kokeilua. Pro-tilaukseen lisätään 14 pv kokeilu myöhemmin.' },
+			{ q: 'Voinko viedä datan?', a: 'Kyllä. Kaikki Taloyhtiöraportit ovat PDF-muodossa, ja Pro-tilaukseen sisältyy JSON-vienti.' }
 		]
 	},
 
@@ -200,7 +219,7 @@ export const copy = {
 			'Liität ilmoituksen URL-osoitteen tai tekstin.',
 			'Järjestelmä poimii hinnan, pinta-alan, huoneluvun ja remontit.',
 			'Vertailemme postinumeroalueen toteutuneisiin kauppoihin (4 viimeisintä neljännestä).',
-			'Saat delta-prosentin ja luotettavuusluokan.'
+			'Saat eron alueen hintatasoon euroina ja tiedon, moneenko kauppaan vertailu perustuu.'
 		],
 		howFallback: 'Jos kauppoja on alle 30, annamme kuntoon perustuvan haarukan — merkitty aina suuntaa-antavaksi.',
 		dontTitle: 'Mitä emme tee',
@@ -210,11 +229,11 @@ export const copy = {
 			'Ei mainoksia, ei datan myyntiä.',
 			'Ei ilmoitusten tai osoitteiden tallennusta.'
 		],
-		tierTitle: 'Luotettavuusluokat',
+		tierTitle: 'Kuinka luotettava vertailu on',
 		tiers: [
-			{ name: 'T1', desc: 'Vähintään 30 kauppaa neljänneksellä. Korkea luotettavuus.' },
-			{ name: 'T3', desc: 'Käytetään, kun postinumeroalueelta ei löydy dataa.' },
-			{ name: 'T4', desc: 'Kuntoon perustuva haarukka. Aina merkitty suuntaa-antavaksi.' }
+			{ name: 'Tarkka vertailu', desc: 'Vähintään 30 kauppaa postinumeroalueelta. Vahva vertailu.' },
+			{ name: 'Aluevertailu', desc: 'Käytetään, kun postinumeroalueelta ei löydy tarpeeksi kauppoja.' },
+			{ name: 'Kuntoarvio', desc: 'Kuntoon perustuva haarukka. Aina merkitty suuntaa-antavaksi.' }
 		],
 		coverageTitle: 'Katettu alue',
 		coverageCount: (n: number) => `Postinumeroalueita: ${n.toLocaleString('fi-FI')}.`
@@ -222,8 +241,9 @@ export const copy = {
 
 	tili: {
 		activated: 'Tilaus aktivoitu',
-		activatedLede: 'Asuntocardit ovat käytössä tällä selaimella.',
+		activatedLede: 'Taloyhtiöraportit ovat käytössä tällä selaimella.',
 		active: 'Tilaus voimassa',
+		activeLede: 'Taloyhtiöraportit löytyvät ilmoitusanalyysin tuloksista.',
 		pastDue: 'Maksu odottaa',
 		pastDueLede: 'Päivitä maksutapa Stripen sähköpostilinkistä.',
 		canceled: 'Tilaus päättynyt',
@@ -236,14 +256,33 @@ export const copy = {
 	},
 
 	raportti: {
-		eyebrow: 'Asuntocard',
-		pendingTitle: 'Korttia kootaan…',
+		eyebrow: 'Taloyhtiöraportti',
+		pageTitle: 'Taloyhtiöraportti | RehtiArvio',
+		pendingTitle: 'Raporttia kootaan…',
 		pendingBody: 'Haemme ja ristivarmistamme taloyhtiön tietoja julkisista web-lähteistä. Tämä kestää tyypillisesti muutaman minuutin.',
-		failedTitle: 'Kortin kokoaminen ei onnistunut',
+		failedTitle: 'Raportin kokoaminen ei onnistunut',
 		failedBody: 'Taloyhtiölle ei löytynyt riittävästi julkisia lähteitä. Yritä myöhemmin uudelleen.',
 		sourcesTitle: 'Lähteet ja luotettavuus',
+		talousTitle: 'Taloyhtiön talous',
+		ptsTitle: 'Kunnossapitotarveselvitys (PTS)',
+		historyTitle: 'Korjaushistoria asiakirjoista',
+		docsSource:
+			'Lähde: ostajan toimittamat asiakirjat (isännöitsijäntodistus/tilinpäätös). Asiakirjatekstiä ei ole tallennettu — vain koneellisesti poimitut luvut.',
+		talous: {
+			hoitovastike: 'Hoitovastike',
+			rahoitusvastike: 'Rahoitusvastike',
+			lainaosuus: 'Lainaosuus',
+			yhtioLainat: 'Yhtiön lainat',
+			hoitokulut: 'Hoitokulut / v',
+			lunastuslauseke: 'Lunastuslauseke',
+			tontti: 'Tontti',
+			on: 'On',
+			ei: 'Ei',
+			oma: 'Oma',
+			vuokra: 'Vuokrattu'
+		},
 		fine: (conf?: number | null) =>
-			`Kortti on koottu koneellisesti julkisista web-lähteistä${conf != null ? ` (kattavuusarvio ${Math.round(conf * 100)} %)` : ''}. Vain lähteissä näkyvät tiedot on raportoitu. Tämä ei ole arvio eikä sijoitusneuvontaa.`
+			`Raportti on koottu koneellisesti julkisista web-lähteistä${conf != null ? ` (kattavuusarvio ${Math.round(conf * 100)} %)` : ''}. Vain lähteissä näkyvät tiedot on raportoitu. Tämä ei ole arvio eikä sijoitusneuvontaa.`
 	},
 
 	footer: {
@@ -261,6 +300,9 @@ export const copy = {
 	errors: {
 		invalidEmail: 'Tarkista sähköpostiosoite.',
 		saveFailed: 'Tallennus epäonnistui. Yritä hetken kuluttua.',
-		generic: 'Jokin meni vikaan.'
+		generic: 'Jokin meni vikaan.',
+		reportNeedSub: 'Taloyhtiöraportit kuuluvat RehtiArvio-tilaukseen. Tilaa /tilaa-sivulta, tai jos olet jo tilannut, avaa /tili samalla selaimella.',
+		reportNeedTarget:
+			'Taloyhtiöraportti tarvitsee taloyhtiön nimen tai osoitteen. Analysoi ilmoitus ensin.'
 	}
 };
