@@ -1,17 +1,21 @@
 <script lang="ts">
 	import { copy } from '$lib/copy/fi';
+
+	const groups = [copy.landing.features, copy.landing.cases];
 </script>
 
-<section class="features" aria-label={copy.landing.features.eyebrow}>
-	<header class="head">
-		<p class="head__eyebrow">{copy.landing.features.eyebrow}</p>
-	</header>
-	<ul class="list">
-		{#each copy.landing.features.items as item, i (i)}
-			<li class="list__item">{item}</li>
-		{/each}
-	</ul>
-</section>
+{#each groups as group (group.eyebrow)}
+	<section class="features" aria-label={group.eyebrow}>
+		<header class="head">
+			<p class="head__eyebrow">{group.eyebrow}</p>
+		</header>
+		<ul class="list">
+			{#each group.items as item, i (i)}
+				<li class="list__item">{item}</li>
+			{/each}
+		</ul>
+	</section>
+{/each}
 
 <style>
 	.features {
@@ -33,8 +37,8 @@
 
 	.list {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem 1.25rem;
+		flex-direction: column;
+		gap: 0.5rem;
 		margin: 0;
 		padding: 1rem 0 0;
 		list-style: none;
@@ -45,29 +49,7 @@
 		font-size: var(--text-md);
 		color: var(--ink-2);
 		line-height: var(--lh-list);
-	}
-
-	.list__item::before {
-		content: '·';
-		margin-right: 1.25rem;
-		color: var(--ink-3);
-	}
-
-	.list__item:first-child::before {
-		display: none;
-	}
-
-	@media (max-width: 720px) {
-		.list {
-			flex-direction: column;
-			gap: 0.4rem;
-		}
-		.list__item::before {
-			display: none;
-		}
-		.list__item {
-			padding-left: 0.7rem;
-			border-left: 2px solid var(--border-2);
-		}
+		padding-left: 0.7rem;
+		border-left: 2px solid var(--border-2);
 	}
 </style>

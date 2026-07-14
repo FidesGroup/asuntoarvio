@@ -96,6 +96,16 @@ export const copy = {
 			]
 		},
 
+		cases: {
+			eyebrow: 'Erilaiset kohteet',
+			items: [
+				'Kerrostalot ja rivitalot: vertailu oman postinumeroalueen toteutuneisiin kauppoihin.',
+				'Omakotitalot: karkea seula alueellisista kauppahinnoista, kunto huomioiden.',
+				'Uudiskohteet: analyysi liputtaa uudiskohdepreemion, joka voi olla kymmeniä prosentteja.',
+				'Sijoitusasunnot: brutto- ja nettotuotto alueen tilastollisesta vuokrasta.'
+			]
+		},
+
 		waitlist: {
 			eyebrow: 'Tulossa',
 			title: 'Taloyhtiöraportti',
