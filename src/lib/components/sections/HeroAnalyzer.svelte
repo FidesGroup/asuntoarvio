@@ -1,19 +1,13 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { onMount } from 'svelte';
 	import { inview } from '$lib/styles/actions';
 	import Field from '$lib/components/ui/Field.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
-	import Chip from '$lib/components/ui/Chip.svelte';
-	import MiniMap from '$lib/components/MiniMap.svelte';
 	import { copy } from '$lib/copy/fi';
-
-	type Mode = 'url' | 'text' | 'manual';
 
 	let {
 		data,
 		form,
-		activeInput = $bindable<Mode>('url'),
 		pending = $bindable(false),
 		formError = $bindable<string | null>(null)
 	}: {
@@ -23,24 +17,14 @@
 			centroids: Record<string, any>;
 		};
 		form: any;
-		activeInput?: Mode;
 		pending?: boolean;
 		formError?: string | null;
 	} = $props();
 
-	const tabs: { id: Mode; label: string }[] = [
-		{ id: 'url', label: copy.landing.tabs.url },
-		{ id: 'text', label: copy.landing.tabs.text },
-		{ id: 'manual', label: copy.landing.tabs.manual }
-	];
-
-	let beginnerMode = $state(true);
 	let cachedValues = $state<Record<string, string>>({});
-	let isCoarsePointer = $state(false);
-	const demoUrl =
-		'/arvio?pc=00530&rt=kaksio&m2=54&price=289000&debtfree=1&yr=1961';
+	let manualOpen = $state(false);
 
-	// Live postcode suggestion (top 3 fuzzy prefix match)
+	// Live postcode suggestion (top fuzzy prefix match)
 	let pcSuggestion = $state<string | null>(null);
 	function onPcInput(e: Event) {
 		const v = (e.currentTarget as HTMLInputElement).value.replace(/\D/g, '').slice(0, 5);
@@ -51,15 +35,6 @@
 		} else {
 			pcSuggestion = null;
 		}
-	}
-
-	function cacheAndSubmit(e: SubmitEvent) {
-		const f = e.currentTarget as HTMLFormElement;
-		for (const el of f.elements) {
-			const i = el as HTMLInputElement;
-			if (i.name) cachedValues[i.name] = i.value;
-		}
-		pending = true;
 	}
 
 	function prefillRent(event: SubmitEvent) {
@@ -76,55 +51,70 @@
 			})
 			.catch(() => {});
 	}
-
-	const fmt = new Intl.NumberFormat('fi-FI');
-
-	onMount(() => {
-		if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
-			isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
-		}
-	});
 </script>
 
 <section class="hero" use:inview>
-	<div class="hero__copy">
-		<span class="hero__eyebrow">{copy.landing.eyebrow}</span>
-		<h1 class="hero__h1">{copy.landing.h1}</h1>
-		<p class="hero__lede">{copy.landing.lede}</p>
-		<p class="hero__independence">{copy.landing.independence}</p>
-		<div class="hero__pills">
-			<Chip size="sm" tone="neutral">{copy.landing.pillCoverage(data.postalCodes.length)}</Chip>
-			<Chip size="sm" tone="neutral">{copy.landing.pillQuarters}</Chip>
-			<Chip size="sm" tone="good">{copy.landing.pillNoAds}</Chip>
+	<span class="hero__eyebrow">{copy.landing.eyebrow}</span>
+	<h1 class="hero__h1">{copy.landing.h1}</h1>
+	<p class="hero__lede">{copy.landing.lede}</p>
+
+	<form
+		method="POST"
+		action="?/analyze"
+		class="form"
+		use:enhance={() => {
+			pending = true;
+			return async ({ update }) => {
+				await update();
+				pending = false;
+				formError = form?.error ?? form?.reportError ?? null;
+			};
+		}}
+		onsubmit={(e) => {
+			const f = e.currentTarget as HTMLFormElement;
+			for (const el of f.elements) {
+				const i = el as HTMLInputElement;
+				if (i.name) cachedValues[i.name] = i.value;
+			}
+			pending = true;
+		}}
+	>
+		<Field label="Ilmoituksen URL" htmlFor="url">
+			{#snippet children({ id })}
+				<input
+					{id}
+					type="url"
+					name="url"
+					placeholder={copy.landing.urlPlaceholder}
+					autocomplete="off"
+					required
+				/>
+			{/snippet}
+		</Field>
+		<div class="form__actions">
+			<Button type="submit" size="lg" loading={pending}>{copy.landing.analyzeCta}</Button>
 		</div>
-	</div>
+		{#if form?.error || form?.reportError}
+			<p class="form__error" role="alert">{form?.error ?? form?.reportError}</p>
+		{/if}
+	</form>
 
-	<div class="hero__viz">
-		<MiniMap centroids={data.centroids} size={300} />
-	</div>
-</section>
+	<button
+		type="button"
+		class="form__manual-toggle"
+		onclick={() => (manualOpen = !manualOpen)}
+		aria-expanded={manualOpen}
+	>
+		{manualOpen ? copy.landing.manualLinkClose : copy.landing.manualLink}
+	</button>
 
-<section class="analyzer" aria-label="Ilmoitusanalyysi">
-	<div class="seg" role="tablist" aria-label="Syöttötapa">
-		{#each tabs as t (t.id)}
-			<button
-				type="button"
-				role="tab"
-				class="seg__btn"
-				class:active={activeInput === t.id}
-				aria-selected={activeInput === t.id}
-				onclick={() => (activeInput = t.id)}
-			>{t.label}</button>
-		{/each}
-		<span
-			class="seg__indicator"
-			style:--seg-i={tabs.findIndex((t) => t.id === activeInput)}
-			style:--seg-count={tabs.length}
-		></span>
-	</div>
-
-	{#if activeInput === 'manual'}
-		<form method="GET" action="/arvio" class="form" onsubmit={prefillRent}>
+	{#if manualOpen}
+		<form
+			method="GET"
+			action="/arvio"
+			class="form form--manual"
+			onsubmit={prefillRent}
+		>
 			<h2 class="form__title">{copy.landing.manualTitle}</h2>
 			<div class="form__grid">
 				<Field label="Postinumero" required htmlFor="pc">
@@ -161,114 +151,37 @@
 						<input {id} name="price" inputmode="numeric" type="number" step="1000" min="10000" placeholder="289 000" required value={cachedValues.price ?? ''} />
 					{/snippet}
 				</Field>
+				<Field label="Rakennusvuosi" optional htmlFor="yr">
+					{#snippet children({ id })}
+						<input {id} name="yr" inputmode="numeric" type="number" min="1800" max="2030" placeholder="1961" value={cachedValues.yr ?? ''} />
+					{/snippet}
+				</Field>
+				<Field label="Hoitovastike" optional helper="€/kk" htmlFor="vastike">
+					{#snippet children({ id })}
+						<input {id} name="vastike" inputmode="numeric" type="number" step="10" min="0" max="5000" placeholder="280" value={cachedValues.vastike ?? ''} />
+					{/snippet}
+				</Field>
 			</div>
-
-			{#if !beginnerMode}
-				<div class="form__optional">
-					<p class="form__optional-label">Valinnaiset kentät tarkentavat arviota</p>
-					<div class="form__grid">
-						<Field label="Hintatyyppi" required htmlFor="debtfree" helper={copy.landing.debtfreeHelper}>
-							{#snippet children({ id })}
-								<select {id} name="debtfree" required>
-									<option value="1" selected>Velaton hinta</option>
-									<option value="0">Myyntihinta</option>
-								</select>
-							{/snippet}
-						</Field>
-						<Field label="Rakennusvuosi" optional htmlFor="yr">
-							{#snippet children({ id })}
-								<input {id} name="yr" inputmode="numeric" type="number" min="1800" max="2030" placeholder="1961" value={cachedValues.yr ?? ''} />
-							{/snippet}
-						</Field>
-						<Field label="Arvioitu vuokra" optional helper="€/kk" htmlFor="rent">
-							{#snippet children({ id })}
-								<input {id} name="rent" inputmode="numeric" type="number" step="10" min="100" max="20000" placeholder="950" value={cachedValues.rent ?? ''} />
-							{/snippet}
-						</Field>
-						<Field label="Hoitovastike" optional helper="€/kk" htmlFor="vastike">
-							{#snippet children({ id })}
-								<input {id} name="vastike" inputmode="numeric" type="number" step="10" min="0" max="5000" placeholder="280" value={cachedValues.vastike ?? ''} />
-							{/snippet}
-						</Field>
-					</div>
-				</div>
-			{/if}
-
 			<datalist id="known-pc">
 				{#each data.postalCodes as pc (pc)}<option value={pc}></option>{/each}
 			</datalist>
-			<button
-				type="button"
-				class="form__toggle"
-				onclick={() => (beginnerMode = !beginnerMode)}
-			>
-				{beginnerMode ? copy.landing.beginnerToggleOn : copy.landing.beginnerToggleOff}
-			</button>
 			<div class="form__actions">
 				<Button type="submit" size="lg">{copy.landing.analyzeCta}</Button>
 			</div>
-			<p class="form__privacy">{copy.landing.privacyNote}</p>
-		</form>
-	{:else}
-		<form
-			method="POST"
-			action="?/analyze"
-			class="form"
-			use:enhance={() => {
-				pending = true;
-				return async ({ update }) => {
-					await update();
-					pending = false;
-					formError = form?.error ?? form?.reportError ?? null;
-				};
-			}}
-			onsubmit={cacheAndSubmit}
-		>
-			{#if activeInput === 'url'}
-				<Field label="Ilmoituksen URL" htmlFor="url">
-					{#snippet children({ id })}
-						<input {id} type="url" name="url" placeholder={copy.landing.urlPlaceholder} autocomplete="off" />
-					{/snippet}
-				</Field>
-			{:else}
-				<Field label="Ilmoituksen teksti" htmlFor="text">
-					{#snippet children({ id })}
-						<textarea
-							{id}
-							name="text"
-							rows="10"
-							placeholder={isCoarsePointer ? copy.landing.textPlaceholderTouch : copy.landing.textPlaceholder}
-						></textarea>
-					{/snippet}
-				</Field>
-			{/if}
-			<div class="form__actions form__actions--row">
-				<Button type="submit" size="lg" loading={pending}>{copy.landing.analyzeCta}</Button>
-				<Button href={demoUrl} variant="secondary" size="lg">{copy.landing.demoLinkCta}</Button>
-				<p class="form__hint">{copy.landing.supportedSources}</p>
-			</div>
-			{#if form?.error || form?.reportError}
-				<p class="form__error" role="alert">{form?.error ?? form?.reportError}</p>
-			{/if}
 		</form>
 	{/if}
+
+	<p class="hero__privacy">{copy.landing.privacyNote}</p>
 </section>
 
 <style>
 	.hero {
-		display: grid;
-		grid-template-columns: 1.2fr 1fr;
-		gap: var(--space-8);
-		align-items: center;
-		padding-top: var(--space-5);
-		margin-bottom: var(--space-9);
-	}
-
-	.hero__copy {
-		max-width: 36rem;
+		max-width: var(--container-prose);
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: 1.25rem;
+		padding-top: var(--space-5);
+		margin-bottom: var(--space-9);
 	}
 
 	.hero__eyebrow {
@@ -300,95 +213,32 @@
 		line-height: var(--lh-body);
 	}
 
-	.hero__independence {
+	.hero__privacy {
 		color: var(--ink-3);
-		font-size: var(--text-sm);
+		font-size: var(--text-xs);
 		margin: 0;
 		line-height: var(--lh-list);
-		max-width: 32rem;
-	}
-
-	.hero__pills {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.4rem;
-		margin-top: 0.5rem;
-	}
-
-	.hero__viz {
-		display: flex;
-		justify-content: center;
-	}
-
-	.analyzer {
-		background: var(--surface-tint);
-		border: 1px solid var(--border);
-		border-radius: var(--radius-lg);
-		padding: 1.5rem 1.75rem 1.75rem;
-		box-shadow: var(--shadow-md);
-		display: flex;
-		flex-direction: column;
-		gap: 1.25rem;
-	}
-
-	/* Segmented control */
-	.seg {
-		position: relative;
-		display: inline-flex;
-		gap: 0;
-		padding: 0.25rem;
-		background: var(--bg);
-		border-radius: var(--radius-md);
-		width: fit-content;
-		max-width: 100%;
-		flex-wrap: wrap;
-	}
-
-	.seg__btn {
-		font: inherit;
-		font-size: var(--text-sm);
-		font-weight: 500;
-		color: var(--ink-2);
-		background: transparent;
-		border: none;
-		padding: 0.7rem 1rem;
-		min-height: 44px;
-		cursor: pointer;
-		border-radius: var(--radius-sm);
-		transition: color var(--dur-fast) var(--ease-standard);
-		position: relative;
-		z-index: 1;
-		white-space: nowrap;
-	}
-
-	.seg__btn:hover { color: var(--ink); }
-
-	.seg__btn.active { color: var(--ink); }
-
-	.seg__indicator {
-		position: absolute;
-		top: 0.25rem;
-		bottom: 0.25rem;
-		left: 0.25rem;
-		width: calc((100% - 0.5rem) / var(--seg-count));
-		background: var(--surface);
-		border-radius: var(--radius-sm);
-		box-shadow: var(--shadow-xs);
-		transform: translateX(calc(var(--seg-i) * 100%));
-		transition: transform var(--dur-base) var(--ease-emphasized);
-		z-index: 0;
 	}
 
 	.form {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: 0.85rem;
+	}
+
+	.form--manual {
+		margin-top: 0.5rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--border);
 	}
 
 	.form__title {
-		font-size: var(--text-md);
+		font-size: var(--text-sm);
 		font-weight: 600;
 		margin: 0 0 0.25rem;
+		color: var(--ink-2);
+		letter-spacing: var(--ls-snug);
+		text-transform: uppercase;
 	}
 
 	.form__grid {
@@ -397,36 +247,8 @@
 		gap: 0.85rem 1rem;
 	}
 
-	.form__optional {
-		padding-top: 1rem;
-		border-top: 1px solid var(--border);
-	}
-
-	.form__optional-label {
-		font-size: var(--text-xs);
-		font-weight: 500;
-		color: var(--ink-3);
-		letter-spacing: var(--ls-wide);
-		text-transform: uppercase;
-		margin: 0 0 0.7rem;
-	}
-
 	.form__actions {
 		display: flex;
-	}
-
-	.form__actions--row {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
-
-	.form__hint {
-		color: var(--ink-3);
-		font-size: var(--text-xs);
-		margin: 0;
 	}
 
 	.form__error {
@@ -439,7 +261,7 @@
 		margin: 0;
 	}
 
-	.form__toggle {
+	.form__manual-toggle {
 		font: inherit;
 		font-size: var(--text-sm);
 		color: var(--brand);
@@ -454,25 +276,11 @@
 		align-self: flex-start;
 	}
 
-	.form__toggle:hover {
+	.form__manual-toggle:hover {
 		text-decoration-color: var(--brand);
-	}
-
-	.form__privacy {
-		color: var(--ink-3);
-		font-size: var(--text-xs);
-		margin: 0;
-		line-height: var(--lh-list);
-	}
-
-	@media (max-width: 860px) {
-		.hero { grid-template-columns: 1fr; gap: var(--space-6); }
-		.form__grid { grid-template-columns: 1fr 1fr; }
-		.analyzer { padding: 1.25rem 1.4rem 1.5rem; }
 	}
 
 	@media (max-width: 560px) {
 		.form__grid { grid-template-columns: 1fr; }
-		.form__actions--row { flex-direction: column; align-items: stretch; }
 	}
 </style>
