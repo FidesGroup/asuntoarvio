@@ -21,6 +21,8 @@
 	<PriceMap onareaclick={(pc) => goto(`/?pc=${pc}`)} />
 </Card>
 
+<p class="note note--touch">{copy.kartta.tapHint}</p>
+
 <p class="note">
 	<span class="note__dot" aria-hidden="true"></span>
 	{copy.kartta.legendNoData}
@@ -37,6 +39,17 @@
 		color: var(--ink-2);
 		font-size: var(--text-sm);
 		max-width: var(--container-prose);
+	}
+
+	/* Touch guidance is only meaningful on coarse-pointer devices. */
+	.note--touch {
+		display: none;
+	}
+
+	@media (pointer: coarse) {
+		.note--touch {
+			display: flex;
+		}
 	}
 
 	.note__dot {

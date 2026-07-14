@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import 'maplibre-gl/dist/maplibre-gl.css';
+	import { copy } from '$lib/copy/fi';
 
 	let {
 		center = [25.5, 62.6] as [number, number],
@@ -14,6 +15,10 @@
 	let container: HTMLDivElement;
 	let hover: { pc: string; nimi: string; eur: number | null; n: number; x: number; y: number } | null =
 		$state(null);
+	// Tap-to-pin panel for coarse-pointer devices, where the mousemove
+	// tooltip never fires. A tap pins the area's numbers to a fixed panel.
+	let pinned: { pc: string; nimi: string; eur: number | null; n: number } | null = $state(null);
+	let clearPin: () => void = () => (pinned = null);
 
 	// Single-hue ink ramp (publication palette), white→black = cheap→expensive.
 	// Lightness-monotonic and CVD-safe (single hue — discrimination is lightness only).
@@ -102,25 +107,70 @@
 					hover = null;
 					map.getCanvas().style.cursor = '';
 				});
-				if (onareaclick) {
-					map.on('click', 'price-fill', (e) => {
-						const pc = e.features?.[0]?.properties.pc;
-						if (pc) onareaclick(pc);
-					});
-				}
+
+				const coarse = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+				let pinnedId: string | null = null;
+				clearPin = () => {
+					if (map && pinnedId !== null)
+						map.setFeatureState({ source: 'prices', id: pinnedId }, { hover: false });
+					pinnedId = null;
+					pinned = null;
+				};
+				map.on('click', 'price-fill', (e) => {
+					if (!map) return;
+					const f = e.features?.[0];
+					if (!f) return;
+					if (coarse) {
+						// Pin instead of navigating: touch users need to read the
+						// numbers first; the panel's own button triggers onareaclick.
+						clearPin();
+						pinnedId = f.properties.pc;
+						if (pinnedId !== null)
+							map.setFeatureState({ source: 'prices', id: pinnedId }, { hover: true });
+						pinned = {
+							pc: f.properties.pc, nimi: f.properties.nimi,
+							eur: f.properties.eur, n: f.properties.n
+						};
+					} else if (onareaclick) {
+						onareaclick(f.properties.pc);
+					}
+				});
+				map.on('click', (e) => {
+					if (!map || !pinned) return;
+					const hits = map.queryRenderedFeatures(e.point, { layers: ['price-fill'] });
+					if (hits.length === 0) clearPin();
+				});
 			});
 		})();
 		return () => map?.remove();
 	});
 </script>
 
+<svelte:window onkeydown={(e) => { if (e.key === 'Escape' && pinned) clearPin(); }} />
+
 <div class="mapwrap" style="--h: {height}">
 	<div class="map" bind:this={container}></div>
-	{#if hover}
+	{#if hover && !pinned}
 		<div class="tooltip" style="left: {hover.x + 12}px; top: {hover.y + 12}px">
 			<b>{hover.pc} {hover.nimi}</b><br />
 			{#if hover.eur}{fmt.format(hover.eur)} €/m² <span>· {hover.n} kauppaa/4 nelj.</span>
 			{:else}ei julkaistua hintaa{/if}
+		</div>
+	{/if}
+	{#if pinned}
+		<div class="panel" role="status">
+			<button class="panel__close" type="button" aria-label={copy.kartta.panelClose} onclick={() => clearPin()}>×</button>
+			<b>{pinned.pc} {pinned.nimi}</b>
+			{#if pinned.eur}
+				<span class="panel__price">{fmt.format(pinned.eur)} €/m² <span class="panel__sub">· {pinned.n} kauppaa/4 nelj.</span></span>
+			{:else}
+				<span class="panel__sub">ei julkaistua hintaa</span>
+			{/if}
+			{#if onareaclick && pinned.eur}
+				<button class="panel__use" type="button" onclick={() => { const pc = pinned?.pc; if (pc) onareaclick?.(pc); }}>
+					{copy.kartta.panelUse}
+				</button>
+			{/if}
 		</div>
 	{/if}
 	{#if showLegend}
@@ -157,6 +207,65 @@
 	}
 	.tooltip span {
 		color: var(--ink-2);
+	}
+	.panel {
+		position: absolute;
+		top: 0.75rem;
+		left: 0.75rem;
+		/* Clear of the top-right nav control and the bottom-left legend. */
+		max-width: min(18rem, calc(100% - 5.5rem));
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		color: var(--ink);
+		padding: 0.7rem 2.6rem 0.7rem 0.8rem;
+		font-size: var(--text-sm);
+		font-variant-numeric: tabular-nums;
+		line-height: var(--lh-snug);
+		box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+		z-index: 6;
+	}
+	.panel b {
+		font-weight: 600;
+	}
+	.panel__price {
+		color: var(--ink);
+	}
+	.panel__sub {
+		color: var(--ink-2);
+	}
+	.panel__close {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 44px;
+		height: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: transparent;
+		border: none;
+		color: var(--ink-2);
+		font-size: 1.3rem;
+		line-height: 1;
+		cursor: pointer;
+	}
+	.panel__use {
+		margin-top: 0.25rem;
+		align-self: flex-start;
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		padding: 0.5rem 0.9rem;
+		background: var(--brand);
+		color: var(--brand-ink);
+		border: none;
+		font: inherit;
+		font-size: var(--text-sm);
+		font-weight: 500;
+		cursor: pointer;
 	}
 	.legend {
 		position: absolute;
