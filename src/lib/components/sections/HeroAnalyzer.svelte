@@ -36,6 +36,9 @@
 
 	let beginnerMode = $state(true);
 	let cachedValues = $state<Record<string, string>>({});
+	let isCoarsePointer = $state(false);
+	const demoUrl =
+		'/arvio?pc=00530&rt=kaksio&m2=54&price=289000&debtfree=1&yr=1961';
 
 	// Live postcode suggestion (top 3 fuzzy prefix match)
 	let pcSuggestion = $state<string | null>(null);
@@ -75,6 +78,12 @@
 	}
 
 	const fmt = new Intl.NumberFormat('fi-FI');
+
+	onMount(() => {
+		if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+			isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+		}
+	});
 </script>
 
 <section class="hero" use:inview>
@@ -82,6 +91,7 @@
 		<span class="hero__eyebrow">{copy.landing.eyebrow}</span>
 		<h1 class="hero__h1">{copy.landing.h1}</h1>
 		<p class="hero__lede">{copy.landing.lede}</p>
+		<p class="hero__independence">{copy.landing.independence}</p>
 		<div class="hero__pills">
 			<Chip size="sm" tone="neutral">{copy.landing.pillCoverage(data.postalCodes.length)}</Chip>
 			<Chip size="sm" tone="neutral">{copy.landing.pillQuarters}</Chip>
@@ -151,36 +161,46 @@
 						<input {id} name="price" inputmode="numeric" type="number" step="1000" min="10000" placeholder="289 000" required value={cachedValues.price ?? ''} />
 					{/snippet}
 				</Field>
-				<Field label="Hintatyyppi" required htmlFor="debtfree">
-					{#snippet children({ id })}
-						<select {id} name="debtfree" required>
-							<option value="1" selected>Velaton hinta</option>
-							<option value="0">Myyntihinta</option>
-						</select>
-					{/snippet}
-				</Field>
-				<Field label="Rakennusvuosi" optional htmlFor="yr">
-					{#snippet children({ id })}
-						<input {id} name="yr" inputmode="numeric" type="number" min="1800" max="2030" placeholder="1961" value={cachedValues.yr ?? ''} />
-					{/snippet}
-				</Field>
-				<Field label="Arvioitu vuokra" optional helper="€/kk" htmlFor="rent">
-					{#snippet children({ id })}
-						<input {id} name="rent" inputmode="numeric" type="number" step="10" min="100" max="20000" placeholder="950" value={cachedValues.rent ?? ''} />
-					{/snippet}
-				</Field>
-				<Field label="Hoitovastike" optional helper="€/kk" htmlFor="vastike">
-					{#snippet children({ id })}
-						<input {id} name="vastike" inputmode="numeric" type="number" step="10" min="0" max="5000" placeholder="280" value={cachedValues.vastike ?? ''} />
-					{/snippet}
-				</Field>
+				{#if !beginnerMode}
+					<Field label="Hintatyyppi" required htmlFor="debtfree" helper={copy.landing.debtfreeHelper}>
+						{#snippet children({ id })}
+							<select {id} name="debtfree" required>
+								<option value="1" selected>Velaton hinta</option>
+								<option value="0">Myyntihinta</option>
+							</select>
+						{/snippet}
+					</Field>
+					<Field label="Rakennusvuosi" optional htmlFor="yr">
+						{#snippet children({ id })}
+							<input {id} name="yr" inputmode="numeric" type="number" min="1800" max="2030" placeholder="1961" value={cachedValues.yr ?? ''} />
+						{/snippet}
+					</Field>
+					<Field label="Arvioitu vuokra" optional helper="€/kk" htmlFor="rent">
+						{#snippet children({ id })}
+							<input {id} name="rent" inputmode="numeric" type="number" step="10" min="100" max="20000" placeholder="950" value={cachedValues.rent ?? ''} />
+						{/snippet}
+					</Field>
+					<Field label="Hoitovastike" optional helper="€/kk" htmlFor="vastike">
+						{#snippet children({ id })}
+							<input {id} name="vastike" inputmode="numeric" type="number" step="10" min="0" max="5000" placeholder="280" value={cachedValues.vastike ?? ''} />
+						{/snippet}
+					</Field>
+				{/if}
 			</div>
 			<datalist id="known-pc">
 				{#each data.postalCodes as pc (pc)}<option value={pc}></option>{/each}
 			</datalist>
+			<button
+				type="button"
+				class="form__toggle"
+				onclick={() => (beginnerMode = !beginnerMode)}
+			>
+				{beginnerMode ? copy.landing.beginnerToggleOn : copy.landing.beginnerToggleOff}
+			</button>
 			<div class="form__actions">
 				<Button type="submit" size="lg">{copy.landing.analyzeCta}</Button>
 			</div>
+			<p class="form__privacy">{copy.landing.privacyNote}</p>
 		</form>
 	{:else}
 		<form
@@ -206,12 +226,18 @@
 			{:else}
 				<Field label="Ilmoituksen teksti" htmlFor="text">
 					{#snippet children({ id })}
-						<textarea {id} name="text" rows="10" placeholder={copy.landing.textPlaceholder}></textarea>
+						<textarea
+							{id}
+							name="text"
+							rows="10"
+							placeholder={isCoarsePointer ? copy.landing.textPlaceholderTouch : copy.landing.textPlaceholder}
+						></textarea>
 					{/snippet}
 				</Field>
 			{/if}
 			<div class="form__actions form__actions--row">
 				<Button type="submit" size="lg" loading={pending}>{copy.landing.analyzeCta}</Button>
+				<Button href={demoUrl} variant="secondary" size="lg">{copy.landing.demoLinkCta}</Button>
 				<p class="form__hint">{copy.landing.supportedSources}</p>
 			</div>
 			{#if form?.error || form?.reportError}
@@ -265,6 +291,14 @@
 		font-size: var(--text-lg);
 		margin: 0;
 		line-height: var(--lh-body);
+	}
+
+	.hero__independence {
+		color: var(--ink-3);
+		font-size: var(--text-sm);
+		margin: 0;
+		line-height: var(--lh-list);
+		max-width: 32rem;
 	}
 
 	.hero__pills {
@@ -382,6 +416,32 @@
 		padding: 0.7rem 0.9rem;
 		border-radius: var(--radius-md);
 		margin: 0;
+	}
+
+	.form__toggle {
+		font: inherit;
+		font-size: var(--text-sm);
+		color: var(--brand);
+		background: transparent;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		text-align: left;
+		text-decoration: underline;
+		text-decoration-color: color-mix(in srgb, var(--brand) 35%, transparent);
+		text-underline-offset: 3px;
+		align-self: flex-start;
+	}
+
+	.form__toggle:hover {
+		text-decoration-color: var(--brand);
+	}
+
+	.form__privacy {
+		color: var(--ink-3);
+		font-size: var(--text-xs);
+		margin: 0;
+		line-height: var(--lh-list);
 	}
 
 	@media (max-width: 860px) {
