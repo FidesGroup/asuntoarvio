@@ -9,10 +9,11 @@
 	import DeltaBadge from '$lib/components/ui/DeltaBadge.svelte';
 	import ConfidenceChip from '$lib/components/ui/ConfidenceChip.svelte';
 	import FactorList from '$lib/components/sections/FactorList.svelte';
+	import HistoryCharts from '$lib/components/sections/HistoryCharts.svelte';
 	import { copy } from '$lib/copy/fi';
 
 	let { data } = $props();
-	const { facts, verdict, yield: yieldResult, rentEstimate } = $derived(data);
+	const { facts, verdict, yield: yieldResult, rentEstimate, notes } = $derived(data);
 
 	const fmt = new Intl.NumberFormat('fi-FI');
 	const overUnder = $derived(verdict.deltaPct === null ? 'none' : verdict.deltaPct >= 0 ? 'over' : 'under');
@@ -134,6 +135,37 @@
 	</div>
 
 	<FactorList flags={verdict.flags ?? []} />
+
+	<Card>
+		{#snippet header()}<h2 class="card__h">{copy.arvio.notes.title}</h2>{/snippet}
+		<ul class="notes">
+			<li>{copy.arvio.notes.transferTax(fmt.format(notes.transferTaxEur))}</li>
+			{#if notes.pipeReno === 'in'}
+				<li>{copy.arvio.notes.pipeIn}</li>
+			{:else if notes.pipeReno === 'near'}
+				<li>{copy.arvio.notes.pipeNear}</li>
+			{/if}
+			{#await data.lazy.history then history}
+				{#if history?.annualChangePct != null && history.years.length}
+					<li>
+						{copy.arvio.notes.trend(
+							`${history.annualChangePct > 0 ? '+' : ''}${String(history.annualChangePct).replace('.', ',')}`,
+							history.years[0].year,
+							history.years[history.years.length - 1].year
+						)}
+					</li>
+				{/if}
+			{/await}
+		</ul>
+	</Card>
+
+	{#await data.lazy.history then history}
+		{#if history}
+			<Card>
+				<HistoryCharts {history} />
+			</Card>
+		{/if}
+	{/await}
 
 	{#if yieldResult}
 		<Card>
@@ -324,6 +356,20 @@
 
 	.back-row {
 		margin-top: var(--space-3);
+	}
+
+	.notes {
+		margin: 0;
+		padding-left: 1.1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+		color: var(--ink-2);
+		line-height: var(--lh-list);
+	}
+
+	.notes li::marker {
+		color: var(--ink-3);
 	}
 
 	.back {

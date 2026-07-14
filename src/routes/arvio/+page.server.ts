@@ -11,8 +11,21 @@ import {
 	type YieldResult
 } from '$lib/server/yield';
 import { estimateRent } from '$lib/server/rents';
+import { fetchAreaHistory } from '$lib/server/history';
 import { logQuery } from '$lib/server/supalog';
 import type { PageServerLoad } from './$types';
+
+/** vero.fi, varainsiirtovero (asunto-osakkeet) 1.5%, page updated 2026-01-01. */
+const TRANSFER_TAX_RATE = 0.015;
+
+/** Typical plumbing-renovation age band for Finnish apartment buildings. */
+function pipeRenovationPhase(buildYear: number | null): 'near' | 'in' | null {
+	if (!buildYear) return null;
+	const age = new Date().getFullYear() - buildYear;
+	if (age >= 40 && age <= 70) return 'in';
+	if (age >= 30) return 'near';
+	return null;
+}
 
 export const load: PageServerLoad = async ({ url }) => {
 	const facts = parseFacts(url.searchParams);
@@ -33,7 +46,19 @@ export const load: PageServerLoad = async ({ url }) => {
 		delta_pct: verdict.deltaPct,
 		confidence: verdict.confidence
 	});
-	return { facts, verdict, yield: yieldResult, rentEstimate };
+	return {
+		facts,
+		verdict,
+		yield: yieldResult,
+		rentEstimate,
+		notes: {
+			transferTaxEur: Math.round(facts.priceEur * TRANSFER_TAX_RATE),
+			pipeReno: pipeRenovationPhase(facts.buildYear ?? null)
+		},
+		// Nested so SvelteKit streams it — the verdict renders immediately and
+		// the history section fills in when StatFin answers (or never, quietly).
+		lazy: { history: fetchAreaHistory(facts.postalCode) }
+	};
 };
 
 /**

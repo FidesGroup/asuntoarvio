@@ -138,6 +138,23 @@ export const copy = {
 			note: 'Sisältää varainsiirtoveron 1,5 % (vero.fi 2026). Remonttivaraus on oletusarvo.',
 			rentIsEstimate: (q?: string | null) => `Vuokra on alueen tilastollinen arvio${q ? ` (${q})` : ''}.`
 		},
+		notes: {
+			title: 'Huomioitavaa arviossa',
+			transferTax: (eur: string) => `Ostajan varainsiirtovero n. ${eur} € (1,5 %, vero.fi).`,
+			pipeNear: 'Rakennus lähestyy tyypillistä putkiremontti-ikää. Tarkista tehdyt remontit.',
+			pipeIn: 'Rakennus on tyypillisessä putkiremontti-iässä. Varmista, onko putkiremontti tehty.',
+			trend: (pct: string, from: number, to: number) =>
+				`Alueen keskihinnat ovat muuttuneet keskimäärin ${pct} % vuodessa (${from}–${to}).`
+		},
+		history: {
+			priceTitle: 'Alueen keskihintojen kehitys',
+			priceUnit: '€/m² vuosikeskiarvo',
+			volumeTitle: 'Alueen myyntimäärien kehitys',
+			volumeUnit: 'julkaistut kaupat / vuosi',
+			trendLabel: 'Keskimääräinen vuosimuutos',
+			source: 'Lähde: Tilastokeskus 13mt',
+			partialNote: 'Viimeisin vuosi voi olla vajaa.'
+		},
 		back: '← Takaisin hakuun',
 		ogFallback: 'Toteutuneet hinnat, ei mielipiteet.'
 	},
