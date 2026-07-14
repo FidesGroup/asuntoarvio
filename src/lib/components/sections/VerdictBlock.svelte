@@ -92,9 +92,10 @@
 	/>
 
 	<header class="result__head">
+		<p class="result__source">Lähde: Tilastokeskus 13mt · 4 viimeistä neljännestä</p>
 		<DeltaBadge delta={verdict.deltaPct} size="hero" />
 		{#if headline}
-			<h2 class="result__headline">{headline}</h2>
+			<h2 class="result__headline result__quote">{headline}</h2>
 		{/if}
 		<p class="result__sentence">{verdictSentence}</p>
 	</header>
@@ -141,11 +142,28 @@
 		gap: 0.5rem;
 	}
 
+	.result__source {
+		font-size: var(--text-xs);
+		font-weight: 500;
+		color: var(--ink-3);
+		letter-spacing: var(--ls-wide);
+		text-transform: uppercase;
+		margin: 0;
+		padding-top: 0.85rem;
+		border-top: 1px solid var(--border);
+	}
+
 	.result__headline {
 		font-size: var(--text-2xl);
 		font-weight: 600;
 		letter-spacing: var(--ls-tight);
 		margin: 0.5rem 0 0;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.result__quote {
+		padding-left: 0.85rem;
+		border-left: 1px solid var(--ink);
 	}
 
 	.result__sentence {
@@ -154,6 +172,7 @@
 		line-height: var(--lh-body);
 		max-width: 38rem;
 		margin: 0;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.result__metrics {
