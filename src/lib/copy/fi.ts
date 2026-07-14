@@ -67,7 +67,14 @@ export const copy = {
 			statListing: 'Kohteen neliöhinta',
 			statBenchmark: 'Alueen kaupat',
 			statConfidence: 'Luotettavuus',
+			factorsTitle: 'Miten luku muodostui?',
+			factorsToggle: 'Avaa selitykset',
+			factorsClose: 'Sulje selitykset',
+			flagsTitle: 'Tulkinnan varaukset',
 			asuntocardTitle: 'Taloyhtiöraportti: syväkatsaus taloyhtiöön',
+			asuntocardBeta: 'beta',
+			asuntocardLede:
+				'Kokoaa remonttihistorian, taloyhtiön muut myynnit ja tonttitiedot julkisista lähteistä. Raportti valmistuu muutamassa minuutissa.',
 			asuntocardCta: 'Tilaa Taloyhtiöraportti',
 			asuntocardNoSub: 'Ei vielä tilausta?'
 		},
