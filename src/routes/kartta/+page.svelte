@@ -3,6 +3,7 @@
 	import PageHero from '$lib/components/sections/PageHero.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 	import PriceMap from '$lib/PriceMap.svelte';
+	import PriceBandsChart from '$lib/components/sections/PriceBandsChart.svelte';
 	import { copy } from '$lib/copy/fi';
 
 	let { data } = $props();
@@ -14,7 +15,7 @@
 </script>
 
 <svelte:head>
-	<title>Hintakartta | RehtiArvio</title>
+	<title>Markkina-analyysi | RehtiArvio</title>
 	<meta name="description" content={copy.kartta.lede} />
 </svelte:head>
 
@@ -34,6 +35,8 @@
 	<span class="note__dot" aria-hidden="true"></span>
 	{copy.kartta.legendNoData}
 </p>
+
+<PriceBandsChart bands={data.market.bands} />
 
 <div class="tops">
 	{#each tops as top (top.title)}

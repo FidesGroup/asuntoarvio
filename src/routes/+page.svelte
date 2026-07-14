@@ -7,7 +7,7 @@
 	import VerdictBlock from '$lib/components/sections/VerdictBlock.svelte';
 	import { goto } from '$app/navigation';
 	import PriceMap from '$lib/PriceMap.svelte';
-	import FeatureGrid from '$lib/components/sections/FeatureGrid.svelte';
+	import CaseGrid from '$lib/components/sections/CaseGrid.svelte';
 	import { copy } from '$lib/copy/fi';
 
 	let { data, form } = $props();
@@ -72,7 +72,7 @@
 	<p class="market__src">{copy.landing.market.source}</p>
 </section>
 
-<FeatureGrid />
+<CaseGrid examples={data.examples} />
 
 <form
 	method="POST"

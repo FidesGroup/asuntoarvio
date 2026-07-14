@@ -12,13 +12,27 @@ export interface AreaStat {
 	n: number;
 }
 
+export interface PriceBand {
+	/** inclusive lower bound, null = open start */
+	from: number | null;
+	/** exclusive upper bound, null = open end */
+	to: number | null;
+	areas: number;
+	transactions: number;
+}
+
 export interface MarketStats {
 	areasWithData: number;
 	totalTransactions: number;
 	medianEurM2: number;
 	topExpensive: AreaStat[];
 	topCheapest: AreaStat[];
+	/** distribution over the same €/m² bands as the map ramp */
+	bands: PriceBand[];
 }
+
+/** Must match BREAKS in src/lib/PriceMap.svelte so chart and map agree. */
+const BAND_BREAKS = [800, 1450, 2200, 3400, 5700];
 
 /** Areas need a minimum transaction count before ranking them publicly. */
 const RANK_MIN_N = 10;
@@ -41,12 +55,29 @@ export function marketStats(): MarketStats {
 	const ranked = rows.filter((r) => r.n >= RANK_MIN_N);
 	const byEurDesc = [...ranked].sort((a, b) => b.eur - a.eur);
 
+	const edges = [null, ...BAND_BREAKS, null];
+	const bands: PriceBand[] = [];
+	for (let i = 0; i < edges.length - 1; i++) {
+		const from = edges[i];
+		const to = edges[i + 1];
+		const inBand = rows.filter(
+			(r) => (from === null || r.eur >= from) && (to === null || r.eur < to)
+		);
+		bands.push({
+			from,
+			to,
+			areas: inBand.length,
+			transactions: inBand.reduce((a, r) => a + r.n, 0)
+		});
+	}
+
 	cached = {
 		areasWithData: rows.length,
 		totalTransactions: rows.reduce((a, r) => a + r.n, 0),
 		medianEurM2: median,
 		topExpensive: byEurDesc.slice(0, TOP_COUNT),
-		topCheapest: byEurDesc.slice(-TOP_COUNT).reverse()
+		topCheapest: byEurDesc.slice(-TOP_COUNT).reverse(),
+		bands
 	};
 	return cached;
 }

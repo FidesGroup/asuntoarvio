@@ -25,7 +25,7 @@
 		<ul class="tier__features">
 			<li class="ok">Ilmoituksen tarkistus</li>
 			<li class="ok">Jaettava vertailuraportti</li>
-			<li class="ok">Koko maan hintakartta</li>
+			<li class="ok">Koko maan markkina-analyysi</li>
 			<li class="ok">Kuntoarvio (suuntaa antava)</li>
 			<li class="no">{copy.landing.result.asuntocardTitle.split(':')[0]}</li>
 			<li class="no">Taloyhtiön muut myynnit</li>

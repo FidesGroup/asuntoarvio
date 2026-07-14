@@ -10,7 +10,7 @@ export const copy = {
 
 	nav: {
 		analyze: 'Analysoi',
-		map: 'Hintakartta',
+		map: 'Markkina-analyysi',
 		pricing: 'Taloyhtiöraportti',
 		why: 'Miksi?',
 		skipToContent: 'Hyppää sisältöön'
@@ -84,26 +84,30 @@ export const copy = {
 			title: 'Postinumeroalueiden neliöhinnat',
 			source: 'Lähde: Tilastokeskus 13mt · 4 viimeistä neljännestä',
 			hint: 'Keltainen = edullinen, punainen = kallis neliöhinta. Klikkaa aluetta esitäyttääksesi vertailun.',
-			openFull: 'Avaa koko hintakartta →'
+			openFull: 'Avaa markkina-analyysi →'
 		},
 
-		features: {
-			eyebrow: 'Mitä saat',
-			items: [
-				'1 724 postinumeroaluetta · Tilastokeskus 13mt',
-				'Vertaa 4 viimeisintä neljännestä',
-				'Lähde: Tilastokeskus · emme ole välittäjä'
-			]
-		},
-
-		cases: {
-			eyebrow: 'Erilaiset kohteet',
-			items: [
-				'Kerrostalot ja rivitalot: vertailu oman postinumeroalueen toteutuneisiin kauppoihin.',
-				'Omakotitalot: karkea seula alueellisista kauppahinnoista, kunto huomioiden.',
-				'Uudiskohteet: analyysi liputtaa uudiskohdepreemion, joka voi olla kymmeniä prosentteja.',
-				'Sijoitusasunnot: brutto- ja nettotuotto alueen tilastollisesta vuokrasta.'
-			]
+		examples: {
+			eyebrow: 'Esimerkkejä eri kohdetyypeistä',
+			title: 'Miltä arvio näyttää erilaisille asunnoille?',
+			rows: {
+				area: 'Alueen kaupat',
+				priceLevel: 'Alueen hintataso',
+				rent: 'Vuokra-arvio',
+				yield: 'Bruttotuotto'
+			},
+			takes: {
+				'yksio-helsinki':
+					'Pienet yksiöt myydään usein alueen keskineliöhintaa kalliimmalla. Vertailu näyttää preemion suuruuden.',
+				'kaksio-tampere':
+					'Kaksiot ovat vaihdetuin kohdetyyppi, joten vertailu on niissä luotettavimmillaan.',
+				'kolmio-turku':
+					'Suuret perheasunnot jäävät usein alle alueen neliökeskihinnan — hinnoittelussa se on neuvotteluvaraa.',
+				'kaksio-oulu':
+					'Edullisemmilla alueilla tilastovuokra nostaa bruttotuoton selvästi kasvukeskuksia korkeammaksi.'
+			} as Record<string, string>,
+			disclaimer:
+				'Luvut ovat aluetason tilastoja (Tilastokeskus 13mt ja asvu), eivät arvioita yksittäisistä kohteista. Emme ole välittäjä.'
 		},
 
 		market: {
@@ -170,13 +174,17 @@ export const copy = {
 	},
 
 	kartta: {
-		title: 'Hintakartta',
-		h1: 'Toteutuneet neliöhinnat postinumeroalueittain',
-		lede: 'Klikkaa aluetta esitäyttääksesi vertailun.',
+		title: 'Markkina-analyysi',
+		h1: 'Asuntomarkkinat postinumeroalueittain',
+		lede: 'Toteutuneet neliöhinnat kartalla, hintajakauma ja alueiden ääripäät. Klikkaa aluetta esitäyttääksesi vertailun.',
 		legendNoData: 'Katkoviivalla merkityltä alueelta ei ole julkaistua hintaa.',
 		tapHint: 'Napauta aluetta nähdäksesi hinnan.',
 		panelUse: 'Käytä vertailussa',
 		panelClose: 'Sulje tietoruutu',
+		bandsTitle: 'Neliöhintojen jakauma',
+		bandsUnit: 'postinumeroalueet hintaluokittain',
+		bandsAreas: 'aluetta',
+		bandsTransactions: 'kauppaa',
 		topExpensive: 'Kalleimmat alueet',
 		topCheapest: 'Edullisimmat alueet',
 		topHint: 'Vähintään 10 kauppaa neljällä neljänneksellä. Klikkaa riviä esitäyttääksesi vertailun.',
