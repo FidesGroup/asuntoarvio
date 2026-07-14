@@ -47,7 +47,7 @@ const RENTED_LAND_PENALTY_PERCENT = 0.12; // -12% for rented land
 export interface ValuationTier {
 	tier: 'T1' | 'T2' | 'T3' | 'T4';
 	benchmarkEurM2: number | null;
-	confidenceLabel: 'korkea' | 'kohtalainen' | 'matala' | 'suuntaa-antava arvio';
+	confidenceLabel: 'korkea' | 'kohtalainen' | 'matala' | 'suuntaa antava arvio';
 	transactionsOrEvidence: number;
 	estLowEurM2: number;
 	estMidEurM2: number;
@@ -105,8 +105,8 @@ export function buildConditionEstimate(
 	// Apply age premium
 	const agePremium = computeAgePremium(buildYear);
 	multiplier *= (1 + agePremium);
-	if (agePremium > 0.01) assumptions.push(`Ikä-preemio: +${(agePremium * 100).toFixed(0)}%`);
-	else if (agePremium < -0.01) assumptions.push(`Ikä-diskontio: ${(agePremium * 100).toFixed(0)}%`);
+	if (agePremium > 0.01) assumptions.push(`Ikälisä: +${(agePremium * 100).toFixed(0)}%`);
+	else if (agePremium < -0.01) assumptions.push(`Ikävähennys: ${(agePremium * 100).toFixed(0)}%`);
 
 	// Apply renovation credits (completed major renos add value)
 	let renovationCredit = 0;
@@ -114,7 +114,7 @@ export function buildConditionEstimate(
 		const credit = MAJOR_RENO_CREDIT_EUR_M2[reno.text];
 		if (credit) {
 			renovationCredit += credit;
-			assumptions.push(`Remontti (${reno.year}): +€${credit}/m²`);
+			assumptions.push(`Remontti (${reno.year}): +${credit} €/m²`);
 		}
 	}
 
@@ -151,7 +151,7 @@ export function buildConditionEstimate(
 	return {
 		tier: 'T4',
 		benchmarkEurM2: null, // No actual comparable
-		confidenceLabel: 'suuntaa-antava arvio',
+		confidenceLabel: 'suuntaa antava arvio',
 		transactionsOrEvidence: 0,
 		estLowEurM2: lowEurM2,
 		estMidEurM2: midEstimateEurM2,
@@ -194,7 +194,7 @@ export function resolveValuation(listing: ExtractedListing): ValuationTier {
 				estLowEurM2: cell.benchmark_eur_m2,
 				estMidEurM2: cell.benchmark_eur_m2,
 				estHighEurM2: cell.benchmark_eur_m2,
-				assumptions: [`Postinumeroalue-vertailu (${cell.n_4q} kauppaa)`]
+				assumptions: [`Postinumeroaluevertailu (${cell.n_4q} kauppaa)`]
 			};
 		}
 	}

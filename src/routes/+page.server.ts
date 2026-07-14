@@ -100,7 +100,7 @@ export const actions: Actions = {
 		const facts = toFacts(extracted);
 		if ('error' in facts) {
 			return fail(422, {
-				error: `${facts.error} ${source ? 'Sivu ei ehkä sisällä tietoja ilman selainta. Liitä ilmoituksen teksti suoraan.' : 'Tarkista että liitit koko ilmoituksen (Ctrl+A → kopioi).'}`
+				error: `${facts.error} ${source ? 'Sivu ei ehkä sisällä tietoja ilman selainta. Liitä ilmoituksen teksti suoraan.' : 'Tarkista, että liitit koko ilmoituksen (Ctrl+A → kopioi).'}`
 			});
 		}
 
@@ -155,7 +155,8 @@ export const actions: Actions = {
 
 		// Server-built asuntocard job payload: echoed back via a hidden field on
 		// the ?/report form so a card can be ordered without re-parsing the text.
-		const reportPayload = JSON.stringify({
+		// Detached houses have no housing company, so no report can exist for them.
+		const reportPayload = extracted.propertyClass === 'omakotitalo' ? null : JSON.stringify({
 			company: extracted.housingCompany,
 			address: extracted.address,
 			postalCode: facts.postalCode,

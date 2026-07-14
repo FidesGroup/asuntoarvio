@@ -15,10 +15,10 @@ export interface ReviewFactor {
 }
 
 const TIER_LABELS: Record<string, string> = {
-	'T1': 'Postinumeroaluevertailu — korkea luotettavuus',
-	'T2': 'Kunnan keskiarvo — kohtalainen luotettavuus',
-	'T3': 'Alueen keskiarvo — kohtalainen luotettavuus',
-	'T4': 'Kunto-perusteinen arvio — suuntaa-antava'
+	'T1': 'postinumeroaluevertailuun (korkea luotettavuus)',
+	'T2': 'kunnan keskiarvoon (kohtalainen luotettavuus)',
+	'T3': 'alueen keskiarvoon (kohtalainen luotettavuus)',
+	'T4': 'kohteen kuntoon (suuntaa antava)'
 };
 
 const CONFIDENCE_METER: Record<string, { label: string; whatsMissing: string[] }> = {
@@ -28,18 +28,18 @@ const CONFIDENCE_METER: Record<string, { label: string; whatsMissing: string[] }
 	},
 	T2: {
 		label: 'Kohtalainen luotettavuus',
-		whatsMissing: ['Postinumeroalueen yksityiskohtaisuutta']
+		whatsMissing: ['tarkempi postinumerotason data']
 	},
 	T3: {
 		label: 'Kohtalainen luotettavuus (aluevertailu)',
-		whatsMissing: ['Paikallisten kauppojen dataa', 'Postinumeroalueen erityispiirteitä']
+		whatsMissing: ['paikallisten kauppojen data', 'postinumeroalueen erityispiirteet']
 	},
 	'T4': {
-		label: 'Suuntaa-antava arvio',
+		label: 'Suuntaa antava arvio',
 		whatsMissing: [
-			'Vertailukohteita (liian vähän kauppoja)',
-			'Todellisen myyntihinnan vertailupohjaa',
-			'Kohteen yksilöllisten tekijöiden vaikutusta'
+			'vertailukaupat (niitä on liian vähän)',
+			'toteutuneiden myyntihintojen vertailupohja',
+			'kohteen yksilöllisten tekijöiden vaikutus'
 		]
 	}
 };
@@ -56,7 +56,7 @@ export function buildReview(listing: ExtractedListing, tier: ValuationTier): Rev
 		factors.push({
 			category: 'what',
 			title: 'Kunto',
-			content: 'Kohteen kunto kuvaa talon yleis- ja teknisen tilan. Arviosta näkyy, kuinka paljon remontointia vielä tarvitaan.'
+			content: 'Kunto kertoo asunnon yleisestä ja teknisestä tilasta. Siitä näkee, kuinka paljon remonttia on vielä edessä.'
 		});
 		factors.push({
 			category: 'here',
@@ -69,14 +69,14 @@ export function buildReview(listing: ExtractedListing, tier: ValuationTier): Rev
 		});
 		factors.push({
 			category: 'why',
-			title: 'Miksi tällä on väliä rahallesi',
+			title: 'Miksi tällä on väliä',
 			content:
-				'Huono kunto merkitsee tulevaa remontoinnin tarvetta, mikä on kallista. Hyvä kunto auttaa arvon säilymisessä ja välttää yllätyksellisiä korjauskuluja.'
+				'Huonokuntoinen asunto vaatii remontteja, jotka maksavat. Hyväkuntoinen asunto säilyttää arvonsa paremmin, ja yllättävien korjauskulujen riski on pienempi.'
 		});
 		factors.push({
 			category: 'check',
 			title: 'Tarkista vielä',
-			content: 'Kuntotutkimus antaa tarkan kuvan. Suosi kohteet, joissa isot remontit on jo tehty (putket, katto, sähköt).'
+			content: 'Kuntotutkimus antaa tarkan kuvan. Suosi kohteita, joissa isot remontit (putket, katto, sähköt) on jo tehty.'
 		});
 	}
 
@@ -86,7 +86,7 @@ export function buildReview(listing: ExtractedListing, tier: ValuationTier): Rev
 		factors.push({
 			category: 'what',
 			title: 'Ikä',
-			content: 'Rakennusvuosi kertoo talon iästä. Vanhemmat talot vaativat usein enemmän ylläpitoa, mutta voivat olla paremmin rakennetut.'
+			content: 'Rakennusvuosi kertoo talon iästä. Vanhemmat talot vaativat usein enemmän ylläpitoa, mutta voivat olla paremmin rakennettuja.'
 		});
 		factors.push({
 			category: 'here',
@@ -95,11 +95,11 @@ export function buildReview(listing: ExtractedListing, tier: ValuationTier): Rev
 		});
 		factors.push({
 			category: 'why',
-			title: 'Miksi tällä on väliä rahallesi',
+			title: 'Miksi tällä on väliä',
 			content:
 				age > 40
-					? 'Vanhassa talossa pitkien putkien saneeraus on todennäköinen pian. Budjeti näille kuluille.'
-					: 'Uudempi rakennus on usein arvokkaampi, mutta ostohinta on korkeampi.'
+					? 'Yli 40-vuotiaassa talossa putkiremontti on todennäköisesti edessä lähivuosina, jos sitä ei ole vielä tehty. Varaudu näihin kuluihin.'
+					: 'Uudempi rakennus vaatii yleensä vähemmän korjauksia, mutta ostohinta on korkeampi.'
 		});
 		factors.push({
 			category: 'check',
@@ -124,11 +124,11 @@ export function buildReview(listing: ExtractedListing, tier: ValuationTier): Rev
 		});
 		factors.push({
 			category: 'why',
-			title: 'Miksi tällä on väliä rahallesi',
+			title: 'Miksi tällä on väliä',
 			content:
 				listing.landOwnership === 'Oma'
-					? 'Oman maan omistus on turvallista — ei tontinvuokran nousua tulevaisuudessa.'
-					: 'Vuokratontti merkitsee vuokranmaksua pitemmän ajan, ja vuokra voi nousta. Se alentaa kiinteistön arvoa.'
+					? 'Omalla tontilla ei ole tontinvuokraa, joka voisi nousta tulevaisuudessa.'
+					: 'Vuokratontista maksetaan vuokraa vuosittain, ja vuokra voi nousta. Tämä alentaa kohteen arvoa.'
 		});
 		factors.push({
 			category: 'check',
@@ -142,34 +142,34 @@ export function buildReview(listing: ExtractedListing, tier: ValuationTier): Rev
 		factors.push({
 			category: 'what',
 			title: 'Vastikkeet',
-			content: 'Vastike on kuukausittainen kulu, joka maksetaan talon yhteisestä ylläpidosta (lämmitys, sähkö, siivous, korjaukset).'
+			content: 'Vastike on kuukausittainen maksu, jolla katetaan taloyhtiön ylläpito (lämmitys, sähkö, siivous, korjaukset).'
 		});
 		factors.push({
 			category: 'here',
 			title: 'Tässä kohteessa',
-			content: `Kuukausittain: €${listing.totalChargeEurMo.toLocaleString('fi-FI')}.`
+			content: `Vastikkeet yhteensä ${listing.totalChargeEurMo.toLocaleString('fi-FI')} €/kk.`
 		});
 		factors.push({
 			category: 'why',
-			title: 'Miksi tällä on väliä rahallesi',
+			title: 'Miksi tällä on väliä',
 			content:
-				'Vastikkeet ovat asumisnkustannuksia kuten vuokra. Korkea vastike alentaa käytettävissä olevia varoja ja kannattavuutta.'
+				'Vastike on kuukausittainen asumiskustannus siinä missä vuokrakin. Korkea vastike pienentää sijoituksen tuottoa ja jää maksettavaksi joka kuukausi.'
 		});
 		factors.push({
 			category: 'check',
 			title: 'Tarkista vielä',
-			content: 'Kysy isännöitsijältä vastikkeen historiasta ja tulevista suunnitelmista. Korkeat vastikkeet voivat merkitä tulossa olevia remontteja.'
+			content: 'Kysy isännöitsijältä vastikkeen kehityksestä ja tulevista suunnitelmista. Korkea vastike voi kertoa tulossa olevista remonteista.'
 		});
 	}
 
 	// === CONFIDENCE METER ===
 	const meter = CONFIDENCE_METER[tier.tier] || CONFIDENCE_METER['T4'];
-	let confidenceText = `Arvio perustuu ${TIER_LABELS[tier.tier] || 'arvioon'}.`;
+	let confidenceText = `Arvio perustuu ${TIER_LABELS[tier.tier] || TIER_LABELS['T4']}.`;
 	if (meter.whatsMissing.length > 0) {
-		confidenceText += ` Luotettavuutta parantaisi: ${meter.whatsMissing.join(', ').toLowerCase()}.`;
+		confidenceText += ` Luotettavuutta parantaisi: ${meter.whatsMissing.join(', ')}.`;
 	}
 	if (tier.tier === 'T4') {
-		confidenceText += ' Tämä on suuntaa-antava arvio, ei todellinen vertailu.';
+		confidenceText += ' Tämä on suuntaa antava arvio, ei todellinen vertailu.';
 	}
 
 	factors.push({

@@ -15,7 +15,7 @@
 </script>
 
 <svelte:head>
-	<title>RehtiArvio — ilmainen markkinahinta-analyysi</title>
+	<title>RehtiArvio | Ilmainen markkinahinta-analyysi</title>
 </svelte:head>
 
 <a class="skip-link" href="#main">{copy.nav.skipToContent}</a>

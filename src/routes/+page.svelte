@@ -27,10 +27,10 @@
 </script>
 
 <svelte:head>
-	<title>RehtiArvio — ilmainen markkinahinta-analyysi</title>
+	<title>RehtiArvio | Ilmainen markkinahinta-analyysi</title>
 	<meta
 		name="description"
-		content="Liitä myynti-ilmoitus — saat vertailuarvon Tilastokeskuksen toteutuneisiin kauppoihin postinumeroalueittain. Ilmainen."
+		content="Liitä myynti-ilmoitus, niin saat vertailun Tilastokeskuksen toteutuneisiin kauppoihin postinumeroalueittain. Ilmainen."
 	/>
 </svelte:head>
 

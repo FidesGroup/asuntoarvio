@@ -96,11 +96,11 @@ describe('buildReview', () => {
 		expect(hasFourParts || review.length > 0).toBe(true);
 	});
 
-	it('marks T4 with suuntaa-antava arvio', () => {
+	it('marks T4 with suuntaa antava arvio', () => {
 		const t4Tier: ValuationTier = {
 			tier: 'T4',
 			benchmarkEurM2: null,
-			confidenceLabel: 'suuntaa-antava arvio',
+			confidenceLabel: 'suuntaa antava arvio',
 			transactionsOrEvidence: 0,
 			estLowEurM2: 6300,
 			estMidEurM2: 7000,
@@ -109,6 +109,6 @@ describe('buildReview', () => {
 		};
 		const review = buildReview(baseListing, t4Tier);
 		const confidenceContent = review.find((f) => f.category === 'confidence')?.content || '';
-		expect(confidenceContent).toContain('suuntaa-antava');
+		expect(confidenceContent).toContain('suuntaa antava');
 	});
 });

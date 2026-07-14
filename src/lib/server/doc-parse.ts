@@ -240,7 +240,7 @@ export function deriveDocInsights(d: ExtractedDocs, ctx: DocInsightContext): str
 	if (d.lainaosuusEur !== null && d.lainaosuusEur > 0) {
 		const perM2 = area ? ` (${fmt(d.lainaosuusEur / area)} €/m²)` : '';
 		const share = ctx.priceEur ? d.lainaosuusEur / ctx.priceEur : null;
-		const sharePart = share !== null ? `, ≈ ${Math.round(share * 100)} % kohteen hinnasta` : '';
+		const sharePart = share !== null ? `, noin ${Math.round(share * 100)} % kohteen hinnasta` : '';
 		let line = `Huoneistokohtainen lainaosuus ${fmt(d.lainaosuusEur)} €${perM2}${sharePart}.`;
 		if (share !== null && share > 0.25) {
 			line +=
@@ -263,7 +263,7 @@ export function deriveDocInsights(d: ExtractedDocs, ctx: DocInsightContext): str
 			);
 		} else if (hoitoPerM2 < 3.5) {
 			out.push(
-				`Hoitovastike ${hoitoPerM2.toFixed(1)} €/m²/kk on matala. Varmista ettei yhtiö kata hoitokuluja lainalla tai siirrä korjauksia — matala vastike ei aina ole etu.`
+				`Hoitovastike ${hoitoPerM2.toFixed(1)} €/m²/kk on matala. Varmista, ettei yhtiö kata hoitokuluja lainalla tai siirrä korjauksia. Matala vastike ei aina ole etu.`
 			);
 		}
 	}
@@ -279,7 +279,7 @@ export function deriveDocInsights(d: ExtractedDocs, ctx: DocInsightContext): str
 		const thisYear = new Date().getFullYear();
 		const ending =
 			d.landLeaseEndYear !== null && d.landLeaseEndYear <= thisYear + 15
-				? ` Vuokrasopimus päättyy ${d.landLeaseEndYear} — uusiminen voi moninkertaistaa tontinvuokran.`
+				? ` Vuokrasopimus päättyy ${d.landLeaseEndYear}, ja uusiminen voi moninkertaistaa tontinvuokran.`
 				: '';
 		out.push(`Tontti on vuokrattu.${rent}${ending}`);
 	}
@@ -297,7 +297,7 @@ export function deriveDocInsights(d: ExtractedDocs, ctx: DocInsightContext): str
 	const done = majors(d.renovationsDone);
 	if (upcoming.size) {
 		out.push(
-			`Kunnossapitotarveselvityksessä isoja hankkeita: ${[...upcoming.entries()].map(([k, y]) => `${k} (${y})`).join(', ')}. Pyydä kustannusarviot — ne eivät vielä näy lainaosuudessa.`
+			`Kunnossapitotarveselvityksessä isoja hankkeita: ${[...upcoming.entries()].map(([k, y]) => `${k} (${y})`).join(', ')}. Pyydä kustannusarviot, sillä ne eivät vielä näy lainaosuudessa.`
 		);
 	}
 	if (done.size) {

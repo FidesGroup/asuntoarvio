@@ -184,11 +184,11 @@ export function evaluateProperty(facts: ListingFacts): Verdict {
 		const houseCell = lookupHouseCell(region);
 		const listingEurM2 = Math.round(facts.priceEur / facts.livingAreaM2);
 		const flags: string[] = [
-			'Omakotitalon €/m² on karkea seula — tontin arvo ja talon yksilöllisyys vaihtelevat paljon.'
+			'Omakotitalon €/m² on karkea seula, koska tontin arvo ja talon yksilöllisyys vaihtelevat paljon.'
 		];
 
 		if (!houseCell || houseCell.benchmark_eur_m2 === null) {
-			flags.push('Alueella ei ole riittävästi kauppadata. Vertailua ei voida laskea.');
+			flags.push('Alueelta ei ole riittävästi kauppadataa. Vertailua ei voida laskea.');
 			return {
 				listingEurM2,
 				benchmarkEurM2: null,

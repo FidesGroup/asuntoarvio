@@ -20,13 +20,13 @@
 	<article class="tier">
 		<header class="tier__head">
 			<h3 class="tier__title">Ilmainen</h3>
-			<p class="tier__price"><b>0 €</b><span class="tier__period">— aina ilmainen</span></p>
+			<p class="tier__price"><b>0 €</b><span class="tier__period">aina ilmainen</span></p>
 		</header>
 		<ul class="tier__features">
-			<li class="ok">Ilmoituksen tarkistus ja hintakartta</li>
+			<li class="ok">Ilmoituksen tarkistus</li>
 			<li class="ok">Jaettava vertailuraportti</li>
 			<li class="ok">Koko maan hintakartta</li>
-			<li class="ok">Kuntoarvio (suuntaa-antava)</li>
+			<li class="ok">Kuntoarvio (suuntaa antava)</li>
 			<li class="no">{copy.landing.result.asuntocardTitle.split(':')[0]}</li>
 			<li class="no">Taloyhtiön muut myynnit</li>
 		</ul>
@@ -44,7 +44,7 @@
 			<li class="ok">Remonttihistorian ristivarmistus</li>
 			<li class="ok">Saman taloyhtiön muut myynnit</li>
 			<li class="ok">Tontin ja isännöinnin varmistus</li>
-			<li class="ok">Punaiset liput</li>
+			<li class="ok">Varoitusmerkit riskikohdista</li>
 			<li class="ok">PDF-raportti lähteineen</li>
 		</ul>
 		{#if enabled}
@@ -55,7 +55,7 @@
 						<input {id} type="email" name="email" placeholder="sinä@esimerkki.fi" required autocomplete="email" />
 					{/snippet}
 				</Field>
-				<Button type="submit" block>{copy.tilaa.cta.buy} — 19 €</Button>
+				<Button type="submit" block>{copy.tilaa.cta.buy} · 19 €</Button>
 				<p class="fine">{copy.tilaa.fineOnce}</p>
 			</form>
 			{#if form?.error}<p class="err">{form.error}</p>{/if}
@@ -85,7 +85,7 @@
 						<input {id} type="email" name="email" placeholder="sinä@esimerkki.fi" required autocomplete="email" />
 					{/snippet}
 				</Field>
-				<Button type="submit" variant="secondary" block>{copy.tilaa.cta.startPro} — 7 €/kk</Button>
+				<Button type="submit" variant="secondary" block>{copy.tilaa.cta.startPro} · 7 €/kk</Button>
 				<p class="fine">{copy.tilaa.finePro}</p>
 			</form>
 			{#if form?.error}<p class="err">{form.error}</p>{/if}

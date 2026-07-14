@@ -32,7 +32,7 @@
 			rooms: 'omakotitalo',
 			outcome: 'estimate',
 			delta: null,
-			body: 'Omakotitalon ostajalle työkalu ei antanut euromääräistä eroa. Aluevertailu varoitti: tontin arvo vaihtelee paljon eikä €/m² yksin riitä hinta-arvioksi. Ostaja tilasi Taloyhtiöraportin tueksi.'
+			body: 'Omakotitalon ostajalle työkalu ei antanut euromääräistä eroa. Aluevertailu varoitti, että tontin arvo vaihtelee paljon eikä €/m² yksin riitä hinta-arvioksi. Ostaja tilasi kuntotarkastuksen ennen tarjousta.'
 		}
 	];
 

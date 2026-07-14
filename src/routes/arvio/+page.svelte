@@ -71,7 +71,7 @@
 			: `${verdict.deltaPct > 0 ? '+' : ''}${verdict.deltaPct} % vs alue`} | RehtiArvio
 	</title>
 	<meta property="og:title" content={`RehtiArvio: ${verdictLabel}`} />
-	<meta property="og:description" content={`${facts.postalCode} · ${facts.roomsType} · ${facts.livingAreaM2} m² — ${verdictLabel}`} />
+	<meta property="og:description" content={`${facts.postalCode} · ${facts.roomsType} · ${facts.livingAreaM2} m² · ${verdictLabel}`} />
 	<meta property="og:image" content={ogImageUrl} />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary_large_image" />

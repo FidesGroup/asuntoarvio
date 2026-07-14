@@ -165,7 +165,7 @@
 
 			{#if !beginnerMode}
 				<div class="form__optional">
-					<p class="form__optional-label">Valinnaiset — tarkentavat arviota</p>
+					<p class="form__optional-label">Valinnaiset kentät tarkentavat arviota</p>
 					<div class="form__grid">
 						<Field label="Hintatyyppi" required htmlFor="debtfree" helper={copy.landing.debtfreeHelper}>
 							{#snippet children({ id })}

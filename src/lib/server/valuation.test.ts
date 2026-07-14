@@ -117,7 +117,7 @@ describe('buildConditionEstimate - T4', () => {
 			'Oma'
 		);
 		expect(t4.tier).toBe('T4');
-		expect(t4.confidenceLabel).toBe('suuntaa-antava arvio');
+		expect(t4.confidenceLabel).toBe('suuntaa antava arvio');
 		expect(t4.estMidEurM2).toBe(7000); // hyvä + no age premium = 1.0 multiplier
 	});
 
@@ -218,7 +218,7 @@ describe('resolveValuation - tiered routing', () => {
 			roomsType: 'kaksio'
 		});
 		expect(result.tier).toBe('T4');
-		expect(result.confidenceLabel).toBe('suuntaa-antava arvio');
+		expect(result.confidenceLabel).toBe('suuntaa antava arvio');
 	});
 
 	it('routes detached houses to T3 (region)', () => {

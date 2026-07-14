@@ -102,7 +102,7 @@ export function estimateRent(
 
 	if (tier === 'town') {
 		flags.push(
-			`Vuokra-arvio perustuu kunnan (${cell.benchmark_eur_m2_kk} €/m²/kk) tasoon, koska postinumeroalueen aineisto on Tilastokeskuksessa salattu.`
+			`Vuokra-arvio perustuu kunnan tasoon (${cell.benchmark_eur_m2_kk} €/m²/kk), koska postinumeroalueen aineisto on Tilastokeskuksessa salattu.`
 		);
 	} else if (tier === 'mk') {
 		flags.push(
@@ -112,7 +112,7 @@ export function estimateRent(
 
 	if (cell.n_4q < 20) {
 		flags.push(
-			`Pieni otos (${cell.n_4q} havaintoa) — tilastokeskuksen salassapitoraja on 20.`
+			`Pieni otos (${cell.n_4q} havaintoa). Tilastokeskuksen salassapitoraja on 20 havaintoa.`
 		);
 	}
 
