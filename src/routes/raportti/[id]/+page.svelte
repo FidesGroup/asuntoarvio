@@ -10,6 +10,13 @@
 	const facts = $derived(data.report.facts as any);
 	const card = $derived(data.scorecard?.data as any);
 	const inFlight = $derived(['pending', 'paid', 'processing'].includes(data.report.status));
+	// Buyer-supplied document extraction (structured figures only; the pasted
+	// text itself is never stored). Rendered in every status so the customer
+	// sees substance while the worker is still running.
+	const docs = $derived(facts?.docs as any);
+	const docInsights = $derived((facts?.docInsights as string[] | undefined) ?? []);
+	const area = $derived(typeof facts?.livingAreaM2 === 'number' ? facts.livingAreaM2 : null);
+	const perM2 = (eur: number) => (area ? ` (${fmt.format(Math.round(eur / area))} €/m²)` : '');
 
 	const host = (u: string) => {
 		try { return new URL(u).hostname.replace(/^www\./, ''); }
@@ -55,6 +62,75 @@
 			luotettavuus {facts.verdict.confidence}).
 		</p>
 	</Card>
+{/if}
+
+{#if docs && docs.fieldsFound > 0}
+	<Card>
+		{#snippet header()}<h2 class="card__h">{copy.raportti.talousTitle}</h2>{/snippet}
+		<ul class="list">
+			{#if docs.hoitovastikeEurMo != null || docs.hoitovastikeEurM2Mo != null}
+				{@const m2 = docs.hoitovastikeEurM2Mo ?? (area && docs.hoitovastikeEurMo != null ? Math.round((docs.hoitovastikeEurMo / area) * 10) / 10 : null)}
+				<li>
+					<b>{copy.raportti.talous.hoitovastike}</b>
+					{docs.hoitovastikeEurMo != null ? `${fmt.format(docs.hoitovastikeEurMo)} €/kk` : ''}{m2 != null ? ` (${fmt.format(m2)} €/m²/kk)` : ''}
+				</li>
+			{/if}
+			{#if docs.rahoitusvastikeEurMo != null}
+				<li><b>{copy.raportti.talous.rahoitusvastike}</b> {fmt.format(docs.rahoitusvastikeEurMo)} €/kk</li>
+			{/if}
+			{#if docs.lainaosuusEur != null}
+				<li><b>{copy.raportti.talous.lainaosuus}</b> {fmt.format(docs.lainaosuusEur)} €{perM2(docs.lainaosuusEur)}</li>
+			{/if}
+			{#if docs.yhtioLainatEur != null}
+				<li>
+					<b>{copy.raportti.talous.yhtioLainat}</b>
+					{fmt.format(docs.yhtioLainatEur)} €{docs.apartmentCount ? ` (~${fmt.format(Math.round(docs.yhtioLainatEur / docs.apartmentCount))} €/huoneisto)` : ''}
+				</li>
+			{/if}
+			{#if docs.hoitokulutEurYr != null}
+				<li><b>{copy.raportti.talous.hoitokulut}</b> {fmt.format(docs.hoitokulutEurYr)} €</li>
+			{/if}
+			{#if docs.lunastuslauseke != null}
+				<li><b>{copy.raportti.talous.lunastuslauseke}</b> {docs.lunastuslauseke ? copy.raportti.talous.on : copy.raportti.talous.ei}</li>
+			{/if}
+			{#if docs.landOwnership}
+				<li>
+					<b>{copy.raportti.talous.tontti}</b>
+					{docs.landOwnership === 'oma' ? copy.raportti.talous.oma : copy.raportti.talous.vuokra}{docs.landRentEurYr != null ? `, vuosivuokra ${fmt.format(docs.landRentEurYr)} €` : ''}{docs.landLeaseEndYear != null ? `, sopimus päättyy ${docs.landLeaseEndYear}` : ''}
+				</li>
+			{/if}
+		</ul>
+		{#if docInsights.length}
+			<ul class="list list--insights">
+				{#each docInsights as s (s)}<li>{s}</li>{/each}
+			</ul>
+		{/if}
+		<p class="fine">{copy.raportti.docsSource}</p>
+	</Card>
+
+	{#if docs.renovationsUpcoming?.length}
+		<Card>
+			{#snippet header()}<h2 class="card__h">{copy.raportti.ptsTitle}</h2>{/snippet}
+			<ul class="list">
+				{#each docs.renovationsUpcoming as r (r)}
+					<li><b>{r.year}</b> {r.text}</li>
+				{/each}
+			</ul>
+			<p class="fine">{copy.raportti.docsSource}</p>
+		</Card>
+	{/if}
+
+	{#if docs.renovationsDone?.length}
+		<Card>
+			{#snippet header()}<h2 class="card__h">{copy.raportti.historyTitle}</h2>{/snippet}
+			<ul class="list">
+				{#each docs.renovationsDone as r (r)}
+					<li><b>{r.year}</b> {r.text}</li>
+				{/each}
+			</ul>
+			<p class="fine">{copy.raportti.docsSource}</p>
+		</Card>
+	{/if}
 {/if}
 
 {#if inFlight}
@@ -179,6 +255,7 @@
 	.list li b { color: var(--ink); }
 	.list li a { margin-left: 0.3rem; font-size: 0.85em; word-break: break-all; }
 	.list--sources li { font-size: 0.82rem; }
+	.list--insights { margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid var(--border-2); }
 
 	.fine { margin: 0.75rem 0 0; color: var(--ink-3); font-size: var(--text-xs); line-height: var(--lh-list); }
 </style>

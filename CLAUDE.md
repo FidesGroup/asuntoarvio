@@ -23,7 +23,11 @@ constraints below were each earned the hard way in one intensive build day
    line and must continue to.
 3. **No personal data storage beyond what's declared.** `query_log` stores
    query facts (postal code, rooms, price), never listing URLs or addresses.
-   `leads` stores an email the user typed in themselves.
+   `leads` stores an email the user typed in themselves. `reports.facts` may
+   additionally carry structured figures deterministically parsed from
+   documents the buyer pasted at order time (vastikkeet, lainaosuus,
+   korjausvuodet — see `doc-parse.ts`); the pasted document text itself is
+   never stored, and the parser must never extract names or free prose.
 
 ### Product honesty
 
