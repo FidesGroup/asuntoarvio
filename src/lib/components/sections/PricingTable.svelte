@@ -37,7 +37,7 @@
 		<Chip size="sm" tone="brand" >{copy.tilaa.badge}</Chip>
 		<header class="tier__head">
 			<h3 class="tier__title">{copy.landing.result.asuntocardTitle.split(':')[0]}</h3>
-			<p class="tier__price"><b>19 €</b><span class="tier__period">{copy.tilaa.billedOnce}</span></p>
+			<p class="tier__price"><b>9,90 €</b><span class="tier__period">{copy.tilaa.billedOnce}</span></p>
 		</header>
 		<ul class="tier__features">
 			<li class="ok">Kaikki ilmaisen ominaisuudet</li>
@@ -55,7 +55,7 @@
 						<input {id} type="email" name="email" placeholder="sinä@esimerkki.fi" required autocomplete="email" />
 					{/snippet}
 				</Field>
-				<Button type="submit" block>{copy.tilaa.cta.buy} · 19 €</Button>
+				<Button type="submit" block>{copy.tilaa.cta.buy} · 9,90 €</Button>
 				<p class="fine">{copy.tilaa.fineOnce}</p>
 			</form>
 			{#if form?.error}<p class="err">{form.error}</p>{/if}
@@ -67,7 +67,7 @@
 	<article class="tier">
 		<header class="tier__head">
 			<h3 class="tier__title">Sijoittaja Pro</h3>
-			<p class="tier__price"><b>7 €</b><span class="tier__period">{copy.tilaa.billedMonth} · tai <b>69 €</b>{copy.tilaa.billedYear}</span></p>
+			<p class="tier__price"><b>19,90 €</b><span class="tier__period">{copy.tilaa.billedMonth}</span></p>
 		</header>
 		<ul class="tier__features">
 			<li class="ok">Kaikki Taloyhtiöraportin ominaisuudet</li>
@@ -85,7 +85,7 @@
 						<input {id} type="email" name="email" placeholder="sinä@esimerkki.fi" required autocomplete="email" />
 					{/snippet}
 				</Field>
-				<Button type="submit" variant="secondary" block>{copy.tilaa.cta.startPro} · 7 €/kk</Button>
+				<Button type="submit" variant="secondary" block>{copy.tilaa.cta.startPro} · 19,90 €/kk</Button>
 				<p class="fine">{copy.tilaa.finePro}</p>
 			</form>
 			{#if form?.error}<p class="err">{form.error}</p>{/if}
