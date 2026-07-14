@@ -57,6 +57,7 @@
 					</span>
 				</div>
 				<p class="case__body">{c.body}</p>
+				<p class="case__source">Lähde: Tilastokeskus 13mt</p>
 			</article>
 		{/each}
 	</div>
@@ -137,6 +138,17 @@
 		font-size: var(--text-sm);
 		line-height: var(--lh-list);
 		margin: 0;
+	}
+
+	.case__source {
+		margin: auto 0 0;
+		padding-top: 0.7rem;
+		border-top: 1px solid var(--border);
+		font-size: var(--text-xs);
+		font-weight: 500;
+		color: var(--ink-3);
+		letter-spacing: var(--ls-wide);
+		text-transform: uppercase;
 	}
 
 	@media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
