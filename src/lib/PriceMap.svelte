@@ -15,11 +15,10 @@
 	let hover: { pc: string; nimi: string; eur: number | null; n: number; x: number; y: number } | null =
 		$state(null);
 
-	// Single-hue Baltic petrol ramp (matches --brand / MiniMap hero), white→petrol = cheap→expensive.
-	// Steps mix #0f6a78 into white at 0/18/38/58/78/100% (component-wise sRGB), mirroring MiniMap's ramp.
-	// L (0.299R+0.587G+0.114B): 255 → 223.5 → 188.5 → 154.1 → 119.0 → 80.4, ~31-39pt gaps.
-	// Still lightness-monotonic and CVD-safe (single hue — discrimination is lightness-only).
-	const RAMP = ['#ffffff', '#d4e4e7', '#a4c6cc', '#74a9b1', '#448b96', '#0f6a78'];
+	// Single-hue ink ramp (publication palette), white→black = cheap→expensive.
+	// Lightness-monotonic and CVD-safe (single hue — discrimination is lightness only).
+	// Endpoints match the editorial palette: paper (#ffffff) to ink (#0a0a0a).
+	const RAMP = ['#ffffff', '#dad6cb', '#b1ab99', '#857c66', '#534a39', '#0a0a0a'];
 	const BREAKS = [800, 1450, 2200, 3400, 5700];
 	const fmt = new Intl.NumberFormat('fi-FI');
 
