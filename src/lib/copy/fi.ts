@@ -113,11 +113,62 @@ export const copy = {
 		market: {
 			eyebrow: 'Markkinat nyt',
 			transactions: 'Kauppoja / 4 nelj.',
-			median: 'Mediaanihinta',
+			change12: '12 kk hintakehitys',
+			forecast12: '12 kk trendiennuste',
 			areas: 'Aluetta, joilla julkaistu hinta',
 			mostExpensive: 'Kallein alue',
 			cheapest: 'Edullisin alue',
-			source: 'Lähde: Tilastokeskus 13mt'
+			countrySub: 'koko maa, kerrostalot',
+			source: 'Lähde: Tilastokeskus 13mt · 13mv'
+		},
+
+		report: {
+			factsTitle: 'Ilmoituksesta poimitut tiedot',
+			factsMissing: 'ei ilmoitettu',
+			facts: {
+				address: 'Osoite',
+				debtFreePrice: 'Velaton hinta',
+				askingPrice: 'Myyntihinta',
+				debtShare: 'Velkaosuus',
+				maintenanceCharge: 'Hoitovastike',
+				capitalCharge: 'Pääomavastike',
+				totalCharge: 'Yhtiövastike yhteensä',
+				area: 'Asuinpinta-ala',
+				rooms: 'Huoneisto',
+				buildYear: 'Rakennusvuosi',
+				condition: 'Kunto',
+				floor: 'Kerros',
+				elevator: 'Hissi',
+				landOwnership: 'Tontin omistus',
+				tonttiArea: 'Tontin pinta-ala',
+				energyClass: 'Energialuokka',
+				housingCompany: 'Taloyhtiö',
+				apartmentCount: 'Huoneistoja yhtiössä',
+				mortgages: 'Yhtiön kiinnitykset',
+				perApartment: 'per huoneisto',
+				ofPrice: 'hinnasta',
+				yes: 'kyllä',
+				no: 'ei',
+				years: 'v'
+			},
+			locationTitle: 'Sijaintipainotettu vertailu',
+			locationBeta: 'beta',
+			locationLede:
+				'Naapurialueiden toteutuneet kaupat etäisyyspainotettuna osoitteen ympäriltä.',
+			locationWeighted: 'Sijaintipainotettu hintataso',
+			locationDelta: 'Kohde vs. sijaintipainotettu',
+			locationCols: { area: 'Alue', price: '€/m²', dist: 'Etäisyys' },
+			estimateTitle: 'Hinta-arviohaarukka',
+			estimateAssumptions: 'Oletukset',
+			insightsTitle: 'Poiminnat ilmoituksesta',
+			renoTitle: 'Remonttihistoria ja tulevat remontit',
+			renoDone: 'Tehty',
+			renoUpcoming: 'Tulossa',
+			renoNone: 'Ilmoituksessa ei mainittu remontteja — pyydä isännöitsijäntodistus ja kunnossapitotarveselvitys.',
+			historyLoading: 'Haetaan alueen hintahistoriaa Tilastokeskuksesta…',
+			shareCta: 'Avaa jaettava arvio →',
+			shareHint: 'Linkki sisältää arvion tiedot ilman ilmoituksen tekstiä.',
+			sourceLine: (host: string) => `Analysoitu ilmoituksesta (${host}), yksi käyttäjän pyytämä haku.`
 		},
 
 		methodNote:
@@ -178,6 +229,7 @@ export const copy = {
 			transferTax: (eur: string) => `Ostajan varainsiirtovero n. ${eur} € (1,5 %, vero.fi).`,
 			pipeNear: 'Rakennus lähestyy tyypillistä putkiremontti-ikää. Tarkista tehdyt remontit.',
 			pipeIn: 'Rakennus on tyypillisessä putkiremontti-iässä. Varmista, onko putkiremontti tehty.',
+			pipeDone: 'Putkiremontti on ilmoituksen mukaan tehty — suurin yksittäinen remonttiriski on takana.',
 			trend: (pct: string, from: number, to: number) =>
 				`Alueen keskihinnat ovat muuttuneet keskimäärin ${pct} % vuodessa (${from}–${to}).`
 		},
@@ -231,6 +283,7 @@ export const copy = {
 		statsAreas: 'Alueita',
 		topExpensive: 'Kalleimmat alueet',
 		topCheapest: 'Edullisimmat alueet',
+		topVolume: 'Vaihdetuimmat alueet',
 		topHint: 'Vähintään 10 kauppaa neljällä neljänneksellä. Klikkaa riviä esitäyttääksesi vertailun.',
 		colArea: 'Alue',
 		colPrice: '€/m²',
@@ -350,6 +403,8 @@ export const copy = {
 
 	footer: {
 		brandLine: 'Fides Groupin kehittämä työkalu asuntokaupan markkinahintavertailuun.',
+		dataLine: (n: number) =>
+			`Data: Tilastokeskus 13mt · 13mv · asvu 13eb · ${n.toLocaleString('fi-FI')} postinumeroaluetta julkaistuin hinnoin · päivittyy neljännesvuosittain.`,
 		links: {
 			why: 'Miksi RehtiArvio?',
 			how: 'Miten tämä toimii',

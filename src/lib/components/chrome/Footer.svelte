@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { copy } from '$lib/copy/fi';
 
+	let { areas = null }: { areas?: number | null } = $props();
+
 	const fidesUrl = 'https://fidesgroup.fi';
 </script>
 
@@ -29,6 +31,9 @@
 	</nav>
 
 	<p class="ftr__attr">{copy.footer.attribution}</p>
+	{#if areas}
+		<p class="ftr__data num">{copy.footer.dataLine(areas)}</p>
+	{/if}
 </footer>
 
 <style>
@@ -119,5 +124,14 @@
 		font-size: var(--text-xs);
 		line-height: var(--lh-list);
 		max-width: 50rem;
+	}
+
+	.ftr__data {
+		margin: 0;
+		color: var(--ink-3);
+		font-size: var(--text-xs);
+		line-height: var(--lh-list);
+		letter-spacing: var(--ls-wide);
+		text-transform: uppercase;
 	}
 </style>

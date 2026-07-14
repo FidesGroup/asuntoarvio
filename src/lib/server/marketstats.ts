@@ -29,6 +29,7 @@ export interface MarketStats {
 	p75EurM2: number;
 	topExpensive: AreaStat[];
 	topCheapest: AreaStat[];
+	topByVolume: AreaStat[];
 	/** distribution over the same €/m² bands as the map ramp */
 	bands: PriceBand[];
 }
@@ -83,6 +84,7 @@ export function marketStats(): MarketStats {
 		p75EurM2: p75,
 		topExpensive: byEurDesc.slice(0, TOP_COUNT),
 		topCheapest: byEurDesc.slice(-TOP_COUNT).reverse(),
+		topByVolume: [...rows].sort((a, b) => b.n - a.n).slice(0, TOP_COUNT),
 		bands
 	};
 	return cached;

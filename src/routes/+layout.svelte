@@ -6,7 +6,7 @@
 	import Toaster from '$lib/components/ui/Toaster.svelte';
 	import { copy } from '$lib/copy/fi';
 
-	let { children } = $props();
+	let { children, data } = $props();
 
 	// Map surfaces get the full wide shell; everything else reads at app width.
 	const wide = $derived(page.route.id === '/kartta');
@@ -23,7 +23,7 @@
 	<main id="main" class="main" class:main--wide={wide}>
 		{@render children()}
 	</main>
-	<Footer />
+	<Footer areas={data.dataMeta.areas} />
 </div>
 
 <Toaster />

@@ -1,7 +1,9 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { knownPostalCodes, evaluateProperty, locationBenchmark } from '$lib/server/benchmark';
+import { knownPostalCodes, evaluateProperty, locationBenchmark, lookupCell } from '$lib/server/benchmark';
+import { computeYield } from '$lib/server/yield';
 import { marketStats } from '$lib/server/marketstats';
 import { exampleCases } from '$lib/server/examples';
+import { fetchCountryHistory } from '$lib/server/country-history';
 import { geocodeAddress } from '$lib/server/geocode';
 import { createReport } from '$lib/server/reports';
 import { getSubscriberByToken } from '$lib/server/subscribers';
@@ -18,13 +20,33 @@ import type { ListingFacts } from '$lib/server/benchmark';
 import { copy } from '$lib/copy/fi';
 import type { Actions, PageServerLoad } from './$types';
 
+/** vero.fi, varainsiirtovero (asunto-osakkeet) 1.5%, page updated 2026-01-01. */
+const TRANSFER_TAX_RATE = 0.015;
+/** Interest assumption for own-vs-rent, stated as pure cost in the UI. */
+const OWN_VS_RENT_INTEREST = 0.035;
+
+const PIPE_RENO_RE = /putki|lvi|linjasaneeraus|käyttövesi/i;
+
+function pipeRenovationPhase(
+	buildYear: number | null,
+	renovationsDone: { text: string }[]
+): 'near' | 'in' | 'done' | null {
+	if (renovationsDone.some((r) => PIPE_RENO_RE.test(r.text))) return 'done';
+	if (!buildYear) return null;
+	const age = new Date().getFullYear() - buildYear;
+	if (age >= 40 && age <= 70) return 'in';
+	if (age >= 30) return 'near';
+	return null;
+}
+
 export const load: PageServerLoad = async ({ url }) => {
 	const pc = url.searchParams.get('pc');
 	return {
 		postalCodes: knownPostalCodes(),
 		prefillPc: pc && /^\d{5}$/.test(pc) ? pc : null,
 		market: marketStats(),
-		examples: exampleCases()
+		examples: exampleCases(),
+		lazy: { country: fetchCountryHistory() }
 	};
 };
 
@@ -181,6 +203,52 @@ export const actions: Actions = {
 			sourceUrl
 		});
 
+		// Yield + own-vs-rent with the listing's REAL vastike when published.
+		const vastikeEur = extracted.totalChargeEurMo ?? extracted.maintenanceChargeEurMo ?? 0;
+		const rentEst = facts.roomsType
+			? estimateRent(facts.postalCode, facts.roomsType, facts.livingAreaM2)
+			: null;
+		const yieldResult =
+			rentEst?.monthlyRentEur != null
+				? computeYield(
+						{
+							monthlyRentEur: rentEst.monthlyRentEur,
+							monthlyVastikeEur: vastikeEur,
+							priceEur: facts.priceEur,
+							priceIsDebtFree: facts.priceIsDebtFree,
+							livingAreaM2: facts.livingAreaM2
+						},
+						'estimate'
+					)
+				: null;
+		const ownVsRent =
+			rentEst?.monthlyRentEur != null
+				? {
+						rentEur: rentEst.monthlyRentEur,
+						rentPerM2: Math.round((rentEst.monthlyRentEur / facts.livingAreaM2) * 10) / 10,
+						rentIsEstimate: true,
+						interestEur: Math.round((facts.priceEur * OWN_VS_RENT_INTEREST) / 12),
+						vastikeEur: Math.round(vastikeEur),
+						reserveEur: yieldResult ? Math.round(yieldResult.reserveEurYr / 12) : 0
+					}
+				: null;
+
+		const cell = facts.roomsType ? lookupCell(facts.postalCode, facts.roomsType) : null;
+		const cellEurs = (cell?.series ?? [])
+			.map((s) => s.eur_m2)
+			.filter((e): e is number => e !== null);
+		const quarterRange =
+			cellEurs.length >= 2 ? { min: Math.min(...cellEurs), max: Math.max(...cellEurs) } : null;
+
+		const share = new URLSearchParams({
+			pc: facts.postalCode,
+			rt: facts.roomsType ?? '',
+			m2: String(facts.livingAreaM2),
+			price: String(facts.priceEur)
+		});
+		if (facts.buildYear) share.set('yr', String(facts.buildYear));
+		if (vastikeEur > 0) share.set('vastike', String(Math.round(vastikeEur)));
+
 		return {
 			extracted,
 			facts,
@@ -190,7 +258,15 @@ export const actions: Actions = {
 			review,
 			location,
 			source,
-			reportPayload
+			reportPayload,
+			yieldResult,
+			ownVsRent,
+			quarterRange,
+			shareParams: facts.roomsType ? share.toString() : null,
+			notes: {
+				transferTaxEur: Math.round(facts.priceEur * TRANSFER_TAX_RATE),
+				pipeReno: pipeRenovationPhase(facts.buildYear ?? null, extracted.renovationsDone)
+			}
 		};
 	},
 

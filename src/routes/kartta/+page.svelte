@@ -11,7 +11,8 @@
 	const fmt = new Intl.NumberFormat('fi-FI');
 	const tops = $derived([
 		{ title: copy.kartta.topExpensive, rows: data.market.topExpensive },
-		{ title: copy.kartta.topCheapest, rows: data.market.topCheapest }
+		{ title: copy.kartta.topCheapest, rows: data.market.topCheapest },
+		{ title: copy.kartta.topVolume, rows: data.market.topByVolume }
 	]);
 </script>
 
@@ -150,10 +151,17 @@
 
 	.tops {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: var(--space-7);
 		margin-top: var(--space-7);
 		max-width: var(--container-app);
+	}
+
+	@media (max-width: 900px) {
+		.tops {
+			grid-template-columns: 1fr;
+			gap: var(--space-5);
+		}
 	}
 
 	.top__title {
@@ -208,13 +216,6 @@
 
 	.top__link:hover {
 		text-decoration-color: var(--ink);
-	}
-
-	@media (max-width: 720px) {
-		.tops {
-			grid-template-columns: 1fr;
-			gap: var(--space-5);
-		}
 	}
 
 	.attr {

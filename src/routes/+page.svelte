@@ -4,7 +4,7 @@
 	import Field from '$lib/components/ui/Field.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import HeroAnalyzer from '$lib/components/sections/HeroAnalyzer.svelte';
-	import VerdictBlock from '$lib/components/sections/VerdictBlock.svelte';
+	import AnalysisReport from '$lib/components/sections/AnalysisReport.svelte';
 	import { goto } from '$app/navigation';
 	import PriceMap from '$lib/PriceMap.svelte';
 	import CaseGrid from '$lib/components/sections/CaseGrid.svelte';
@@ -44,7 +44,7 @@
 </div>
 
 {#if hasResult && form?.facts && form?.verdict}
-	<VerdictBlock verdict={form.verdict} {tier} facts={form.facts} />
+	<AnalysisReport {form} />
 {/if}
 
 <section class="market" aria-label={copy.landing.market.eyebrow}>
@@ -55,8 +55,30 @@
 			<span class="mstat__val num">{fmtNum.format(data.market.totalTransactions)}</span>
 		</div>
 		<div class="mstat">
-			<span class="mstat__lbl">{copy.landing.market.median}</span>
-			<span class="mstat__val num">{fmtNum.format(data.market.medianEurM2)} <span class="mstat__unit">€/m²</span></span>
+			<span class="mstat__lbl">{copy.landing.market.change12}</span>
+			{#await data.lazy.country}
+				<span class="mstat__val num">–</span>
+			{:then c}
+				{#if c?.last12moChangePct != null}
+					<span class="mstat__val num">{c.last12moChangePct > 0 ? '+' : ''}{String(c.last12moChangePct).replace('.', ',')} %</span>
+					<span class="mstat__sub">{copy.landing.market.countrySub}</span>
+				{:else}
+					<span class="mstat__val num">–</span>
+				{/if}
+			{/await}
+		</div>
+		<div class="mstat">
+			<span class="mstat__lbl">{copy.landing.market.forecast12}</span>
+			{#await data.lazy.country}
+				<span class="mstat__val num">–</span>
+			{:then c}
+				{#if c?.next12moTrendPct != null}
+					<span class="mstat__val num">{c.next12moTrendPct > 0 ? '+' : ''}{String(c.next12moTrendPct).replace('.', ',')} %</span>
+					<span class="mstat__sub">{copy.landing.market.countrySub}</span>
+				{:else}
+					<span class="mstat__val num">–</span>
+				{/if}
+			{/await}
 		</div>
 		<div class="mstat">
 			<span class="mstat__lbl">{copy.landing.market.mostExpensive}</span>
@@ -187,7 +209,7 @@
 
 	.market__grid {
 		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
 		gap: 1rem;
 		padding-top: 1rem;
 		border-top: 1px solid var(--border);
