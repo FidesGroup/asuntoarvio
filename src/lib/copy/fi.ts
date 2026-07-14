@@ -18,7 +18,7 @@ export const copy = {
 
 	landing: {
 		eyebrow: 'Ilmainen analyysi',
-		h1: 'Onko tämä hinta kohdallaan?',
+		h1: 'Onko asunnon hinta kohdallaan?',
 		lede: 'Liitä ilmoitus, niin saat vertailun alueen toteutuneisiin kauppoihin.',
 		pillCoverage: (n: number) => `${n.toLocaleString('fi-FI')} postinumeroa`,
 		pillQuarters: '4 viimeistä neljännestä',
