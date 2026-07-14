@@ -6,10 +6,34 @@
 	type CaseItem = { pc: string; rooms: string; outcome: Outcome; delta: string | null; body: string };
 
 	const items: CaseItem[] = [
-		{ pc: '00100', rooms: 'yksiö', outcome: 'under', delta: '−8,2 %', body: 'Pyyntihinta oli selvästi alueen mediaanin alapuolella. Syyksi paljastui tuleva putkiremontti — ostaja budjetoi 320 €/m² ja teki tarjouksen.' },
-		{ pc: '00200', rooms: 'kolmio+', outcome: 'over', delta: '+14,7 %', body: 'Hinta kuulosti korkealta, mutta sijaintipainotettu vertailu osoitti kohteen olevan linjassa mikrosijainnin kanssa. Ostaja jatkoi neuvottelua.' },
-		{ pc: '33100', rooms: 'rivitalo', outcome: 'estimate', delta: null, body: 'Alueella alle 20 kauppaa neljänneksessä. Kuntoarvio (hyvä kunto, 1998 rakennettu, putket tehty) arvioi hinnan haarukaksi 2 850–3 150 €/m².' },
-		{ pc: '90500', rooms: 'omakotitalo', outcome: 'estimate', delta: null, body: 'Omakotitaloille ei ole kuntakohtaista dataa. Aluevertailu varoittaa: tontin arvo vaihtelee paljon, eikä €/m² yksin riitä hinta-arvioksi.' }
+		{
+			pc: '00100',
+			rooms: 'yksiö',
+			outcome: 'under',
+			delta: '−8,2 %',
+			body: 'Ensiasunnon ostaja huomasi vertailun näyttävän pyyntihinnan noin 22 000 € alle alueen tason. Syyksi paljastui tuleva putkiremontti: ostaja budjetoi 320 €/m² lisää ja tarjosi vähemmän.'
+		},
+		{
+			pc: '00200',
+			rooms: 'kolmio+',
+			outcome: 'over',
+			delta: '+14,7 %',
+			body: 'Perhe vertaili isoa kolmiota ja sai 45 000 € yli alueen mediaanin. Lähialueen toteutuneet kaupat osoittivat kohteen olevan kuitenkin linjassa kadun muiden kauppojen kanssa, joten neuvottelu jatkui.'
+		},
+		{
+			pc: '33100',
+			rooms: 'rivitalo',
+			outcome: 'estimate',
+			delta: null,
+			body: 'Rivitalon ostaja sai alueelta vain 12 kauppaa neljänneksessä. Kuntoarvio (hyvä kunto, 1998 rakennettu, putket tehty) arvioi hinnan haarukaksi 178 000–196 000 €.'
+		},
+		{
+			pc: '90500',
+			rooms: 'omakotitalo',
+			outcome: 'estimate',
+			delta: null,
+			body: 'Omakotitalon ostajalle työkalu ei antanut euromääräistä eroa. Aluevertailu varoitti: tontin arvo vaihtelee paljon eikä €/m² yksin riitä hinta-arvioksi. Ostaja tilasi Taloyhtiöraportin tueksi.'
+		}
 	];
 
 	function outcomeLabel(o: Outcome) {
