@@ -1,9 +1,12 @@
 <script lang="ts">
 	/**
 	 * Hero mini-map of Finland: €/m² by postal area, colored by lightness ramp.
-	 * Single-hue (Baltic petrol) sequential ramp — CVD-safe, lightness-monotonic
-	 * per rule 10. Centroid data comes from `centroids.json` (postal codes + lat/lon
-	 * + €/m²). Areas without published data render as a faint dot, not omitted.
+	 * Single-hue (ink) sequential ramp -- CVD-safe, lightness-monotonic per
+	 * rule 10. The 5 steps mix --brand (now paper-on-ink editorial) into
+	 * --surface (paper white) at 30/48/66/84/100% — same lightness gaps as
+	 * the Baltic-petrol version, just on the ink axis. Centroid data comes
+	 * from `centroids.json` (postal codes + lat/lon + €/m²). Areas without
+	 * published data render as a faint dot, not omitted.
 	 */
 	interface Centroid {
 		c: number[];
@@ -42,9 +45,12 @@
 	function fillFor(eur: number | null): string {
 		if (eur === null || eur <= 0) return 'var(--border-2)';
 		const t = lightness(eur);
-		// 5-step sequential ramp on the Baltic petrol hue. Floor raised from 18%→30%
-		// so the cheapest-tier dots (majority, price distribution skews low) don't
-		// blend into the --surface card background. Still lightness-monotonic, single-hue.
+		// 5-step sequential ramp on the ink axis. --brand is now publication
+		// ink (#0a0a0a) so mixing N% of it into --surface (paper white)
+		// yields a paper-to-ink ramp: N=30% → ~#b3b3b3 (clearest against
+		// the card). Floor kept at 30% so the cheapest-tier dots (majority,
+		// price distribution skews low) don't blend into the --surface card
+		// background. Still lightness-monotonic, single-hue.
 		if (t < 0.2) return 'color-mix(in srgb, var(--brand) 30%, var(--surface))';
 		if (t < 0.4) return 'color-mix(in srgb, var(--brand) 48%, var(--surface))';
 		if (t < 0.6) return 'color-mix(in srgb, var(--brand) 66%, var(--surface))';
