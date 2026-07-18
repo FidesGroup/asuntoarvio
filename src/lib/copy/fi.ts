@@ -264,14 +264,83 @@ export const copy = {
 	kartta: {
 		title: 'Markkina-analyysi',
 		h1: 'Asuntomarkkinat postinumeroalueittain',
-		lede: 'Toteutuneet neliöhinnat kartalla, hintajakauma ja alueiden ääripäät. Klikkaa aluetta esitäyttääksesi vertailun.',
-		legendNoData: 'Katkoviivalla merkityltä alueelta ei ole julkaistua hintaa.',
-		tapHint: 'Napauta aluetta nähdäksesi hinnan.',
+		lede: 'Toteutuneet neliöhinnat, 12 kuukauden hintakehitys, bruttovuokratuotot ja markkinan likviditeetti kartalla. Klikkaa aluetta esitäyttääksesi vertailun.',
+		legendNoData: 'Katkoviivalla merkityltä alueelta ei ole julkaistua arvoa valitulle tunnusluvulle.',
+		noValue: 'ei julkaistua arvoa',
+		tapHint: 'Napauta aluetta nähdäksesi luvut.',
 		panelUse: 'Käytä vertailussa',
 		panelClose: 'Sulje tietoruutu',
+		modesLabel: 'Kartan tunnusluku',
+		modes: {
+			eur: 'Neliöhinta',
+			chg: 'Muutos 12 kk',
+			yld: 'Vuokratuotto',
+			pir: 'Hinta / tulot',
+			liq: 'Likviditeetti'
+		},
+		modeUnits: {
+			yld: 'brutto / v',
+			pir: 'vuoden mediaanituloa',
+			liq: 'kauppaa / 1 000 asuntoa'
+		},
+		modeLedes: {
+			eur: 'Toteutuneiden kauppojen keskineliöhinta neljältä viimeiseltä neljännekseltä.',
+			chg: 'Neliöhintojen muutos edellisvuoden vastaavaan neljään neljännekseen. Laskettu huonetyypeittäin ja painotettu kauppamäärillä, jotta myyntirakenteen muutos ei näy hinnanmuutoksena.',
+			yld: 'Bruttovuokratuotto: alueen tilastovuokra (12 kk) suhteessa saman huonetyypin toteutuneisiin neliöhintoihin. Ei sisällä vastikkeita eikä veroja.',
+			pir: '60 m² asunnon velaton hinta suhteessa alueen aikuisväestön mediaanivuosituloihin. Mitä suurempi luku, sitä kireämpi hintataso suhteessa paikalliseen ostovoimaan.',
+			liq: 'Julkaistut kaupat neljältä neljännekseltä suhteessa alueen asuntokantaan. Ohuilla markkinoilla yksittäiset kaupat heiluttavat hintatilastoa enemmän.'
+		},
+		katsausTitle: 'Markkinakatsaus',
+		katsausWindow: (w: string) => `Tarkastelujakso ${w}`,
+		katsaus: (s: {
+			areas: number;
+			transactions: string;
+			median: string;
+			chg: number | null;
+			riser: { name: string; value: number } | null;
+			faller: { name: string; value: number } | null;
+			medianYield: number | null;
+		}) => {
+			const pct = (v: number) => `${v > 0 ? '+' : ''}${String(v).replace('.', ',')}`;
+			const out: string[] = [];
+			out.push(
+				`Tilastokeskus julkaisi neliöhinnan ${s.areas} postinumeroalueelta; julkaistuja kauppoja kirjattiin ${s.transactions} ja julkaistujen alueiden mediaanineliöhinta oli ${s.median} €/m².`
+			);
+			if (s.chg !== null) {
+				out.push(
+					`Vuodentakaiseen verrattuna neliöhinnat ${s.chg < 0 ? 'laskivat' : 'nousivat'} julkaistuilla alueilla keskimäärin ${pct(Math.abs(s.chg)).replace('+', '')} % (kauppamäärillä painotettu, huonetyypeittäin vakioitu).`
+				);
+			}
+			if (s.riser && s.faller) {
+				out.push(
+					`Voimakkainta nousu oli alueella ${s.riser.name} (${pct(s.riser.value)} %); suurin lasku kirjattiin alueella ${s.faller.name} (${pct(s.faller.value)} %).`
+				);
+			}
+			if (s.medianYield !== null) {
+				out.push(
+					`Tilastovuokriin suhteutettu bruttovuokratuotto oli mediaanialueella ${String(s.medianYield).replace('.', ',')} %.`
+				);
+			}
+			return out;
+		},
+		katsausDisclaimer:
+			'Katsaus muodostetaan automaattisesti sivun tilastoista. Se ei ole sijoitusneuvo.',
 		countryPriceTitle: 'Koko maan hintakehitys (kerrostalot)',
 		countryVolumeTitle: 'Koko maan myyntimäärät (kerrostalot)',
 		countrySource: 'Lähde: Tilastokeskus 13mv',
+		divergence: {
+			title: 'Alueellinen eriytyminen: pääkaupunkiseutu vs. muu Suomi',
+			lede: 'Kerrostalojen toteutuneet neliöhinnat indeksoituna: sama lähtötaso vuonna 2020, joten viivojen etäisyys kertoo markkinoiden eriytymisen.',
+			unit: (base: number) => `indeksi, ${base} = 100`,
+			pks: 'PKS',
+			msu: 'Muu Suomi',
+			variantLabel: 'Hintasarjan tyyppi',
+			nominal: 'Nimellinen',
+			real: 'Reaalinen',
+			realNote:
+				'Reaalinen sarja on deflatoitu kuluttajahintaindeksillä: se näyttää hintakehityksen suhteessa yleiseen hintatasoon.',
+			source: 'Lähde: Tilastokeskus 13mv · KHI 11xs'
+		},
 		bandsTitle: 'Neliöhintojen jakauma',
 		bandsUnit: 'postinumeroalueet hintaluokittain',
 		bandsAreas: 'aluetta',
@@ -281,14 +350,24 @@ export const copy = {
 		statsP75: 'Yläkvartiili',
 		statsTransactions: 'Kauppoja / 4 nelj.',
 		statsAreas: 'Alueita',
+		statsChange: '12 kk muutos',
+		statsYield: 'Mediaanituotto',
 		topExpensive: 'Kalleimmat alueet',
 		topCheapest: 'Edullisimmat alueet',
 		topVolume: 'Vaihdetuimmat alueet',
+		topYield: 'Korkeimmat vuokratuotot',
+		topRisers: 'Suurimmat nousijat 12 kk',
+		topFallers: 'Suurimmat laskijat 12 kk',
 		topHint: 'Vähintään 10 kauppaa neljällä neljänneksellä. Klikkaa riviä esitäyttääksesi vertailun.',
+		topYieldHint: 'Bruttotuotto ennen vastikkeita ja veroja. Korkea tuotto heijastaa usein myös korkeampaa riskiä.',
 		colArea: 'Alue',
 		colPrice: '€/m²',
 		colN: 'Kauppoja',
-		attribution: 'Lähde: Tilastokeskus (13mt, CC BY 4.0).'
+		colYield: 'Tuotto-%',
+		colChange: 'Muutos-%',
+		csvCta: 'Lataa aluetaulukko (CSV)',
+		csvNote: 'Kaikki julkaistut alueet tunnuslukuineen.',
+		attribution: 'Lähde: Tilastokeskus (13mt, asvu 13eb, 13mv, Paavo — CC BY 4.0).'
 	},
 
 	tilaa: {
@@ -329,7 +408,7 @@ export const copy = {
 			{ code: 'Vuokrat', desc: 'Keskivuokrat postinumeroalueittain.' }
 		],
 		dataNote:
-			'Hinnat päivittyvät neljä kertaa vuodessa, kun Tilastokeskus julkaisee uudet luvut. Tilastojen tunnisteet (13mt, 15hw, asvu 13eb) löytyvät sivun alatunnisteesta.',
+			'Hinnat päivittyvät neljä kertaa vuodessa, kun Tilastokeskus julkaisee uudet luvut. Tilastojen tunnisteet (13mt, 13mv, 15hw, asvu 13eb sekä Paavo-aluetilasto) löytyvät sivun alatunnisteesta ja markkina-analyysin lähdemerkinnöistä.',
 		howTitle: 'Miten vertailu toimii',
 		howSteps: [
 			'Liität myynti-ilmoituksen linkin tai tekstin.',
@@ -350,6 +429,45 @@ export const copy = {
 			{ name: 'Tarkka vertailu', desc: 'Asunnon omalta postinumeroalueelta löytyi vähintään 30 kauppaa. Luotettavin taso.' },
 			{ name: 'Aluevertailu', desc: 'Omalta alueelta ei löytynyt tarpeeksi kauppoja, joten vertaamme laajempaan alueeseen. Karkeampi taso.' },
 			{ name: 'Kuntoarvio', desc: 'Kauppoja on liian vähän vertailuun, joten annamme hintahaarukan asunnon kunnon perusteella. Aina suuntaa antava.' }
+		],
+		metricsTitle: 'Markkina-analyysin tunnusluvut',
+		metricsIntro:
+			'Markkina-analyysin kartta, taulukot ja CSV-vienti käyttävät seuraavia tunnuslukuja. Jokainen lasketaan vain, kun havaintoja on riittävästi — muuten arvo jätetään näyttämättä sen sijaan, että tilalle keksittäisiin luku.',
+		metrics: [
+			{
+				name: 'Neliöhinta (€/m²)',
+				desc: 'Toteutuneiden kauppojen keskineliöhinta neljältä viimeiseltä neljännekseltä, painotettu kauppamäärillä (Tilastokeskus 13mt).'
+			},
+			{
+				name: 'Muutos 12 kk',
+				desc: 'Neliöhintojen muutos edellisvuoden vastaavaan neljään neljännekseen. Lasketaan huonetyypeittäin ja painotetaan kauppamäärillä, jotta myyntirakenteen muutos ei näy hinnanmuutoksena. Näytetään vain, jos molemmissa jaksoissa on vähintään 10 julkaistua kauppaa.'
+			},
+			{
+				name: 'Vuokratuotto (brutto)',
+				desc: 'Alueen tilastovuokra 12 kuukaudelta jaettuna saman huonetyypin toteutuneella neliöhinnalla (asvu 13eb / 13mt), painotettu kauppamäärillä. Bruttoluku: ei sisällä vastikkeita, veroja eikä tyhjiä kuukausia. Puuttuvia postinumeroalueita ei paikata kuntatason vuokrilla.'
+			},
+			{
+				name: 'Hinta / tulot',
+				desc: '60 m² asunnon hinta alueen neliöhinnalla jaettuna alueen aikuisväestön mediaanivuosituloilla (Paavo). Karkea kohtuuhintaisuuden mittari: mitä suurempi luku, sitä kireämpi hintataso suhteessa paikalliseen ostovoimaan.'
+			},
+			{
+				name: 'Likviditeetti',
+				desc: 'Julkaistut kaupat neljältä neljännekseltä tuhatta asuntoa kohden (13mt / Paavo). Vähimmäisarvio: tilastosalauksen piilottamat kaupat eivät ole mukana. Ohuilla markkinoilla yksittäiset kaupat heiluttavat hintatilastoa enemmän.'
+			},
+			{
+				name: 'Alueellinen eriytyminen',
+				desc: 'Pääkaupunkiseudun ja muun Suomen kerrostalohinnat indeksisarjoina (13mv), perusvuosi 2020 = 100. Reaalinen sarja on deflatoitu kuluttajahintaindeksillä (KHI 11xs).'
+			}
+		],
+		limitsTitle: 'Mitä aluetilasto ei kerro',
+		limitsIntro:
+			'Aluetason tilasto on rehellinen vain, jos sen rajat sanotaan ääneen. Nämä tunnetut vinoumat on validoitu vertaamalla tilastoja eläviin myynti-ilmoituksiin:',
+		limits: [
+			'Uudiskohteet: uudistuotannon preemio alueen keskiarvoon nähden voi olla kymmeniä prosentteja — ja tiiviin uudisrakentamisen alueilla suhde voi kääntyä toisinpäin.',
+			'Huoneistokoko: pienet yksiöt myydään tyypillisesti alueen keskineliöhintaa kalliimmalla ja suuret perheasunnot halvemmalla.',
+			'Alueen sisäinen hajonta: sama postinumeroalue voi sisältää sekä arvokorttelin että lähiön, eikä keskiarvo kuvaa kumpaakaan täydellisesti.',
+			'Salatut solut: Tilastokeskus ei julkaise vähäisten havaintojen soluja (vuokratilastossa raja on 20 havaintoa). Puuttuva arvo ei tarkoita nollaa, eikä salattua arvoa koskaan korvata toisella luvulla.',
+			'Vuokratilasto painottuu vapaarahoitteisiin vuokrasuhteisiin, ja yksittäisen asunnon vuokra voi poiketa alueen tilastovuokrasta selvästi.'
 		],
 		coverageTitle: 'Katettu alue',
 		coverageCount: (n: number) => `Vertailuhinnat kattavat ${n.toLocaleString('fi-FI')} postinumeroaluetta eri puolilla Suomea.`

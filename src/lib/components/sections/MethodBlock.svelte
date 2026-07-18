@@ -55,6 +55,29 @@
 	</Card>
 
 	<Card>
+		{#snippet header()}<h2 class="h2">{copy.miksi.metricsTitle}</h2>{/snippet}
+		<p class="intro">{copy.miksi.metricsIntro}</p>
+		<dl class="tiers">
+			{#each copy.miksi.metrics as t (t.name)}
+				<div class="tier">
+					<dt>{t.name}</dt>
+					<dd>{t.desc}</dd>
+				</div>
+			{/each}
+		</dl>
+	</Card>
+
+	<Card>
+		{#snippet header()}<h2 class="h2">{copy.miksi.limitsTitle}</h2>{/snippet}
+		<p class="intro">{copy.miksi.limitsIntro}</p>
+		<ul class="dont">
+			{#each copy.miksi.limits as item (item)}
+				<li>{item}</li>
+			{/each}
+		</ul>
+	</Card>
+
+	<Card>
 		{#snippet header()}<h2 class="h2">{copy.miksi.coverageTitle}</h2>{/snippet}
 		<p class="coverage">{copy.miksi.coverageCount(cover)} <a href="/kartta">Avaa markkina-analyysi →</a></p>
 	</Card>

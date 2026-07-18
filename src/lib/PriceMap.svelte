@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { copy } from '$lib/copy/fi';
+	import type { MapMode } from '$lib/map-modes';
 
 	let {
 		center = [25.5, 62.6] as [number, number],
@@ -9,25 +10,116 @@
 		height = 'min(72vh, 640px)',
 		marker = null as [number, number] | null,
 		showLegend = true,
+		mode = 'eur' as MapMode,
 		onareaclick = null as ((pc: string) => void) | null
 	} = $props();
 
 	let container: HTMLDivElement;
-	let hover: { pc: string; nimi: string; eur: number | null; n: number; x: number; y: number } | null =
-		$state(null);
+
+	interface AreaProps {
+		pc: string;
+		nimi: string;
+		eur: number | null;
+		n: number;
+		chg: number | null;
+		yld: number | null;
+		pir: number | null;
+		liq: number | null;
+	}
+	let hover: { p: AreaProps; x: number; y: number } | null = $state(null);
 	// Tap-to-pin panel for coarse-pointer devices, where the mousemove
 	// tooltip never fires. A tap pins the area's numbers to a fixed panel.
-	let pinned: { pc: string; nimi: string; eur: number | null; n: number } | null = $state(null);
+	let pinned: AreaProps | null = $state(null);
 	let clearPin: () => void = () => (pinned = null);
 
-	// Classic choropleth ramp: ColorBrewer 6-class YlOrRd, pale yellow →
-	// deep red = cheap → expensive. Sequential, lightness-monotonic and
-	// colorblind-safe per ColorBrewer — owner decision 2026-07-14 replacing
-	// the paper/ink ramp, which read as scary/hard to read on the dark
-	// basemap. Reads instantly as "heat = price" on the light basemap.
-	const RAMP = ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#f03b20', '#bd0026'];
-	const BREAKS = [800, 1450, 2200, 3400, 5700];
 	const fmt = new Intl.NumberFormat('fi-FI');
+	const fmt1 = new Intl.NumberFormat('fi-FI', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+	const signed = (v: number) => `${v > 0 ? '+' : ''}${fmt1.format(v)}`;
+
+	/**
+	 * All ramps are ColorBrewer 6-class schemes (lightness-monotonic and
+	 * CVD-validated per ColorBrewer — rule 10: never eyeball replacements).
+	 * eur keeps the classic YlOrRd choropleth (owner decision 2026-07-14);
+	 * chg is diverging RdBu around 0 (red = falling, blue = rising);
+	 * the rest are sequential. Breaks were set from the observed
+	 * distribution quantiles printed by scripts/enrich-map-data.mts.
+	 * eur BREAKS must keep matching BAND_BREAKS in marketstats.ts.
+	 */
+	const MODES: Record<
+		MapMode,
+		{
+			prop: string;
+			ramp: string[];
+			breaks: number[];
+			legendTitle: string;
+			labels: [string, string, string];
+			line: (p: AreaProps) => string | null;
+		}
+	> = {
+		eur: {
+			prop: 'eur',
+			ramp: ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#f03b20', '#bd0026'],
+			breaks: [800, 1450, 2200, 3400, 5700],
+			legendTitle: '€/m²',
+			labels: ['<800', '2 200', '>5 700'],
+			line: (p) => (p.eur === null ? null : `${fmt.format(p.eur)} €/m²`)
+		},
+		chg: {
+			prop: 'chg',
+			ramp: ['#b2182b', '#ef8a62', '#fddbc7', '#d1e5f0', '#67a9cf', '#2166ac'],
+			breaks: [-10, -5, 0, 5, 10],
+			legendTitle: copy.kartta.modes.chg,
+			labels: ['<−10 %', '0', '>+10 %'],
+			line: (p) => (p.chg === null ? null : `${signed(p.chg)} % / 12 kk`)
+		},
+		yld: {
+			prop: 'yld',
+			ramp: ['#ffffcc', '#c7e9b4', '#7fcdbb', '#41b6c4', '#2c7fb8', '#253494'],
+			breaks: [5, 6.5, 8, 10, 12],
+			legendTitle: copy.kartta.modes.yld,
+			labels: ['<5 %', '8 %', '>12 %'],
+			line: (p) => (p.yld === null ? null : `${fmt1.format(p.yld)} % ${copy.kartta.modeUnits.yld}`)
+		},
+		pir: {
+			prop: 'pir',
+			ramp: ['#feebe2', '#fcc5c0', '#fa9fb5', '#f768a1', '#c51b8a', '#7a0177'],
+			breaks: [2.5, 4, 5.5, 7, 9],
+			legendTitle: copy.kartta.modes.pir,
+			labels: ['<2,5', '5,5', '>9'],
+			line: (p) => (p.pir === null ? null : `${fmt1.format(p.pir)} ${copy.kartta.modeUnits.pir}`)
+		},
+		liq: {
+			prop: 'liq',
+			ramp: ['#f2f0f7', '#dadaeb', '#bcbddc', '#9e9ac8', '#756bb1', '#54278f'],
+			breaks: [3, 6, 12, 20, 30],
+			legendTitle: copy.kartta.modes.liq,
+			labels: ['<3', '12', '>30'],
+			line: (p) => (p.liq === null ? null : `${fmt1.format(p.liq)} ${copy.kartta.modeUnits.liq}`)
+		}
+	};
+	const modeCfg = $derived(MODES[mode]);
+
+	function fillColor(m: MapMode): unknown {
+		const c = MODES[m];
+		const step: unknown[] = ['step', ['get', c.prop], c.ramp[0]];
+		c.breaks.forEach((b, i) => step.push(b, c.ramp[i + 1]));
+		return step;
+	}
+
+	function readProps(props: Record<string, unknown>): AreaProps {
+		return {
+			pc: props.pc as string,
+			nimi: props.nimi as string,
+			eur: (props.eur ?? null) as number | null,
+			n: (props.n ?? 0) as number,
+			chg: (props.chg ?? null) as number | null,
+			yld: (props.yld ?? null) as number | null,
+			pir: (props.pir ?? null) as number | null,
+			liq: (props.liq ?? null) as number | null
+		};
+	}
+
+	let applyMode: (m: MapMode) => void = () => {};
 
 	onMount(() => {
 		let map: import('maplibre-gl').Map | undefined;
@@ -51,12 +143,10 @@
 					id: 'price-fill',
 					type: 'fill',
 					source: 'prices',
-					filter: ['!=', ['get', 'eur'], null],
+					filter: ['!=', ['get', modeCfg.prop], null],
 					paint: {
-						'fill-color': [
-							'step', ['get', 'eur'],
-							RAMP[0], BREAKS[0], RAMP[1], BREAKS[1], RAMP[2], BREAKS[2], RAMP[3], BREAKS[3], RAMP[4], BREAKS[4], RAMP[5]
-						],
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						'fill-color': fillColor(mode) as any,
 						// Slightly translucent so basemap labels/roads show through and
 						// the map keeps reading as a real map.
 						'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.95, 0.75]
@@ -68,33 +158,42 @@
 					id: 'price-outline',
 					type: 'line',
 					source: 'prices',
-					filter: ['!=', ['get', 'eur'], null],
+					filter: ['!=', ['get', modeCfg.prop], null],
 					paint: { 'line-color': '#ffffff', 'line-opacity': 0.9, 'line-width': 0.8 }
 				});
 				map.addLayer({
 					id: 'price-nodata',
 					type: 'line',
 					source: 'prices',
-					filter: ['==', ['get', 'eur'], null],
+					filter: ['==', ['get', modeCfg.prop], null],
 					paint: { 'line-color': '#9a9a9a', 'line-opacity': 0.5, 'line-width': 0.7, 'line-dasharray': [2, 2] }
 				});
 				if (marker) {
 					new maplibregl.Marker({ color: '#0a0a0a' }).setLngLat(marker).addTo(map);
 				}
 
+				applyMode = (m: MapMode) => {
+					if (!map) return;
+					const prop = MODES[m].prop;
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					map.setPaintProperty('price-fill', 'fill-color', fillColor(m) as any);
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					map.setFilter('price-fill', ['!=', ['get', prop], null] as any);
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					map.setFilter('price-outline', ['!=', ['get', prop], null] as any);
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					map.setFilter('price-nodata', ['==', ['get', prop], null] as any);
+				};
+
 				let hoveredId: string | null = null;
 				map.on('mousemove', 'price-fill', (e) => {
 					if (!map) return;
 					const f = e.features?.[0];
 					if (!f) return;
-				if (hoveredId !== null) map.setFeatureState({ source: 'prices', id: hoveredId }, { hover: false });
-				hoveredId = f.properties.pc;
-				if (hoveredId !== null) map.setFeatureState({ source: 'prices', id: hoveredId }, { hover: true });
-					hover = {
-						pc: f.properties.pc, nimi: f.properties.nimi,
-						eur: f.properties.eur, n: f.properties.n,
-						x: e.point.x, y: e.point.y
-					};
+					if (hoveredId !== null) map.setFeatureState({ source: 'prices', id: hoveredId }, { hover: false });
+					hoveredId = f.properties.pc;
+					if (hoveredId !== null) map.setFeatureState({ source: 'prices', id: hoveredId }, { hover: true });
+					hover = { p: readProps(f.properties), x: e.point.x, y: e.point.y };
 					map.getCanvas().style.cursor = onareaclick ? 'pointer' : '';
 				});
 				map.on('mouseleave', 'price-fill', () => {
@@ -124,10 +223,7 @@
 						pinnedId = f.properties.pc;
 						if (pinnedId !== null)
 							map.setFeatureState({ source: 'prices', id: pinnedId }, { hover: true });
-						pinned = {
-							pc: f.properties.pc, nimi: f.properties.nimi,
-							eur: f.properties.eur, n: f.properties.n
-						};
+						pinned = readProps(f.properties);
 					} else if (onareaclick) {
 						onareaclick(f.properties.pc);
 					}
@@ -141,6 +237,10 @@
 		})();
 		return () => map?.remove();
 	});
+
+	$effect(() => {
+		applyMode(mode);
+	});
 </script>
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape' && pinned) clearPin(); }} />
@@ -148,22 +248,30 @@
 <div class="mapwrap" style="--h: {height}">
 	<div class="map" bind:this={container}></div>
 	{#if hover && !pinned}
+		{@const line = modeCfg.line(hover.p)}
 		<div class="tooltip" style="left: {hover.x + 12}px; top: {hover.y + 12}px">
-			<b>{hover.pc} {hover.nimi}</b><br />
-			{#if hover.eur}{fmt.format(hover.eur)} €/m² <span>· {hover.n} kauppaa/4 nelj.</span>
-			{:else}ei julkaistua hintaa{/if}
+			<b>{hover.p.pc} {hover.p.nimi}</b><br />
+			{#if line}{line}{:else}{copy.kartta.noValue}{/if}
+			{#if mode !== 'eur' && hover.p.eur !== null}
+				<br /><span>{fmt.format(hover.p.eur)} €/m²</span>
+			{/if}
+			<span>· {hover.p.n} kauppaa/4 nelj.</span>
 		</div>
 	{/if}
 	{#if pinned}
+		{@const line = modeCfg.line(pinned)}
 		<div class="panel" role="status">
 			<button class="panel__close" type="button" aria-label={copy.kartta.panelClose} onclick={() => clearPin()}>×</button>
 			<b>{pinned.pc} {pinned.nimi}</b>
-			{#if pinned.eur}
-				<span class="panel__price">{fmt.format(pinned.eur)} €/m² <span class="panel__sub">· {pinned.n} kauppaa/4 nelj.</span></span>
+			{#if line}
+				<span class="panel__price">{line}</span>
 			{:else}
-				<span class="panel__sub">ei julkaistua hintaa</span>
+				<span class="panel__sub">{copy.kartta.noValue}</span>
 			{/if}
-			{#if onareaclick && pinned.eur}
+			<span class="panel__sub">
+				{#if mode !== 'eur' && pinned.eur !== null}{fmt.format(pinned.eur)} €/m² · {/if}{pinned.n} kauppaa/4 nelj.
+			</span>
+			{#if onareaclick && pinned.eur !== null}
 				<button class="panel__use" type="button" onclick={() => { const pc = pinned?.pc; if (pc) onareaclick?.(pc); }}>
 					{copy.kartta.panelUse}
 				</button>
@@ -171,10 +279,10 @@
 		</div>
 	{/if}
 	{#if showLegend}
-		<div class="legend" aria-label="Värilegenda: euroa per neliömetri">
-			<span class="title">€/m²</span>
-			{#each RAMP as color (color)}<span class="swatch" style="background:{color}"></span>{/each}
-			<span class="lab">&lt;800</span><span class="lab mid">2 200</span><span class="lab">&gt;5 700</span>
+		<div class="legend" aria-label="Värilegenda: {modeCfg.legendTitle}">
+			<span class="title">{modeCfg.legendTitle}</span>
+			{#each modeCfg.ramp as color (color)}<span class="swatch" style="background:{color}"></span>{/each}
+			<span class="lab">{modeCfg.labels[0]}</span><span class="lab mid">{modeCfg.labels[1]}</span><span class="lab">{modeCfg.labels[2]}</span>
 		</div>
 	{/if}
 </div>

@@ -130,6 +130,17 @@ constraints below were each earned the hard way in one intensive build day
   polygons (WFS) joined to the seed; regeneration scripts live in the geo repo
   scratch (`C:/tmp/geo-bench/`) — promote them into `scripts/` here if touched
   again.
+- **Derived market metrics** (2026-07-18): `price-change.seed.json` (previous
+  4-quarter 13mt window for the mix-controlled 12-mo change) and
+  `paavo.seed.json` (median income `hr_mtu` + dwellings `ra_asunn`) power the
+  /kartta map modes, tables and CSV. Rerun after each benchmark refresh /
+  annual Paavo vintage:
+  `node --experimental-strip-types scripts/build-price-change.mts`
+  `node --experimental-strip-types scripts/build-paavo-stats.mts`
+  `node --experimental-strip-types scripts/enrich-map-data.mts` (writes the
+  metrics into `static/map-data.geojson`; run it last). Metric definitions
+  live in `src/lib/server/areametrics.ts` and must stay in sync with the
+  /miksi copy. Null means below-threshold or suppressed — never substitute.
 
 ## Related repos
 

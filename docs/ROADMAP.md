@@ -20,8 +20,12 @@ be public.
   listing fields; verdict + taloyhtiö insights + flags; micro-location v1
   (MML geocoding → inverse-distance-weighted blend of nearby postal
   benchmarks) with an embedded price map around the address.
-- **`/kartta`** — whole-Finland choropleth of realized €/m² (1,724 postal
-  areas, 711 with published data), click-through to prefill the benchmark.
+- **`/kartta`** — whole-Finland choropleth with five metric modes (€/m²,
+  mix-controlled 12-mo change, gross rental yield, price-to-income, trades
+  per 1,000 dwellings), an auto-generated Markkinakatsaus, PKS-vs-muu-Suomi
+  divergence chart (nominal/real, 13mv + KHI), six ranked area tables and a
+  CSV export of the full area table (2026-07-18). Click-through to prefill
+  the benchmark. Metric definitions are documented on /miksi.
 - **`/api/benchmark`** — JSON endpoint (future MCP surface).
 - **`/api/refresh`** — monthly StatFin refresh cron.
 - Whole-Finland seed: StatFin 13mt, 4-quarter transaction-weighted means,
