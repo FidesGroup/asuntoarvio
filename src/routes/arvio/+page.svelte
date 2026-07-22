@@ -501,15 +501,12 @@
 
 	.back:hover { color: var(--ink); }
 
+	/* Keep the metric tiles as compact two-column pairs even on the smallest
+	   phones rather than collapsing to one tall stacked column — the verdict
+	   stays scannable and the page reads shorter. minmax(0,1fr) prevents the
+	   €/m² values from forcing overflow. */
 	@media (max-width: 720px) {
-		.metrics { grid-template-columns: 1fr 1fr; }
-		.yield-grid { grid-template-columns: 1fr 1fr; }
-	}
-
-	@media (max-width: 480px) {
-		.metrics,
-		.yield-grid {
-			grid-template-columns: 1fr;
-		}
+		.metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+		.yield-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	}
 </style>

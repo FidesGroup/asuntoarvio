@@ -119,7 +119,8 @@ export const copy = {
 			mostExpensive: 'Kallein alue',
 			cheapest: 'Edullisin alue',
 			countrySub: 'koko maa, kerrostalot',
-			source: 'Lähde: Tilastokeskus 13mt · 13mv'
+			source: 'Lähde: Tilastokeskus 13mt · 13mv',
+			methodToggle: 'Miten tämä lasketaan?'
 		},
 
 		report: {

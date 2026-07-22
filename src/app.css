@@ -138,10 +138,15 @@ svg {
 .reveal[data-stagger='5'] { transition-delay: 300ms; }
 .reveal[data-stagger='6'] { transition-delay: 360ms; }
 
+/* Data-driven stagger: any container can drive its own rhythm by setting an
+   inline `--stagger` index (50ms/step). Complements the numbered classes above. */
+.reveal[style*='--stagger'] { transition-delay: calc(var(--stagger) * 50ms); }
+
 @media (prefers-reduced-motion: reduce) {
 	.reveal {
 		opacity: 1;
 		transform: none;
+		transition-delay: 0s;
 	}
 }
 

@@ -10,6 +10,7 @@
 	import CaseGrid from '$lib/components/sections/CaseGrid.svelte';
 	import { copy } from '$lib/copy/fi';
 	import { SITE_URL } from '$lib/site';
+	import { inview } from '$lib/styles/actions';
 
 	let { data, form } = $props();
 
@@ -106,15 +107,21 @@
 		</div>
 	</div>
 	<p class="market__src">{copy.landing.market.source}</p>
-	<p class="market__method">{copy.landing.methodNote}</p>
+	<details class="market__method">
+		<summary class="market__method-toggle">{copy.landing.market.methodToggle}</summary>
+		<p class="market__method-body">{copy.landing.methodNote}</p>
+	</details>
 </section>
 
-<CaseGrid examples={data.examples} />
+<div class="reveal" use:inview>
+	<CaseGrid examples={data.examples} />
+</div>
 
 <form
 	method="POST"
 	action="?/waitlist"
-	class="waitlist"
+	class="waitlist reveal"
+	use:inview
 	use:enhance={() => {
 		pending = true;
 		return async ({ result, update }) => {
@@ -275,9 +282,48 @@
 
 	.market__method {
 		margin: 0;
+	}
+
+	/* Progressive disclosure: methodology explanation collapsed by default so
+	   the stat strip stays the focus. StatFin attribution (.market__src) stays
+	   always visible above it — it is a license condition, not decoration. */
+	.market__method-toggle {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		font-size: var(--text-sm);
+		color: var(--brand);
+		cursor: pointer;
+		list-style: none;
+		text-decoration: underline;
+		text-decoration-color: color-mix(in srgb, var(--brand) 35%, transparent);
+		text-underline-offset: 3px;
+		width: fit-content;
+	}
+
+	.market__method-toggle::-webkit-details-marker { display: none; }
+
+	.market__method-toggle::before {
+		content: '+';
+		display: inline-block;
+		width: 1em;
+		margin-right: 0.35rem;
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.market__method[open] .market__method-toggle::before { content: '−'; }
+
+	.market__method-toggle:hover {
+		text-decoration-color: var(--brand);
+	}
+
+	.market__method-body {
+		margin: 0.35rem 0 0;
 		font-size: var(--text-sm);
 		color: var(--ink-2);
 		line-height: var(--lh-list);
+		max-width: var(--container-prose);
 	}
 
 	@media (max-width: 720px) {

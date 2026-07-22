@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { inview } from '$lib/styles/actions';
 	import Field from '$lib/components/ui/Field.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import { copy } from '$lib/copy/fi';
@@ -52,7 +51,7 @@
 	}
 </script>
 
-<section class="hero" use:inview>
+<section class="hero">
 	<span class="hero__eyebrow">{copy.landing.eyebrow}</span>
 	<h1 class="hero__h1">{copy.landing.h1}</h1>
 	<p class="hero__lede">{copy.landing.lede}</p>
@@ -196,6 +195,7 @@
 	}
 
 	.hero__h1 {
+		position: relative;
 		font-size: var(--text-4xl);
 		line-height: var(--lh-tight);
 		letter-spacing: var(--ls-tightest);
@@ -204,11 +204,61 @@
 		margin: 0;
 	}
 
+	/* Signature: a short "publication ink" rule that draws in under the
+	   headline once the hero has settled. Editorial masthead cue, on-brand
+	   (square, ink), reserved signal colors untouched. */
+	.hero__h1::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		bottom: -0.4rem;
+		width: 2.75rem;
+		height: 3px;
+		background: var(--brand);
+		transform: scaleX(0);
+		transform-origin: left center;
+		animation: hero-rule var(--dur-slow) var(--ease-emphasized) both;
+		animation-delay: 480ms;
+	}
+
 	.hero__lede {
 		color: var(--ink-2);
 		font-size: var(--text-lg);
 		margin: 0;
 		line-height: var(--lh-body);
+	}
+
+	/* On-load entrance choreography. CSS-driven (not JS `inview`) so the LCP
+	   headline paints on first frame instead of waiting for hydration. */
+	.hero__eyebrow,
+	.hero__h1,
+	.hero__lede,
+	.form:not(.form--manual) {
+		animation: hero-in var(--dur-slow) var(--ease-emphasized) both;
+	}
+	.hero__eyebrow { animation-delay: 40ms; }
+	.hero__h1 { animation-delay: 130ms; }
+	.hero__lede { animation-delay: 230ms; }
+	.form:not(.form--manual) { animation-delay: 330ms; }
+
+	@keyframes hero-in {
+		from { opacity: 0; transform: translateY(10px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+
+	@keyframes hero-rule {
+		to { transform: scaleX(1); }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero__eyebrow,
+		.hero__h1,
+		.hero__lede,
+		.form:not(.form--manual),
+		.hero__h1::after {
+			animation: none;
+		}
+		.hero__h1::after { transform: scaleX(1); }
 	}
 
 	.hero__privacy {
@@ -228,6 +278,7 @@
 		margin-top: 0.5rem;
 		padding-top: 1.25rem;
 		border-top: 1px solid var(--border);
+		animation: hero-in var(--dur-base) var(--ease-standard) both;
 	}
 
 	.form__title {
@@ -283,11 +334,11 @@
 		text-decoration-color: var(--brand);
 	}
 
+	/* Keep two columns down to the smallest phones so the six fields read as
+	   three calm pairs (postinumero/huonetyyppi · pinta-ala/hinta ·
+	   vuosi/vastike) instead of six stacked inputs. minmax(0,1fr) guards
+	   against numeric-input overflow. */
 	@media (max-width: 720px) {
 		.form__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-	}
-
-	@media (max-width: 480px) {
-		.form__grid { grid-template-columns: 1fr; }
 	}
 </style>

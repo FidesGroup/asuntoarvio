@@ -33,11 +33,11 @@
 				<tbody>
 					{#each copy.evasteet.rows as row (row.name)}
 						<tr>
-							<td class="num">{row.name}</td>
-							<td>{row.group}</td>
-							<td>{row.purpose}</td>
-							<td>{row.duration}</td>
-							<td>{row.setter}</td>
+							<td class="num" data-label={copy.evasteet.tableCols.name}>{row.name}</td>
+							<td data-label={copy.evasteet.tableCols.group}>{row.group}</td>
+							<td data-label={copy.evasteet.tableCols.purpose}>{row.purpose}</td>
+							<td data-label={copy.evasteet.tableCols.duration}>{row.duration}</td>
+							<td data-label={copy.evasteet.tableCols.setter}>{row.setter}</td>
 						</tr>
 					{/each}
 				</tbody>
@@ -88,5 +88,61 @@
 
 	tbody tr:last-child td {
 		border-bottom: none;
+	}
+
+	/* On phones, reflow each row into a stacked label/value card instead of a
+	   sideways-scrolling table. The header row is redundant once every cell
+	   carries its own label. */
+	@media (max-width: 480px) {
+		.table-scroll {
+			overflow-x: visible;
+			border: none;
+			border-radius: 0;
+		}
+
+		table,
+		tbody,
+		tr,
+		td {
+			display: block;
+			width: 100%;
+		}
+
+		thead {
+			display: none;
+		}
+
+		tr {
+			border: 1px solid var(--border);
+			border-radius: var(--radius-sm);
+			padding: 0.4rem 0.9rem;
+			margin-bottom: 0.6rem;
+			background: var(--surface);
+		}
+
+		tbody tr:last-child {
+			margin-bottom: 0;
+		}
+
+		td {
+			display: flex;
+			flex-direction: column;
+			gap: 0.15rem;
+			padding: 0.5rem 0;
+			border-bottom: 1px solid var(--border);
+		}
+
+		tr td:last-child {
+			border-bottom: none;
+		}
+
+		td::before {
+			content: attr(data-label);
+			font-size: var(--text-xs);
+			font-weight: 600;
+			color: var(--ink-3);
+			letter-spacing: var(--ls-wide);
+			text-transform: uppercase;
+		}
 	}
 </style>

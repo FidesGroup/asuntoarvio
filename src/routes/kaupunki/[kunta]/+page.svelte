@@ -63,12 +63,12 @@
 		<tbody>
 			{#each town.rows as r (r.pc)}
 				<tr>
-					<td><a href={`/postinumero/${r.pc}`}>{r.pc} {r.nimi}</a></td>
-					<td class="r">{fmt.format(r.eur)}</td>
-					<td class="r">{fmt.format(r.n)}</td>
-					<td class="r">{r.chgPct !== null ? signed(r.chgPct) : '–'}</td>
-					<td class="r">{r.yieldPct !== null ? fmt1.format(r.yieldPct) : '–'}</td>
-					<td>
+					<td class="tbl__area"><a href={`/postinumero/${r.pc}`}>{r.pc} {r.nimi}</a></td>
+					<td class="r" data-label={copy.kaupunki.colPrice}>{fmt.format(r.eur)}</td>
+					<td class="r" data-label={copy.kaupunki.colN}>{fmt.format(r.n)}</td>
+					<td class="r" data-label={copy.kaupunki.colChange}>{r.chgPct !== null ? signed(r.chgPct) : '–'}</td>
+					<td class="r" data-label={copy.kaupunki.colYield}>{r.yieldPct !== null ? fmt1.format(r.yieldPct) : '–'}</td>
+					<td class="tbl__action">
 						<button type="button" class="tbl__cta" onclick={() => goto(`/?pc=${r.pc}`)}>
 							{copy.kaupunki.prefillCta}
 						</button>
@@ -140,10 +140,97 @@
 		padding: 0.35rem 0.6rem;
 		min-height: 32px;
 		cursor: pointer;
+		transition:
+			background var(--dur-fast) var(--ease-standard),
+			transform var(--dur-fast) var(--ease-standard);
 	}
 
 	.tbl__cta:hover {
 		background: var(--chip);
+	}
+
+	.tbl__cta:active {
+		transform: translateY(1px);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.tbl__cta:active {
+			transform: none;
+		}
+	}
+
+	/* On phones, reflow each row into a stacked card: area name as the title,
+	   numeric columns as label/value rows, prefill as a full-width action. */
+	@media (max-width: 480px) {
+		.tbl-scroll {
+			overflow-x: visible;
+		}
+
+		.tbl,
+		.tbl tbody,
+		.tbl tr,
+		.tbl td {
+			display: block;
+			width: 100%;
+		}
+
+		.tbl thead {
+			display: none;
+		}
+
+		.tbl tr {
+			border: 1px solid var(--border);
+			border-radius: var(--radius-sm);
+			padding: 0.55rem 0.9rem;
+			margin-bottom: 0.6rem;
+			background: var(--surface);
+		}
+
+		.tbl tbody tr:last-child {
+			margin-bottom: 0;
+		}
+
+		.tbl td {
+			padding: 0.45rem 0;
+			white-space: normal;
+			text-align: left;
+			border-bottom: 1px solid var(--border);
+		}
+
+		.tbl tr td:last-child {
+			border-bottom: none;
+		}
+
+		.tbl__area {
+			font-size: var(--text-md);
+			font-weight: 600;
+			padding-top: 0.2rem;
+		}
+
+		.tbl .r {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 1rem;
+		}
+
+		.tbl .r::before {
+			content: attr(data-label);
+			font-size: var(--text-xs);
+			font-weight: 600;
+			color: var(--ink-3);
+			letter-spacing: var(--ls-wide);
+			text-transform: uppercase;
+		}
+
+		.tbl__action {
+			padding-top: 0.6rem;
+		}
+
+		.tbl__action .tbl__cta {
+			width: 100%;
+			min-height: 44px;
+		}
 	}
 
 	.hint {

@@ -208,7 +208,7 @@
 	.drawer__backdrop {
 		position: absolute;
 		inset: 0;
-		background: color-mix(in srgb, var(--ink) 30%, transparent);
+		background: color-mix(in srgb, var(--ink) 40%, transparent);
 		backdrop-filter: blur(2px);
 		border: none;
 		cursor: pointer;
