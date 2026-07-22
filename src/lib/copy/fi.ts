@@ -359,7 +359,8 @@ export const copy = {
 		topYield: 'Korkeimmat vuokratuotot',
 		topRisers: 'Suurimmat nousijat 12 kk',
 		topFallers: 'Suurimmat laskijat 12 kk',
-		topHint: 'Vähintään 10 kauppaa neljällä neljänneksellä. Klikkaa riviä esitäyttääksesi vertailun.',
+		topHint: 'Vähintään 10 kauppaa neljällä neljänneksellä. Avaa alueen sivu tai esitäytä vertailu suoraan.',
+		rowPrefillCta: 'Esitäytä',
 		topYieldHint: 'Bruttotuotto ennen vastikkeita ja veroja. Korkea tuotto heijastaa usein myös korkeampaa riskiä.',
 		colArea: 'Alue',
 		colPrice: '€/m²',
@@ -369,6 +370,56 @@ export const copy = {
 		csvCta: 'Lataa aluetaulukko (CSV)',
 		csvNote: 'Kaikki julkaistut alueet tunnuslukuineen.',
 		attribution: 'Lähde: Tilastokeskus (13mt, asvu 13eb, 13mv, Paavo, CC BY 4.0).'
+	},
+
+	// Colon-label titles/descriptions on purpose ("Helsinki: ...") — Finnish
+	// place names inflect irregularly (Helsinki -> Helsingin/Helsingissä,
+	// Turku -> Turun), and there's no lookup table for every town/area name
+	// here, so copy never grammatically inflects the {town}/{nimi} value.
+	kaupunki: {
+		eyebrow: 'Kaupunki',
+		lede: 'Toteutuneet asuntokauppojen neliöhinnat postinumeroalueittain, Tilastokeskuksen tilastoista.',
+		indexEyebrow: 'Kaupungit',
+		indexH1: 'Asuntojen hinnat kaupungeittain',
+		indexLede: 'Toteutuneet asuntokauppojen neliöhinnat postinumeroalueittain, ryhmiteltynä kaupungeittain. Tilastokeskuksen tilastoista.',
+		indexMetaTitle: 'Asuntojen hinnat kaupungeittain | RehtiArvio',
+		indexMetaDescription: 'Toteutuneet asuntokauppojen neliöhinnat postinumeroalueittain, ryhmiteltynä kaupungeittain. Tilastokeskuksen tilastoista.',
+		metaTitle: (town: string) => `${town}: asuntojen neliöhinnat postinumeroalueittain | RehtiArvio`,
+		metaDescription: (town: string, median: string, n: number) =>
+			`${town}: asuntojen mediaanineliöhinta ${median} €/m², ${n} postinumeroaluetta. Toteutuneet kauppahinnat Tilastokeskuksen tilastoista.`,
+		statMedian: 'Mediaanihinta',
+		statAreas: 'Postinumeroaluetta',
+		statTransactions: 'Kauppoja / 4 nelj.',
+		tableTitle: 'Postinumeroalueet',
+		colArea: 'Alue',
+		colPrice: '€/m²',
+		colN: 'Kauppoja',
+		colChange: 'Muutos 12 kk',
+		colYield: 'Tuotto-%',
+		rowHint: 'Avaa alueen oma sivu tarkempiin tietoihin, tai esitäytä vertailu suoraan.',
+		openArea: 'Avaa alueen sivu',
+		prefillCta: 'Esitäytä',
+		backToKartta: 'Avaa koko maan kartta →',
+		notFound: 'Kaupunkia ei löytynyt.',
+		attribution: 'Lähde: Tilastokeskus (13mt, asvu 13eb, CC BY 4.0).'
+	},
+
+	postinumero: {
+		eyebrow: 'Postinumeroalue',
+		metaTitle: (pc: string, nimi: string) => `${pc} ${nimi}: asuntojen neliöhinnat | RehtiArvio`,
+		metaDescription: (pc: string, nimi: string, eur: string) =>
+			`${pc} ${nimi}: toteutunut asuntokauppojen neliöhinta ${eur} €/m², Tilastokeskuksen tilastoista.`,
+		statPrice: 'Neliöhinta',
+		statN: 'Kauppoja / 4 nelj.',
+		statChange: 'Muutos 12 kk',
+		statYield: 'Vuokratuotto (brutto)',
+		statPriceIncome: 'Hinta / tulot',
+		statLiquidity: 'Kauppaa / 1 000 asuntoa',
+		prefillCta: 'Esitäytä vertailu tälle alueelle →',
+		townTitle: 'Muut postinumeroalueet',
+		backToKartta: 'Avaa koko maan kartta →',
+		notFound: 'Postinumeroaluetta ei löytynyt.',
+		attribution: 'Lähde: Tilastokeskus (13mt, asvu 13eb, Paavo, CC BY 4.0).'
 	},
 
 	tilaa: {
@@ -471,7 +522,34 @@ export const copy = {
 			'Vuokratilasto painottuu vapaarahoitteisiin vuokrasuhteisiin, ja yksittäisen asunnon vuokra voi poiketa alueen tilastovuokrasta selvästi.'
 		],
 		coverageTitle: 'Katettu alue',
-		coverageCount: (n: number) => `Vertailuhinnat kattavat ${n.toLocaleString('fi-FI')} postinumeroaluetta eri puolilla Suomea.`
+		coverageCount: (n: number) => `Vertailuhinnat kattavat ${n.toLocaleString('fi-FI')} postinumeroaluetta eri puolilla Suomea.`,
+		faqTitle: 'Usein kysyttyä',
+		faq: [
+			{
+				q: 'Mistä RehtiArvion hintatiedot tulevat?',
+				a: 'Kaikki hinnat ovat Tilastokeskuksen keräämiä tietoja oikeista, jo tehdyistä asuntokaupoista. Emme käytä pyyntihintoja emmekä välittäjien arvioita.'
+			},
+			{
+				q: 'Kuinka luotettava hinta-arvio on?',
+				a: 'Riippuu kauppojen määrästä alueella. Vähintään 30 kauppaa omalta postinumeroalueelta antaa tarkan vertailun; harvemmalla siirrytään laajempaan aluevertailuun tai asunnon kunnon perusteella tehtyyn suuntaa antavaan kuntoarvioon.'
+			},
+			{
+				q: 'Miten hinta-arvio lasketaan käytännössä?',
+				a: 'Liität myynti-ilmoituksen linkin tai tekstin. Työkalu poimii hinnan, pinta-alan, huoneluvun ja remontit, ja vertaa niitä saman postinumeroalueen toteutuneisiin kauppoihin viimeisen vuoden ajalta.'
+			},
+			{
+				q: 'Onko RehtiArvio virallinen arviolausunto?',
+				a: 'Ei. Emme anna virallisia arviolausuntoja emmekä sijoitusneuvoja, emmekä tee kuntotarkastusta — se on aina ostajan omalla vastuulla.'
+			},
+			{
+				q: 'Kuinka usein hinnat päivittyvät?',
+				a: 'Neljä kertaa vuodessa, kun Tilastokeskus julkaisee uudet luvut.'
+			},
+			{
+				q: 'Maksaako RehtiArvion käyttö?',
+				a: 'Perusvertailu ja Kartta-sivu ovat ilmaisia. Taloyhtiöraportti ja Pro-tilaus ovat maksullisia lisäpalveluita.'
+			}
+		]
 	},
 
 	tili: {
@@ -527,6 +605,7 @@ export const copy = {
 		links: {
 			why: 'Miksi RehtiArvio?',
 			how: 'Miten tämä toimii',
+			cities: 'Kaupungit',
 			statfi: 'Tilastokeskus (CC BY 4.0)',
 			privacy: 'Tietosuoja',
 			cookies: 'Evästeet',

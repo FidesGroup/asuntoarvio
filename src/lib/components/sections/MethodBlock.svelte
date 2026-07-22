@@ -81,6 +81,18 @@
 		{#snippet header()}<h2 class="h2">{copy.miksi.coverageTitle}</h2>{/snippet}
 		<p class="coverage">{copy.miksi.coverageCount(cover)} <a href="/kartta">Avaa kartta →</a></p>
 	</Card>
+
+	<Card>
+		{#snippet header()}<h2 class="h2">{copy.miksi.faqTitle}</h2>{/snippet}
+		<dl class="faq">
+			{#each copy.miksi.faq as item (item.q)}
+				<div class="faq__item">
+					<dt>{item.q}</dt>
+					<dd>{item.a}</dd>
+				</div>
+			{/each}
+		</dl>
+	</Card>
 </div>
 
 <style>
@@ -208,6 +220,26 @@
 		color: var(--ink-2);
 		font-size: var(--text-md);
 		line-height: var(--lh-body);
+	}
+
+	.faq {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin: 0;
+	}
+
+	.faq__item dt {
+		font-weight: 600;
+		color: var(--ink);
+		margin: 0 0 0.3rem;
+	}
+
+	.faq__item dd {
+		margin: 0;
+		font-size: var(--text-sm);
+		color: var(--ink-2);
+		line-height: var(--lh-list);
 	}
 
 </style>

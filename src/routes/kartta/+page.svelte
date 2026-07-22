@@ -176,18 +176,21 @@
 			<h2 class="top__title">{top.title}</h2>
 			<table class="top__table num">
 				<thead>
-					<tr><th>{copy.kartta.colArea}</th><th class="r">{top.valueHead}</th><th class="r">{copy.kartta.colN}</th></tr>
+					<tr><th>{copy.kartta.colArea}</th><th class="r">{top.valueHead}</th><th class="r">{copy.kartta.colN}</th><th></th></tr>
 				</thead>
 				<tbody>
 					{#each top.rows as r (r.pc)}
 						<tr>
 							<td>
-								<button type="button" class="top__link" onclick={() => goto(`/?pc=${r.pc}`)}>
-									{r.pc} {r.nimi}
-								</button>
+								<a class="top__link" href={`/postinumero/${r.pc}`}>{r.pc} {r.nimi}</a>
 							</td>
 							<td class="r">{r.display}</td>
 							<td class="r">{fmt.format(r.n)}</td>
+							<td class="r">
+								<button type="button" class="top__cta" onclick={() => goto(`/?pc=${r.pc}`)}>
+									{copy.kartta.rowPrefillCta}
+								</button>
+							</td>
 						</tr>
 					{/each}
 				</tbody>
@@ -410,6 +413,23 @@
 
 	.top__link:hover {
 		text-decoration-color: var(--ink);
+	}
+
+	.top__cta {
+		font: inherit;
+		font-size: var(--text-xs);
+		font-weight: 500;
+		background: var(--surface-tint);
+		color: var(--ink);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-sm);
+		padding: 0.3rem 0.55rem;
+		min-height: 32px;
+		cursor: pointer;
+	}
+
+	.top__cta:hover {
+		background: var(--chip);
 	}
 
 	.dl {

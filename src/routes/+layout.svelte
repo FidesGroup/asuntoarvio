@@ -21,9 +21,29 @@
 	// Map surfaces get the full wide shell; everything else reads at app width.
 	const wide = $derived(page.route.id === '/kartta');
 
-	// /arvio's query params identify the specific verdict being shown, so its
-	// canonical must include them — it sets its own <link rel="canonical">.
-	const hasOwnCanonical = $derived(page.route.id === '/arvio');
+	// These routes build their own canonical (query params on /arvio identify
+	// the specific verdict shown; the dynamic content routes need their own
+	// exact-slug URL) — each sets its own <link rel="canonical">.
+	const OWN_CANONICAL_ROUTES = ['/arvio', '/kaupunki/[kunta]', '/postinumero/[pc]'];
+	const hasOwnCanonical = $derived(OWN_CANONICAL_ROUTES.includes(page.route.id ?? ''));
+
+	// Real registrant data from /tietosuoja's controller statement, not a
+	// placeholder — kept in sync with copy.tietosuoja.controllerBody.
+	const organizationLd = {
+		'@context': 'https://schema.org',
+		'@type': 'Organization',
+		name: 'Fides Group',
+		url: SITE_URL,
+		email: 'arthakkarainen@gmail.com',
+		taxID: '3637368-5',
+		address: { '@type': 'PostalAddress', addressLocality: 'Espoo', addressCountry: 'FI' }
+	};
+	const websiteLd = {
+		'@context': 'https://schema.org',
+		'@type': 'WebSite',
+		name: 'RehtiArvio',
+		url: SITE_URL
+	};
 </script>
 
 <svelte:head>
@@ -31,6 +51,8 @@
 	{#if !hasOwnCanonical}
 		<link rel="canonical" href={`${SITE_URL}${page.url.pathname}`} />
 	{/if}
+	{@html `<script type="application/ld+json">${JSON.stringify(organizationLd)}<\/script>`}
+	{@html `<script type="application/ld+json">${JSON.stringify(websiteLd)}<\/script>`}
 </svelte:head>
 
 <a class="skip-link" href="#main">{copy.nav.skipToContent}</a>

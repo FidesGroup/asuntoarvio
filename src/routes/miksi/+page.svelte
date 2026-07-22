@@ -5,6 +5,16 @@
 	import { SITE_URL } from '$lib/site';
 
 	let { data } = $props();
+
+	const faqLd = {
+		'@context': 'https://schema.org',
+		'@type': 'FAQPage',
+		mainEntity: copy.miksi.faq.map((item) => ({
+			'@type': 'Question',
+			name: item.q,
+			acceptedAnswer: { '@type': 'Answer', text: item.a }
+		}))
+	};
 </script>
 
 <svelte:head>
@@ -17,6 +27,7 @@
 	<meta name="twitter:card" content="summary" />
 	<meta name="twitter:title" content="Miksi RehtiArvio? | RehtiArvio" />
 	<meta name="twitter:description" content="Miten RehtiArvio toimii, mistä hinnat tulevat ja mitä työkalu ei tee." />
+	{@html `<script type="application/ld+json">${JSON.stringify(faqLd)}<\/script>`}
 </svelte:head>
 
 <div class="page">
