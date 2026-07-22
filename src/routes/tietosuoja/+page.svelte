@@ -22,7 +22,7 @@
 		<dl class="deflist">
 			{#each copy.tietosuoja.whatRows as row (row.name)}
 				<div class="deflist__row">
-					<dt>{row.name} <span class="deflist__basis">— {row.basis}</span></dt>
+					<dt>{row.name} <span class="deflist__basis">({row.basis})</span></dt>
 					<dd>{row.desc}</dd>
 				</div>
 			{/each}

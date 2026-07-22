@@ -102,7 +102,7 @@ export const copy = {
 				'kaksio-tampere':
 					'Kaksiot ovat vaihdetuin kohdetyyppi, joten vertailu on niissä luotettavimmillaan.',
 				'kolmio-turku':
-					'Suuret perheasunnot jäävät usein alle alueen neliökeskihinnan — hinnoittelussa se on neuvotteluvaraa.',
+					'Suuret perheasunnot jäävät usein alle alueen neliökeskihinnan. Hinnoittelussa se on neuvotteluvaraa.',
 				'kaksio-oulu':
 					'Edullisemmilla alueilla tilastovuokra nostaa bruttotuoton selvästi kasvukeskuksia korkeammaksi.'
 			} as Record<string, string>,
@@ -164,7 +164,7 @@ export const copy = {
 			renoTitle: 'Remonttihistoria ja tulevat remontit',
 			renoDone: 'Tehty',
 			renoUpcoming: 'Tulossa',
-			renoNone: 'Ilmoituksessa ei mainittu remontteja — pyydä isännöitsijäntodistus ja kunnossapitotarveselvitys.',
+			renoNone: 'Ilmoituksessa ei mainittu remontteja. Pyydä isännöitsijäntodistus ja kunnossapitotarveselvitys.',
 			historyLoading: 'Haetaan alueen hintahistoriaa Tilastokeskuksesta…',
 			shareCta: 'Avaa jaettava arvio →',
 			shareHint: 'Linkki sisältää arvion tiedot ilman ilmoituksen tekstiä.',
@@ -182,7 +182,7 @@ export const copy = {
 			success: 'Kiitos! Sähköpostisi on kirjattu.',
 			errorGeneric: 'Tallennus epäonnistui. Yritä hetken kuluttua.',
 			errorInvalid: 'Tarkista sähköpostiosoite.',
-			marketingOptIn: 'Saan myös lähettää muita RehtiArvion uutisia sähköpostiisi.'
+			marketingOptIn: 'Saan myös muuta RehtiArvion postia sähköpostiini.'
 		}
 	},
 
@@ -222,7 +222,7 @@ export const copy = {
 			interest: 'Korkokulu',
 			vastike: 'Hoitovastike',
 			reserve: 'Remonttivaraus',
-			vastikeUnknown: 'Hoitovastiketta ei annettu — omistuksen kulut ovat todellisuudessa suuremmat.',
+			vastikeUnknown: 'Hoitovastiketta ei annettu. Omistuksen kulut ovat todellisuudessa suuremmat.',
 			note: 'Korko-oletus 3,5 % velattomasta hinnasta puhtaana kuluna. Ei sisällä lyhennystä eikä arvonmuutosta: lyhennys kasvattaa varallisuutta, arvonmuutos on riski molempiin suuntiin.'
 		},
 		notes: {
@@ -230,7 +230,7 @@ export const copy = {
 			transferTax: (eur: string) => `Ostajan varainsiirtovero n. ${eur} € (1,5 %, vero.fi).`,
 			pipeNear: 'Rakennus lähestyy tyypillistä putkiremontti-ikää. Tarkista tehdyt remontit.',
 			pipeIn: 'Rakennus on tyypillisessä putkiremontti-iässä. Varmista, onko putkiremontti tehty.',
-			pipeDone: 'Putkiremontti on ilmoituksen mukaan tehty — suurin yksittäinen remonttiriski on takana.',
+			pipeDone: 'Putkiremontti on ilmoituksen mukaan tehty. Suurin yksittäinen remonttiriski on takana.',
 			trend: (pct: string, from: number, to: number) =>
 				`Alueen keskihinnat ovat muuttuneet keskimäärin ${pct} % vuodessa (${from}–${to}).`
 		},
@@ -244,7 +244,7 @@ export const copy = {
 			forecastLabel: 'Seuraavan 12 kk trendiennuste',
 			forecastSeries: 'Ennuste',
 			forecastNote:
-				'Trendiennuste on lineaarinen jatke alueen toteutuneista hinnoista (enintään 5 v) — suuntaa antava, ei takuu tulevasta.',
+				'Trendiennuste on lineaarinen jatke alueen toteutuneista hinnoista (enintään 5 v), suuntaa antava eikä takuu tulevasta.',
 			source: 'Lähde: Tilastokeskus 13mt',
 			partialNote: 'Viimeisin vuosi voi olla vajaa.'
 		},
@@ -254,7 +254,7 @@ export const copy = {
 				'Kohteen neliöhinta = velaton hinta jaettuna asuinpinta-alalla.',
 				'Vertailutaso on postinumeroalueen toteutuneiden kauppojen kauppamäärillä painotettu keskihinta neljältä viimeiseltä neljännekseltä (Tilastokeskus 13mt).',
 				'Jos omalta alueelta on alle 30 kauppaa, vertailu laajenee kuntatasolle ja luotettavuusluokka laskee.',
-				'Tilastokeskus ei julkaise alle 20 kaupan soluja — puuttuvaa arvoa ei koskaan korvata toisella luvulla.',
+				'Tilastokeskus ei julkaise alle 20 kaupan soluja. Puuttuvaa arvoa ei koskaan korvata toisella luvulla.',
 				'Ero ilmoitetaan aina yhdessä luotettavuusluokan ja tulkinnan varausten kanssa, ei pelkkänä prosenttina.'
 			]
 		},
@@ -368,7 +368,7 @@ export const copy = {
 		colChange: 'Muutos-%',
 		csvCta: 'Lataa aluetaulukko (CSV)',
 		csvNote: 'Kaikki julkaistut alueet tunnuslukuineen.',
-		attribution: 'Lähde: Tilastokeskus (13mt, asvu 13eb, 13mv, Paavo — CC BY 4.0).'
+		attribution: 'Lähde: Tilastokeskus (13mt, asvu 13eb, 13mv, Paavo, CC BY 4.0).'
 	},
 
 	tilaa: {
@@ -433,7 +433,7 @@ export const copy = {
 		],
 		metricsTitle: 'Kartan tunnusluvut',
 		metricsIntro:
-			'Kartta-sivun karttatasot, taulukot ja CSV-vienti käyttävät seuraavia tunnuslukuja. Jokainen lasketaan vain, kun havaintoja on riittävästi — muuten arvo jätetään näyttämättä sen sijaan, että tilalle keksittäisiin luku.',
+			'Kartta-sivun karttatasot, taulukot ja CSV-vienti käyttävät seuraavia tunnuslukuja. Jokainen lasketaan vain, kun havaintoja on riittävästi. Muuten arvo jätetään näyttämättä sen sijaan, että tilalle keksittäisiin luku.',
 		metrics: [
 			{
 				name: 'Neliöhinta (€/m²)',
@@ -464,7 +464,7 @@ export const copy = {
 		limitsIntro:
 			'Aluetason tilasto on rehellinen vain, jos sen rajat sanotaan ääneen. Nämä tunnetut vinoumat on validoitu vertaamalla tilastoja eläviin myynti-ilmoituksiin:',
 		limits: [
-			'Uudiskohteet: uudistuotannon preemio alueen keskiarvoon nähden voi olla kymmeniä prosentteja — ja tiiviin uudisrakentamisen alueilla suhde voi kääntyä toisinpäin.',
+			'Uudiskohteet: uudistuotannon preemio alueen keskiarvoon nähden voi olla kymmeniä prosentteja, ja tiiviin uudisrakentamisen alueilla suhde voi kääntyä toisinpäin.',
 			'Huoneistokoko: pienet yksiöt myydään tyypillisesti alueen keskineliöhintaa kalliimmalla ja suuret perheasunnot halvemmalla.',
 			'Alueen sisäinen hajonta: sama postinumeroalue voi sisältää sekä arvokorttelin että lähiön, eikä keskiarvo kuvaa kumpaakaan täydellisesti.',
 			'Salatut solut: Tilastokeskus ei julkaise vähäisten havaintojen soluja (vuokratilastossa raja on 20 havaintoa). Puuttuva arvo ei tarkoita nollaa, eikä salattua arvoa koskaan korvata toisella luvulla.',
@@ -538,7 +538,7 @@ export const copy = {
 
 	consent: {
 		bannerAriaLabel: 'Evästeasetukset',
-		lede: 'Käytämme evästeitä sivun toimintaan ja, suostumuksellasi, kävijäanalytiikkaan.',
+		lede: 'Sivulla on muutama eväste. Pakolliset pyörittävät sivua, loput käynnistyvät vain jos hyväksyt ne.',
 		privacyLink: 'Lue lisää evästeistä',
 		acceptAll: 'Hyväksy kaikki',
 		rejectAll: 'Hylkää valinnaiset',
@@ -549,104 +549,104 @@ export const copy = {
 		categories: {
 			necessary: {
 				title: 'Välttämättömät',
-				desc: 'Sivun toiminnan ja tilaajakirjautumisen kannalta pakolliset. Aina päällä — sivu ei toimi ilman näitä.'
+				desc: 'Pyörittävät sivua ja tilaajan kirjautumista. Aina päällä, muuten sivu ei toimi.'
 			},
 			analytics: {
 				title: 'Analytiikka',
-				desc: 'Kävijämäärät, sivujen käyttö ja se, mitä postinumeroalueita tai hintoja analysoit — käytämme tätä palvelun parantamiseen. Katso /tietosuoja.'
+				desc: 'Kävijämäärät, sivujen käyttö ja se, mitä postinumeroalueita tai hintoja katsot. Näiden avulla näemme, mikä toimii ja mikä ei. Lisätietoa: /tietosuoja.'
 			},
 			marketing: {
 				title: 'Markkinointi',
-				desc: 'Varattu tulevaa mainonnan kohdentamista varten. Ei vielä käytössä — kytkin ei tällä hetkellä käynnistä mitään.'
+				desc: 'Ei vielä käytössä. Varattu mahdollista mainontaa varten myöhemmin; kytkin ei tee tällä hetkellä mitään.'
 			}
 		}
 	},
 
 	evasteet: {
 		h1: 'Evästeet ja seurannan hallinta',
-		lede: 'Kolme kategoriaa: välttämättömät ovat aina päällä, analytiikan ja markkinoinnin voit hyväksyä tai hylätä alta milloin tahansa.',
+		lede: 'Kolme ryhmää: välttämättömät ovat aina päällä, analytiikan ja markkinoinnin voit hyväksyä tai hylätä alta, milloin tahansa.',
 		manageTitle: 'Omat valinnat',
 		tableTitle: 'Käytössä olevat evästeet',
 		tableCols: { name: 'Nimi', group: 'Ryhmä', purpose: 'Tarkoitus', duration: 'Voimassaolo', setter: 'Asettaja' },
 		rows: [
-			{ name: 'ra_consent', group: 'Välttämätön', purpose: 'Tallentaa evästesuostumuksesi', duration: '~180 vrk', setter: '1. osapuoli (RehtiArvio)' },
+			{ name: 'ra_consent', group: 'Välttämätön', purpose: 'Tallentaa evästevalintasi', duration: '~180 vrk', setter: '1. osapuoli (RehtiArvio)' },
 			{ name: 'ra_access', group: 'Välttämätön', purpose: 'Tilaajan kirjautumisen tunnistus', duration: '365 vrk', setter: '1. osapuoli (RehtiArvio)' },
-			{ name: 'ph_*_posthog', group: 'Analytiikka', purpose: 'Anonyymi käyttäjätunniste istuntojen välillä (vain jos analytiikka on hyväksytty)', duration: '~1 v', setter: 'PostHog (eu.posthog.com)' },
-			{ name: '—', group: 'Markkinointi', purpose: 'Ei vielä käytössä — täydennetään, kun mainosalusta valitaan', duration: '—', setter: '—' }
+			{ name: 'ph_*_posthog', group: 'Analytiikka', purpose: 'Anonyymi käyttäjätunniste istuntojen välillä, vain jos hyväksyit analytiikan', duration: '~1 v', setter: 'PostHog (eu.posthog.com)' },
+			{ name: 'Ei vielä käytössä', group: 'Markkinointi', purpose: 'Täydennetään tähän, kun mainosalusta valitaan', duration: '–', setter: '–' }
 		]
 	},
 
 	tietosuoja: {
 		h1: 'Tietosuojaseloste',
-		lede: 'Tämä seloste kertoo, mitä tietoa RehtiArvio kerää sivuston kävijöistä, miksi, ja miten voit käyttää oikeuksiasi.',
-		updated: 'Viimeksi päivitetty: 22.7.2026 (v1).',
+		lede: 'Tässä kerrotaan, mitä tietoa RehtiArvio kerää sivuston kävijöistä, miksi, ja miten pääset käsiksi omiin tietoihisi.',
+		updated: 'Päivitetty 22.7.2026 (v1).',
 		controllerTitle: 'Rekisterinpitäjä',
 		controllerBody:
-			'Arttu Hakkarainen / Fides Group, Y-tunnus 3637368-5, Espoo, Suomi. Yhteydenotot rekisteriasioissa: arthakkarainen@gmail.com.',
-		whatTitle: 'Mitä tietoa kerätään ja millä perusteella',
+			'Arttu Hakkarainen / Fides Group, Y-tunnus 3637368-5, Espoo. Rekisteriasioissa: arthakkarainen@gmail.com.',
+		whatTitle: 'Mitä kerätään ja millä perusteella',
 		whatRows: [
 			{
-				name: 'Selailu- ja tuotekäyttödata',
-				basis: 'Suostumus (analytiikka-kategoria)',
-				desc: 'Sivulataukset, klikkaukset ja se, mitä postinumeroalueita/hintoja analysoit. Kerätään PostHogilla (EU, eu.posthog.com) vain, jos hyväksyt analytiikan.'
+				name: 'Selailu- ja käyttödata',
+				basis: 'Suostumus (analytiikka)',
+				desc: 'Sivulataukset, klikkaukset ja se, mitä postinumeroalueita tai hintoja katsot. Kerätään PostHogilla (EU, eu.posthog.com), vain jos hyväksyt analytiikan.'
 			},
 			{
-				name: 'Jonotuslistan sähköposti (leads)',
-				basis: 'Oma pyyntö (sopimusta edeltävät toimet)',
-				desc: 'Itse syöttämäsi sähköposti Taloyhtiöraportin jonotuslistalle. Erillinen, oma valintaruutunsa kertoo, saako osoitteeseen lähettää myös muuta markkinointia.'
+				name: 'Jonotuslistan sähköposti',
+				basis: 'Oma pyyntö',
+				desc: 'Itse antamasi sähköposti Taloyhtiöraportin jonotuslistalle. Oma valintaruutunsa kertoo, saako osoitteeseen lähettää myös muuta postia.'
 			},
 			{
-				name: 'Tilaajatiedot (subscribers)',
+				name: 'Tilaajatiedot',
 				basis: 'Sopimus',
-				desc: 'Sähköposti sekä Stripen asiakas- ja tilaustunnukset Taloyhtiöraportin tai Pro-tilauksen toimittamiseksi.'
+				desc: 'Sähköposti sekä Stripen asiakas- ja tilaustunnukset, Taloyhtiöraportin tai Pro-tilauksen toimittamista varten.'
 			},
 			{
-				name: 'Taloyhtiöraportin luvut (reports.facts)',
+				name: 'Taloyhtiöraportin luvut',
 				basis: 'Sopimus',
-				desc: 'Ostajan liittämistä asiakirjoista koneellisesti poimitut rakenteiset luvut (vastikkeet, lainaosuus, korjausvuodet). Asiakirjatekstiä tai nimiä ei tallenneta.'
+				desc: 'Ostajan liittämistä asiakirjoista koneellisesti poimitut luvut: vastikkeet, lainaosuus, korjausvuodet. Asiakirjatekstiä tai nimiä ei tallenneta.'
 			},
 			{
-				name: 'Suostumusloki (consent_log)',
-				basis: 'Lakisääteinen velvoite osoittaa suostumus',
-				desc: 'Mitä evästevalintaa teit, milloin ja millä selosteversiolla — ei IP-osoitetta eikä selaintunnistetta.'
+				name: 'Suostumusloki',
+				basis: 'Suostumuksen todistaminen (laki edellyttää)',
+				desc: 'Mitä evästevalintaa teit, milloin ja millä selosteversiolla. Ei IP-osoitetta eikä selaintunnistetta.'
 			}
 		],
 		retentionTitle: 'Säilytysajat',
 		retentionRows: [
 			{
-				name: 'Jonotuslistan sähköpostit (leads)',
-				period: 'Säilytetään niin kauan kuin ne palvelevat alkuperäistä tarkoitusta (jonotuslistan ilmoitus, ja markkinointiluvan antaneilla myös muu RehtiArvion viestintä). Tarve arvioidaan vuosittain.'
+				name: 'Jonotuslistan sähköpostit',
+				period: 'Säilössä niin kauan kuin ne palvelevat tarkoitustaan (jonotuslistan ilmoitus, ja markkinointiluvan antaneilla myös muu posti). Käydään läpi kerran vuodessa.'
 			},
 			{
-				name: 'Suostumusloki (consent_log)',
-				period: 'Säilytetään toistaiseksi todisteena annetusta/perutusta suostumuksesta (GDPR 7 artikla). Tarve arvioidaan vuosittain.'
+				name: 'Suostumusloki',
+				period: 'Säilössä todisteena annetusta tai perutusta suostumuksesta. Katsotaan tämäkin läpi vuosittain, vaikka erillistä poistorajaa ei ole.'
 			},
 			{
-				name: 'Analytiikkatapahtumat (PostHog)',
-				period: 'Säilytetään PostHogin projektiasetuksissa valitun, mahdollisimman pitkän säilytysajan verran. Tarve arvioidaan vuosittain.'
+				name: 'Analytiikkatapahtumat',
+				period: 'Niin pitkään kuin PostHogin projektiasetuksissa on määritetty. Tällä hetkellä valittuna pisin saatavilla oleva aika.'
 			},
 			{
 				name: 'Tilaajatiedot ja taloyhtiöraportit',
-				period: 'Säilytetään asiakassuhteen ajan sekä kirjanpitolain edellyttämän ajan sen jälkeen.'
+				period: 'Asiakassuhteen ajan, ja sen jälkeen niin kauan kuin kirjanpitolaki vaatii.'
 			}
 		],
-		recipientsTitle: 'Vastaanottajat ja käsittelijät',
+		recipientsTitle: 'Kenelle tieto menee',
 		recipients: [
-			'Supabase (EU, eu-west-1/Irlanti) — tietokanta.',
-			'PostHog EU Cloud — kävijäanalytiikka (eu.posthog.com), vain suostumuksella.',
-			'Vercel — sivuston hosting, laskenta-alue fra1 (Frankfurt).',
-			'Stripe — maksunvälitys tilausten yhteydessä.'
+			'Supabase (EU, eu-west-1, Irlanti): tietokanta.',
+			'PostHog EU Cloud (eu.posthog.com): kävijäanalytiikka, vain suostumuksella.',
+			'Vercel: sivuston hosting, laskenta-alue Frankfurt.',
+			'Stripe: maksunvälitys tilausten yhteydessä.'
 		],
-		transfersTitle: 'Kansainväliset tiedonsiirrot',
+		transfersTitle: 'Tiedon siirtyminen EU:n ulkopuolelle',
 		transfersBody:
-			'Osa käsittelijöistä (Vercel, Stripe, PostHog) on yhdysvaltalaisia yhtiöitä, vaikka tieto säilytetään EU-alueella. Siirrot perustuvat EU:n vakiosopimuslausekkeisiin tai muihin GDPR:n hyväksymiin siirtomekanismeihin.',
-		rightsTitle: 'Rekisteröidyn oikeudet',
+			'Vercel, Stripe ja PostHog ovat yhdysvaltalaisia yhtiöitä, vaikka itse tieto säilytetään EU-alueella. Tämä nojaa EU:n vakiosopimuslausekkeisiin tai muuhun GDPR:n hyväksymään siirtoperusteeseen.',
+		rightsTitle: 'Sinun oikeutesi',
 		rightsBody:
-			'Sinulla on oikeus saada pääsy tietoihisi, oikaista tai poistaa niitä, rajoittaa käsittelyä, siirtää tiedot toiseen palveluun sekä perua suostumuksesi milloin tahansa (ks. /evasteet). Voit myös tehdä valituksen tietosuojavaltuutetun toimistolle (tietosuoja.fi). Käytä oikeuksiasi ottamalla yhteyttä yllä mainittuun sähköpostiin.',
+			'Voit pyytää pääsyn omiin tietoihisi, pyytää niiden korjaamista tai poistamista, rajoittaa niiden käsittelyä, pyytää tiedot siirrettäväksi toiseen palveluun, ja perua suostumuksesi milloin tahansa osoitteessa /evasteet. Jos jokin ei täsmää, voit tehdä kantelun tietosuojavaltuutetulle (tietosuoja.fi). Näitä oikeuksia käytät ottamalla yhteyttä yllä olevaan sähköpostiin.',
 		automatedTitle: 'Automaattinen päätöksenteko',
 		automatedBody:
-			'Hinta-arvio on tilastollinen vertailu, ei sinua koskeva automaattinen päätös, jolla olisi oikeudellisia tai vastaavia merkittäviä vaikutuksia (GDPR 22 artikla).',
-		cookiesLink: 'Evästekohtaiset tiedot: /evasteet.'
+			'Hinta-arvio on tilastollinen vertailu, ei sinua koskeva päätös, jolla olisi oikeudellisia vaikutuksia (GDPR 22 artikla).',
+		cookiesLink: 'Evästekohtaiset tiedot löytyvät sivulta /evasteet.'
 	},
 
 	errors: {
