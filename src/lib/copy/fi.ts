@@ -181,7 +181,8 @@ export const copy = {
 			cta: 'Liity jonotuslistalle',
 			success: 'Kiitos! Sähköpostisi on kirjattu.',
 			errorGeneric: 'Tallennus epäonnistui. Yritä hetken kuluttua.',
-			errorInvalid: 'Tarkista sähköpostiosoite.'
+			errorInvalid: 'Tarkista sähköpostiosoite.',
+			marketingOptIn: 'Saan myös lähettää muita RehtiArvion uutisia sähköpostiisi.'
 		}
 	},
 
@@ -527,10 +528,109 @@ export const copy = {
 			why: 'Miksi RehtiArvio?',
 			how: 'Miten tämä toimii',
 			statfi: 'Tilastokeskus (CC BY 4.0)',
+			privacy: 'Tietosuoja',
+			cookies: 'Evästeet',
 			fides: 'Fides Group'
 		},
 		attribution:
 			'Hinta-aineistot: Tilastokeskus (13mt, 15hw, asvu 13eb, CC BY 4.0). Suuntaa antava seula, ei arviolausunto eikä sijoitusneuvonta.'
+	},
+
+	consent: {
+		bannerAriaLabel: 'Evästeasetukset',
+		lede: 'Käytämme evästeitä sivun toimintaan ja, suostumuksellasi, kävijäanalytiikkaan.',
+		privacyLink: 'Lue lisää evästeistä',
+		acceptAll: 'Hyväksy kaikki',
+		rejectAll: 'Hylkää valinnaiset',
+		customize: 'Mukauta',
+		save: 'Tallenna valinnat',
+		back: '← Takaisin',
+		saved: 'Valinnat tallennettu.',
+		categories: {
+			necessary: {
+				title: 'Välttämättömät',
+				desc: 'Sivun toiminnan ja tilaajakirjautumisen kannalta pakolliset. Aina päällä — sivu ei toimi ilman näitä.'
+			},
+			analytics: {
+				title: 'Analytiikka',
+				desc: 'Kävijämäärät, sivujen käyttö ja se, mitä postinumeroalueita tai hintoja analysoit — käytämme tätä palvelun parantamiseen. Katso /tietosuoja.'
+			},
+			marketing: {
+				title: 'Markkinointi',
+				desc: 'Varattu tulevaa mainonnan kohdentamista varten. Ei vielä käytössä — kytkin ei tällä hetkellä käynnistä mitään.'
+			}
+		}
+	},
+
+	evasteet: {
+		h1: 'Evästeet ja seurannan hallinta',
+		lede: 'Kolme kategoriaa: välttämättömät ovat aina päällä, analytiikan ja markkinoinnin voit hyväksyä tai hylätä alta milloin tahansa.',
+		manageTitle: 'Omat valinnat',
+		tableTitle: 'Käytössä olevat evästeet',
+		tableCols: { name: 'Nimi', group: 'Ryhmä', purpose: 'Tarkoitus', duration: 'Voimassaolo', setter: 'Asettaja' },
+		rows: [
+			{ name: 'ra_consent', group: 'Välttämätön', purpose: 'Tallentaa evästesuostumuksesi', duration: '~180 vrk', setter: '1. osapuoli (RehtiArvio)' },
+			{ name: 'ra_access', group: 'Välttämätön', purpose: 'Tilaajan kirjautumisen tunnistus', duration: '365 vrk', setter: '1. osapuoli (RehtiArvio)' },
+			{ name: 'ph_*_posthog', group: 'Analytiikka', purpose: 'Anonyymi käyttäjätunniste istuntojen välillä (vain jos analytiikka on hyväksytty)', duration: '~1 v', setter: 'PostHog (eu.posthog.com)' },
+			{ name: '—', group: 'Markkinointi', purpose: 'Ei vielä käytössä — täydennetään, kun mainosalusta valitaan', duration: '—', setter: '—' }
+		]
+	},
+
+	tietosuoja: {
+		h1: 'Tietosuojaseloste',
+		lede: 'Tämä seloste kertoo, mitä tietoa RehtiArvio kerää sivuston kävijöistä, miksi, ja miten voit käyttää oikeuksiasi.',
+		updated: 'Viimeksi päivitetty: 22.7.2026 (v1).',
+		controllerTitle: 'Rekisterinpitäjä',
+		controllerBody:
+			'Arttu Hakkarainen / Fides Group [Y-TUNNUS TÄYTETTÄVÄ], [OSOITE TÄYTETTÄVÄ]. Yhteydenotot rekisteriasioissa: [SÄHKÖPOSTI TÄYTETTÄVÄ].',
+		whatTitle: 'Mitä tietoa kerätään ja millä perusteella',
+		whatRows: [
+			{
+				name: 'Selailu- ja tuotekäyttödata',
+				basis: 'Suostumus (analytiikka-kategoria)',
+				desc: 'Sivulataukset, klikkaukset ja se, mitä postinumeroalueita/hintoja analysoit. Kerätään PostHogilla (EU, eu.posthog.com) vain, jos hyväksyt analytiikan.'
+			},
+			{
+				name: 'Jonotuslistan sähköposti (leads)',
+				basis: 'Oma pyyntö (sopimusta edeltävät toimet)',
+				desc: 'Itse syöttämäsi sähköposti Taloyhtiöraportin jonotuslistalle. Erillinen, oma valintaruutunsa kertoo, saako osoitteeseen lähettää myös muuta markkinointia.'
+			},
+			{
+				name: 'Tilaajatiedot (subscribers)',
+				basis: 'Sopimus',
+				desc: 'Sähköposti sekä Stripen asiakas- ja tilaustunnukset Taloyhtiöraportin tai Pro-tilauksen toimittamiseksi.'
+			},
+			{
+				name: 'Taloyhtiöraportin luvut (reports.facts)',
+				basis: 'Sopimus',
+				desc: 'Ostajan liittämistä asiakirjoista koneellisesti poimitut rakenteiset luvut (vastikkeet, lainaosuus, korjausvuodet). Asiakirjatekstiä tai nimiä ei tallenneta.'
+			},
+			{
+				name: 'Suostumusloki (consent_log)',
+				basis: 'Lakisääteinen velvoite osoittaa suostumus',
+				desc: 'Mitä evästevalintaa teit, milloin ja millä selosteversiolla — ei IP-osoitetta eikä selaintunnistetta.'
+			}
+		],
+		retentionTitle: 'Säilytysajat',
+		retentionNote:
+			'Tarkat säilytysajat vahvistetaan erikseen (ks. docs/MINIMAXGDPR_PLAN.md, avoimet päätökset) — tämä seloste päivitetään, kun ne on päätetty.',
+		recipientsTitle: 'Vastaanottajat ja käsittelijät',
+		recipients: [
+			'Supabase — tietokanta (varmista aluesijainti ennen julkaisua).',
+			'PostHog EU Cloud — kävijäanalytiikka (eu.posthog.com), vain suostumuksella.',
+			'Vercel — sivuston hosting, laskenta-alue fra1 (Frankfurt).',
+			'Stripe — maksunvälitys tilausten yhteydessä.'
+		],
+		transfersTitle: 'Kansainväliset tiedonsiirrot',
+		transfersBody:
+			'Osa käsittelijöistä (Vercel, Stripe, PostHog) on yhdysvaltalaisia yhtiöitä, vaikka tieto säilytetään EU-alueella. Siirrot perustuvat EU:n vakiosopimuslausekkeisiin tai muihin GDPR:n hyväksymiin siirtomekanismeihin.',
+		rightsTitle: 'Rekisteröidyn oikeudet',
+		rightsBody:
+			'Sinulla on oikeus saada pääsy tietoihisi, oikaista tai poistaa niitä, rajoittaa käsittelyä, siirtää tiedot toiseen palveluun sekä perua suostumuksesi milloin tahansa (ks. /evasteet). Voit myös tehdä valituksen tietosuojavaltuutetun toimistolle (tietosuoja.fi). Käytä oikeuksiasi ottamalla yhteyttä yllä mainittuun sähköpostiin.',
+		automatedTitle: 'Automaattinen päätöksenteko',
+		automatedBody:
+			'Hinta-arvio on tilastollinen vertailu, ei sinua koskeva automaattinen päätös, jolla olisi oikeudellisia tai vastaavia merkittäviä vaikutuksia (GDPR 22 artikla).',
+		cookiesLink: 'Evästekohtaiset tiedot: /evasteet.'
 	},
 
 	errors: {

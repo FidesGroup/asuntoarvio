@@ -27,6 +27,8 @@
 		<a href="/miksi">{copy.footer.links.why}</a>
 		<a href="/#miten">{copy.footer.links.how}</a>
 		<a href="https://stat.fi/tilasto/ashi" target="_blank" rel="noopener">{copy.footer.links.statfi}</a>
+		<a href="/tietosuoja">{copy.footer.links.privacy}</a>
+		<a href="/evasteet">{copy.footer.links.cookies}</a>
 		<a href={fidesUrl} target="_blank" rel="noopener">{copy.footer.links.fides}</a>
 	</nav>
 

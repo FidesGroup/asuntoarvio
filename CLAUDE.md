@@ -28,6 +28,10 @@ constraints below were each earned the hard way in one intensive build day
    documents the buyer pasted at order time (vastikkeet, lainaosuus,
    korjausvuodet — see `doc-parse.ts`); the pasted document text itself is
    never stored, and the parser must never extract names or free prose.
+   Consent-gated visitor analytics and the pseudonymous product-usage event
+   stream are a separate, opt-in data lane — see rule 13. They must never be
+   merged into `query_log`, which stays exactly as described above: no
+   visitor correlation, not personal data, no consent required.
 
 ### Product honesty
 
@@ -78,6 +82,29 @@ constraints below were each earned the hard way in one intensive build day
     /kartta's coarse-pointer tap-to-pin panel must keep exposing €/m² +
     transaction count, and the landing map links to /kartta as its touch
     affordance.
+
+### Privacy / consent
+
+13. **Visitor tracking is consent-gated, not automatic — and this rule
+    required the owner's explicit sign-off** (2026-07-22, see
+    `docs/MINIMAXGDPR_PLAN.md`). Three consent categories, stored in the
+    `ra_consent` cookie and mirrored in `consent_log`: necessary (always on —
+    `ra_access`, `ra_consent` itself), analytics (one disclosed purpose
+    covering both traffic behavior and product/business-usage events — see
+    `/tietosuoja`), marketing (reserved for a future ad-retargeting pixel;
+    consent plumbing exists, no pixel is wired yet). PostHog (EU Cloud,
+    `eu.posthog.com`) — neither the client script (`posthog-js`, dynamically
+    imported in `posthog-client.ts`) nor server-side capture (`posthog-node`,
+    `src/lib/server/analytics.ts`) — may run before the `ra_consent` cookie
+    records `analytics:true`; any new event call site must gate on
+    `analyticsDistinctId(cookies)` (server) or the consent context (client),
+    the same way `logQuery`/`addLead` call sites already exist. `consent_log`
+    records every accept/reject/customize/withdraw action, written
+    best-effort via `supalog.ts` (rule 8's pattern) — it is the GDPR
+    Art. 7(1) proof-of-consent record; don't let it silently stop writing.
+    Any further expansion of what's collected under an existing consent
+    category, or any new category, needs the same explicit owner sign-off as
+    this rule did — not just an added event call.
 
 ## Dev environment gotchas (Windows host)
 

@@ -24,6 +24,8 @@
   "dependencies": {
     "@fontsource-variable/ibm-plex-sans": "^5.2.8",
     "@vercel/og": "^0.6.4",
-    "maplibre-gl": "^5.24.0"
+    "maplibre-gl": "^5.24.0",
+    "posthog-js": "^1.406.2",
+    "posthog-node": "^5.46.0"
   }
 }

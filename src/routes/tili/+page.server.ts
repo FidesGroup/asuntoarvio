@@ -1,5 +1,7 @@
 import { getCheckoutSession, stripeEnabled } from '$lib/server/stripe';
 import { getSubscriberByToken, upsertSubscriber } from '$lib/server/subscribers';
+import { analyticsDistinctId } from '$lib/server/consent';
+import { trackServerEvent } from '$lib/server/analytics';
 import type { PageServerLoad } from './$types';
 
 const COOKIE = 'ra_access';
@@ -29,6 +31,11 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
 					secure: true,
 					maxAge: 60 * 60 * 24 * 365
 				});
+				// Fired here (the visitor's own browser load, with their cookies),
+				// not from the Stripe webhook — the webhook is server-to-server
+				// with no consent cookie to attach a distinct_id to.
+				const cid = analyticsDistinctId(cookies);
+				if (cid) await trackServerEvent(cid, 'subscription_activated', {});
 				return { state: 'activated' as const, email: sub.email };
 			}
 		}

@@ -44,7 +44,19 @@ waitlist pointer.
 ## Next up (technical)
 
 1. Apply Supabase migrations (`supabase/combined_v0.sql` in the SQL editor) —
-   until then waitlist and query-log writes fail gracefully by design.
+   until then waitlist and query-log writes fail gracefully by design. This
+   now includes `consent_log` and `leads.marketing_opt_in`
+   (`supabase/migrations/20260722100001_consent.sql`).
+1a. **GDPR/ePrivacy consent + analytics system shipped (2026-07-22)**, per
+   `docs/MINIMAXGDPR_PLAN.md` and CLAUDE.md rule 13: consent banner + audit
+   trail (`consent_log`), `/tietosuoja` + `/evasteet`, and consent-gated
+   PostHog EU Cloud wiring (client `posthog-js` + server `posthog-node`).
+   Still open before production go-live: the owner's Y-tunnus/business
+   address/contact email in `/tietosuoja` (currently placeholders),
+   confirming the Supabase project's region is actually EU, finalizing
+   retention periods, and creating the actual PostHog EU project + setting
+   `PUBLIC_POSTHOG_KEY`/`PUBLIC_POSTHOG_HOST` in Vercel env (analytics stays
+   fully inert without them, same graceful-degradation pattern as Supabase).
 2. Post-deploy verification checklist: `/kartta` 200, waitlist renders,
    `/analyysi` URL-fetch path sane on a real listing, mini-map +
    location-weighted comparison visible (needs `MML_API_KEY`).

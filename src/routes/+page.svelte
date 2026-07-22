@@ -128,6 +128,10 @@
 			/>
 		{/snippet}
 	</Field>
+	<label class="waitlist__marketing">
+		<input type="checkbox" name="marketingOptIn" />
+		{copy.landing.waitlist.marketingOptIn}
+	</label>
 	<Button type="submit" loading={pending}>{copy.landing.waitlist.cta}</Button>
 </form>
 
@@ -293,6 +297,22 @@
 		letter-spacing: var(--ls-wide);
 		text-transform: uppercase;
 		padding-bottom: 0.35rem;
+	}
+
+	.waitlist__marketing {
+		flex: 1 1 100%;
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+		color: var(--ink-2);
+		font-size: var(--text-sm);
+		line-height: var(--lh-list);
+		cursor: pointer;
+	}
+
+	.waitlist__marketing input {
+		margin-top: 0.2rem;
+		flex-shrink: 0;
 	}
 
 	@media (max-width: 480px) {

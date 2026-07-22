@@ -15,6 +15,8 @@ import {
 import { estimateRent } from '$lib/server/rents';
 import { fetchAreaHistory } from '$lib/server/history';
 import { logQuery } from '$lib/server/supalog';
+import { analyticsDistinctId } from '$lib/server/consent';
+import { trackServerEvent } from '$lib/server/analytics';
 import type { PageServerLoad } from './$types';
 
 /** vero.fi, varainsiirtovero (asunto-osakkeet) 1.5%, page updated 2026-01-01. */
@@ -36,7 +38,7 @@ function pipeRenovationPhase(buildYear: number | null): 'near' | 'in' | null {
 	return null;
 }
 
-export const load: PageServerLoad = async ({ url }) => {
+export const load: PageServerLoad = async ({ url, cookies }) => {
 	const facts = parseFacts(url.searchParams);
 	if ('error' in facts) throw error(400, facts.error);
 	const verdict = evaluate(facts);
@@ -55,6 +57,16 @@ export const load: PageServerLoad = async ({ url }) => {
 		delta_pct: verdict.deltaPct,
 		confidence: verdict.confidence
 	});
+	const cid = analyticsDistinctId(cookies);
+	if (cid) {
+		await trackServerEvent(cid, 'analyzer_submitted', {
+			postal_code: facts.postalCode,
+			rooms_type: facts.roomsType,
+			delta_pct: verdict.deltaPct,
+			confidence: verdict.confidence,
+			source: 'share-link'
+		});
+	}
 	// Quarter-to-quarter dispersion of the benchmark cell (real published
 	// means, not a modeled deviation).
 	const cell = lookupCell(facts.postalCode, facts.roomsType);

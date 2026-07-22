@@ -8,6 +8,8 @@ import { geocodeAddress } from '$lib/server/geocode';
 import { createReport } from '$lib/server/reports';
 import { getSubscriberByToken } from '$lib/server/subscribers';
 import { addLead, logQuery } from '$lib/server/supalog';
+import { analyticsDistinctId } from '$lib/server/consent';
+import { trackServerEvent } from '$lib/server/analytics';
 import {
 	allowedListingUrl, deriveInsights, htmlToText, parseListingText, parseListingHtml,
 	type ExtractedListing
@@ -70,19 +72,26 @@ function toFacts(x: ExtractedListing): ListingFacts | { error: string } {
 }
 
 export const actions: Actions = {
-	waitlist: async ({ request }) => {
-		const email = String((await request.formData()).get('email') ?? '').trim().toLowerCase();
+	waitlist: async ({ request, cookies }) => {
+		const fd = await request.formData();
+		const email = String(fd.get('email') ?? '').trim().toLowerCase();
 		if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
 			return fail(400, { waitlistError: 'Tarkista sähköpostiosoite.' });
 		}
-		const ok = await addLead(email, 'landing-waitlist');
+		// Distinct from the cookie-banner's marketing category: this is the
+		// waitlist form's own, separately-consented opt-in for RehtiArvio's
+		// own emails beyond the waitlist notification itself (unchecked by default).
+		const marketingOptIn = fd.get('marketingOptIn') === 'on';
+		const ok = await addLead(email, 'landing-waitlist', marketingOptIn);
 		if (!ok) return fail(503, { waitlistError: 'Tallennus epäonnistui. Yritä hetken kuluttua uudelleen.' });
+		const cid = analyticsDistinctId(cookies);
+		if (cid) await trackServerEvent(cid, 'waitlist_joined', {});
 		return { joined: true };
 	},
 
 	// NB: named because SvelteKit forbids a default action next to named ones
 	// (waitlist/report) — the form posts to ?/analyze.
-	analyze: async ({ request, fetch }) => {
+	analyze: async ({ request, fetch, cookies }) => {
 		const fd = await request.formData();
 		const pasted = String(fd.get('text') ?? '').trim();
 		const urlRaw = String(fd.get('url') ?? '').trim();
@@ -176,6 +185,16 @@ export const actions: Actions = {
 			delta_pct: location?.deltaPct ?? verdict.deltaPct,
 			confidence: verdict.confidence
 		});
+		const cid = analyticsDistinctId(cookies);
+		if (cid) {
+			await trackServerEvent(cid, 'analyzer_submitted', {
+				postal_code: facts.postalCode,
+				rooms_type: facts.roomsType ?? extracted.propertyClass ?? 'tuntematon',
+				delta_pct: location?.deltaPct ?? verdict.deltaPct,
+				confidence: verdict.confidence,
+				source: source ? 'url' : 'text'
+			});
+		}
 
 		// Server-built asuntocard job payload: echoed back via a hidden field on
 		// the ?/report form so a card can be ordered without re-parsing the text.
@@ -322,6 +341,13 @@ export const actions: Actions = {
 			facts: payload
 		});
 		if (!id) return fail(503, { reportError: 'Tallennus epäonnistui. Yritä hetken kuluttua.' });
+		const cid = analyticsDistinctId(cookies);
+		if (cid) {
+			await trackServerEvent(cid, 'report_ordered', {
+				postal_code: typeof payload.postalCode === 'string' ? payload.postalCode : null,
+				has_docs: Boolean(payload.docs)
+			});
+		}
 		redirect(303, `/raportti/${id}`);
 	}
 };
