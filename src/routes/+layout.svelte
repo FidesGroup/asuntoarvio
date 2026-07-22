@@ -9,6 +9,7 @@
 	import AnalyticsLoader from '$lib/components/consent/AnalyticsLoader.svelte';
 	import { ConsentStore, CONSENT_CONTEXT_KEY } from '$lib/consent/state.svelte';
 	import { copy } from '$lib/copy/fi';
+	import { SITE_URL } from '$lib/site';
 
 	let { children, data } = $props();
 
@@ -19,10 +20,17 @@
 
 	// Map surfaces get the full wide shell; everything else reads at app width.
 	const wide = $derived(page.route.id === '/kartta');
+
+	// /arvio's query params identify the specific verdict being shown, so its
+	// canonical must include them — it sets its own <link rel="canonical">.
+	const hasOwnCanonical = $derived(page.route.id === '/arvio');
 </script>
 
 <svelte:head>
 	<title>RehtiArvio | Ilmainen markkinahinta-analyysi</title>
+	{#if !hasOwnCanonical}
+		<link rel="canonical" href={`${SITE_URL}${page.url.pathname}`} />
+	{/if}
 </svelte:head>
 
 <a class="skip-link" href="#main">{copy.nav.skipToContent}</a>

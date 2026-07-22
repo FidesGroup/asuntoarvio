@@ -8,6 +8,7 @@
 	import DivergenceChart from '$lib/components/sections/DivergenceChart.svelte';
 	import { MAP_MODES, type MapMode } from '$lib/map-modes';
 	import { copy } from '$lib/copy/fi';
+	import { SITE_URL } from '$lib/site';
 
 	let { data } = $props();
 	const fmt = new Intl.NumberFormat('fi-FI');
@@ -77,6 +78,13 @@
 <svelte:head>
 	<title>Kartta | RehtiArvio</title>
 	<meta name="description" content={copy.kartta.lede} />
+	<meta property="og:title" content="Kartta | RehtiArvio" />
+	<meta property="og:description" content={copy.kartta.lede} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={`${SITE_URL}/kartta`} />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content="Kartta | RehtiArvio" />
+	<meta name="twitter:description" content={copy.kartta.lede} />
 </svelte:head>
 
 <PageHero

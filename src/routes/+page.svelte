@@ -9,6 +9,7 @@
 	import PriceMap from '$lib/PriceMap.svelte';
 	import CaseGrid from '$lib/components/sections/CaseGrid.svelte';
 	import { copy } from '$lib/copy/fi';
+	import { SITE_URL } from '$lib/site';
 
 	let { data, form } = $props();
 
@@ -26,6 +27,19 @@
 	<meta
 		name="description"
 		content="Liitä myynti-ilmoitus, niin saat vertailun Tilastokeskuksen toteutuneisiin kauppoihin postinumeroalueittain. Ilmainen."
+	/>
+	<meta property="og:title" content="RehtiArvio | Ilmainen markkinahinta-analyysi" />
+	<meta
+		property="og:description"
+		content="Liitä myynti-ilmoitus, niin saat vertailun Tilastokeskuksen toteutuneisiin kauppoihin postinumeroalueittain. Ilmainen."
+	/>
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={SITE_URL} />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content="RehtiArvio | Ilmainen markkinahinta-analyysi" />
+	<meta
+		name="twitter:description"
+		content="Liitä myynti-ilmoitus, niin saat vertailun Tilastokeskuksen toteutuneisiin kauppoihin postinumeroalueittain."
 	/>
 </svelte:head>
 

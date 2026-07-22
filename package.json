@@ -1,6 +1,7 @@
 {
   "name": "rehtiarvio",
   "version": "0.0.1",
+  "description": "Free apartment listing price benchmark against StatFin realized sales data, by postal code.",
   "private": true,
   "type": "module",
   "scripts": {

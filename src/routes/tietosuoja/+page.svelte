@@ -1,11 +1,17 @@
 <script lang="ts">
 	import PageHero from '$lib/components/sections/PageHero.svelte';
 	import { copy } from '$lib/copy/fi';
+	import { SITE_URL } from '$lib/site';
 </script>
 
 <svelte:head>
 	<title>Tietosuojaseloste | RehtiArvio</title>
 	<meta name="description" content="RehtiArvion tietosuojaseloste: mitä tietoa kerätään, miksi ja miten käytät oikeuksiasi." />
+	<meta property="og:title" content="Tietosuojaseloste | RehtiArvio" />
+	<meta property="og:description" content="RehtiArvion tietosuojaseloste: mitä tietoa kerätään, miksi ja miten käytät oikeuksiasi." />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={`${SITE_URL}/tietosuoja`} />
+	<meta name="twitter:card" content="summary" />
 </svelte:head>
 
 <div class="page">

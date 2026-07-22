@@ -31,6 +31,8 @@
 
 <svelte:head>
 	<title>Tili | RehtiArvio</title>
+	<meta name="description" content="Hallitse RehtiArvio-tiliäsi ja tilaustasi." />
+	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <div class="page">

@@ -13,6 +13,7 @@
 	import OwnVsRent from '$lib/components/sections/OwnVsRent.svelte';
 	import PriceMap from '$lib/PriceMap.svelte';
 	import { copy } from '$lib/copy/fi';
+	import { SITE_URL } from '$lib/site';
 
 	let { data } = $props();
 	const { facts, verdict, yield: yieldResult, rentEstimate, notes, quarterRange, centroid, ownVsRent } =
@@ -42,7 +43,8 @@
 			: 'Pyyntihinta on alueen toteutuneiden kauppojen alapuolella.';
 	});
 	const shareUrl = $derived($page.url.toString());
-	const ogImageUrl = $derived(`/arvio/og?${$page.url.searchParams.toString()}`);
+	const canonicalUrl = $derived(`${SITE_URL}${$page.url.pathname}${$page.url.search}`);
+	const ogImageUrl = $derived(`${SITE_URL}/arvio/og?${$page.url.searchParams.toString()}`);
 
 	let copyState = $state<'idle' | 'copied' | 'error'>('idle');
 	async function copyShareLink() {
@@ -74,10 +76,13 @@
 			? 'Ei vertailuarvoa'
 			: `${verdict.deltaPct > 0 ? '+' : ''}${verdict.deltaPct} % vs alue`} | RehtiArvio
 	</title>
+	<meta name="description" content={verdictLabel} />
+	<link rel="canonical" href={canonicalUrl} />
 	<meta property="og:title" content={`RehtiArvio: ${verdictLabel}`} />
 	<meta property="og:description" content={`${facts.postalCode} · ${facts.roomsType} · ${facts.livingAreaM2} m² · ${verdictLabel}`} />
 	<meta property="og:image" content={ogImageUrl} />
 	<meta property="og:type" content="website" />
+	<meta property="og:url" content={canonicalUrl} />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={`RehtiArvio: ${verdictLabel}`} />
 	<meta name="twitter:description" content={`${facts.postalCode} · ${facts.roomsType} · ${facts.livingAreaM2} m²`} />
