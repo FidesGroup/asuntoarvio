@@ -63,13 +63,10 @@ constraints below were each earned the hard way in one intensive build day
 ### Design
 
 10. **Clean and simple; intentional, not templated.** Design tokens live in
-    `src/lib/styles/tokens.css`: editorial paper/ink base (bg `#fafaf7`, ink
-    `#0a0a0a`), light theme only, plus one vivid brand accent (`--brand
-    #1d4ed8`, updated 2026-07-22 — owner decision, was `#0a0a0a`) used for
-    CTAs, active states, focus rings and highlighted figures. Signal colors
-    are reserved for verdict direction only and must never be reused for the
-    accent (warn `#b3261e` = over market, good `#1d6f3a` = under market).
-    Square corners, no gradient heroes, no emoji
+    `src/lib/styles/tokens.css`: editorial paper/ink palette (bg `#fafaf7`,
+    brand = publication ink `#0a0a0a`), light theme only; signal colors are
+    reserved for verdict direction (warn `#b3261e` = over market, good
+    `#1d6f3a` = under market). Square corners, no gradient heroes, no emoji
     section markers. Layout convention (documented next to the container
     tokens): containers prose 38rem / app 62rem (the `<main>` default) /
     wide 76rem (map + chrome); canonical breakpoints 480 / 720 / 900 px plus

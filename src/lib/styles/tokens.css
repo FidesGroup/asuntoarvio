@@ -3,23 +3,17 @@
 :root {
 	color-scheme: light;
 
-	/* Brand accent (2026-07-22, owner decision: single vivid accent on the
-	   editorial black/white base, for trust/security framing). --brand is
-	   the site's one accent color — CTAs, active states, focus rings,
-	   highlighted figures. Body text/headings stay on --ink (near-black),
-	   untouched. Signal colors (--warn/--good) remain reserved exclusively
-	   for verdict direction and must never be confused with this accent.
-	   --brand-50..400 are legacy ink-ramp steps, currently unused (the
-	   CVD-validated map choropleth ramp lives hardcoded in PriceMap.svelte
-	   per CLAUDE.md and is untouched by this change). */
+	/* Ink ramp (was Baltic petrol). Brand is now "publication ink" —
+	   every active element reads as the publication's mark, and color
+	   is reserved for data direction (warn = over, good = under). */
 	--brand-50:  #f3f1ea;
 	--brand-100: #e3dfd3;
 	--brand-200: #c7c1b0;
 	--brand-300: #948c75;
 	--brand-400: #5c5443;
-	--brand:     #1d4ed8;
-	--brand-600: #1741b3;
-	--brand-700: #123785;
+	--brand:     #0a0a0a;
+	--brand-600: #000000;
+	--brand-700: #000000;
 	--brand-ink: #fafaf7;
 
 	/* Signal colors — used exclusively for verdict direction. */
