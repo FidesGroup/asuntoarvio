@@ -100,7 +100,7 @@ describe('evaluateProperty - property class routing', () => {
 		});
 		expect(r.benchmarkEurM2).toBeNull();
 		expect(r.confidence).toBe('ei saatavilla');
-		expect(r.flags[0]).toContain('Tuntematon kohdetyyppi');
+		expect(r.flags[0]).toContain('ei tunnistettu');
 	});
 
 	it('rejects apartment routing without roomsType', () => {

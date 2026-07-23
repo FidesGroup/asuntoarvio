@@ -244,12 +244,12 @@ export function deriveDocInsights(d: ExtractedDocs, ctx: DocInsightContext): str
 		let line = `Huoneistokohtainen lainaosuus ${fmt(d.lainaosuusEur)} €${perM2}${sharePart}.`;
 		if (share !== null && share > 0.25) {
 			line +=
-				' Iso yhtiölainaosuus: rahoitusvastike nousee korkojen mukana ja lyhennysvapaan päättyessä.';
+				' Yhtiölainaosuus on iso — rahoitusvastike nousee korkojen mukana ja kun lyhennysvapaa loppuu.';
 		}
 		out.push(line);
 	} else if (d.rahoitusvastikeEurMo !== null && d.rahoitusvastikeEurMo > 0) {
 		out.push(
-			`Rahoitusvastiketta peritään ${fmt(d.rahoitusvastikeEurMo)} €/kk, mutta lainaosuutta ei löytynyt asiakirjoista. Pyydä isännöitsijältä huoneistokohtainen velkaosuus.`
+			`Rahoitusvastiketta peritään ${fmt(d.rahoitusvastikeEurMo)} €/kk, mutta huoneiston lainaosuus ei löytynyt asiakirjoista. Kysy se isännöitsijältä.`
 		);
 	}
 
@@ -259,18 +259,18 @@ export function deriveDocInsights(d: ExtractedDocs, ctx: DocInsightContext): str
 	if (hoitoPerM2 !== null) {
 		if (hoitoPerM2 > 7) {
 			out.push(
-				`Hoitovastike ${hoitoPerM2.toFixed(1)} €/m²/kk on korkea (tyypillisesti 4–6 €/m²/kk). Selvitä syy tilinpäätöksestä.`
+				`Hoitovastike ${hoitoPerM2.toFixed(1)} €/m²/kk on korkeahko (tyypillisesti 4–6 €/m²/kk). Kannattaa selvittää syy tilinpäätöksestä.`
 			);
 		} else if (hoitoPerM2 < 3.5) {
 			out.push(
-				`Hoitovastike ${hoitoPerM2.toFixed(1)} €/m²/kk on matala. Varmista, ettei yhtiö kata hoitokuluja lainalla tai siirrä korjauksia. Matala vastike ei aina ole etu.`
+				`Hoitovastike ${hoitoPerM2.toFixed(1)} €/m²/kk on matala. Varmista, ettei yhtiö kata hoitokuluja lainalla tai lykkää korjauksia — matala vastike ei aina ole pelkkä etu.`
 			);
 		}
 	}
 
 	if (d.lunastuslauseke === true) {
 		out.push(
-			'Yhtiöjärjestyksessä on lunastuslauseke: vanhat osakkaat voivat lunastaa kaupan itselleen. Varmista lunastusajan pituus ennen tarjousta.'
+			'Yhtiöjärjestyksessä on lunastuslauseke: vanhat osakkaat voivat lunastaa kaupan itselleen. Tarkista lunastusajan pituus ennen kuin teet tarjouksen.'
 		);
 	}
 
@@ -279,7 +279,7 @@ export function deriveDocInsights(d: ExtractedDocs, ctx: DocInsightContext): str
 		const thisYear = new Date().getFullYear();
 		const ending =
 			d.landLeaseEndYear !== null && d.landLeaseEndYear <= thisYear + 15
-				? ` Vuokrasopimus päättyy ${d.landLeaseEndYear}, ja uusiminen voi moninkertaistaa tontinvuokran.`
+				? ` Vuokrasopimus päättyy ${d.landLeaseEndYear}, ja uusi sopimus voi moninkertaistaa tontinvuokran.`
 				: '';
 		out.push(`Tontti on vuokrattu.${rent}${ending}`);
 	}
@@ -297,19 +297,19 @@ export function deriveDocInsights(d: ExtractedDocs, ctx: DocInsightContext): str
 	const done = majors(d.renovationsDone);
 	if (upcoming.size) {
 		out.push(
-			`Kunnossapitotarveselvityksessä isoja hankkeita: ${[...upcoming.entries()].map(([k, y]) => `${k} (${y})`).join(', ')}. Pyydä kustannusarviot, sillä ne eivät vielä näy lainaosuudessa.`
+			`Kunnossapitotarveselvityksessä on isoja hankkeita: ${[...upcoming.entries()].map(([k, y]) => `${k} (${y})`).join(', ')}. Kysy niistä kustannusarviot, sillä ne eivät vielä näy lainaosuudessa.`
 		);
 	}
 	if (done.size) {
 		out.push(
-			`Asiakirjojen korjaushistoria: ${[...done.entries()].map(([k, y]) => `${k} ${y}`).join(', ')}.`
+			`Asiakirjoissa näkyvä korjaushistoria: ${[...done.entries()].map(([k, y]) => `${k} ${y}`).join(', ')}.`
 		);
 	}
 
 	const by = d.buildYear ?? ctx.buildYear;
 	if (by && by < new Date().getFullYear() - 40 && !done.has('putkiremontti') && !upcoming.has('putkiremontti')) {
 		out.push(
-			'Putkiremonttia ei näy korjaushistoriassa eikä kunnossapitotarveselvityksessä, vaikka rakennus on yli 40 v. Kysy LVV-kuntotutkimuksen tulokset.'
+			'Putkiremonttia ei näy korjaushistoriassa eikä kunnossapitotarveselvityksessä, vaikka talo on yli 40-vuotias. Kysy LVV-kuntotutkimuksen tulokset.'
 		);
 	}
 

@@ -41,7 +41,7 @@ describe('computeYield', () => {
 	it('treats a zero vastike as gross == net numerator and flags it', () => {
 		const r = computeYield({ ...base, monthlyVastikeEur: 0 }, 'user');
 		expect(r.monthlyNetEur).toBe(1000);
-		expect(r.flags.some((f) => f.includes('Vastiketta ei syötetty'))).toBe(true);
+		expect(r.flags.some((f) => f.includes('Vastiketta ei annettu'))).toBe(true);
 	});
 
 	it('flags a non-debt-free price as optimistic', () => {

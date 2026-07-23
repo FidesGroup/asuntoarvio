@@ -42,12 +42,12 @@ export function computeYield(inputs: YieldInputs, rentSource: RentSource): Yield
 	const flags: string[] = [];
 	if (!inputs.priceIsDebtFree) {
 		flags.push(
-			'Hinta syötetty myyntihintana. Jos kohteessa on yhtiölainaa, todellinen (velaton) neliöhinta on korkeampi, joten nettotuotto on yläkanttiin.'
+			'Hinta on syötetty myyntihintana. Jos kohteessa on yhtiölainaa, velaton neliöhinta on todellisuudessa korkeampi — silloin nettotuotto näyttää yläkanttiin.'
 		);
 	}
 	if (inputs.monthlyVastikeEur <= 0) {
 		flags.push(
-			'Vastiketta ei syötetty, joten laskelma olettaa hoitovastikkeen nollaksi. Todellinen nettotuotto on todennäköisesti pienempi.'
+			'Vastiketta ei annettu, joten laskelma olettaa hoitovastikkeeksi nollan. Todellinen nettotuotto jää tätä pienemmäksi.'
 		);
 	}
 	if (rentSource === 'estimate') {

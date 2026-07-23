@@ -172,7 +172,7 @@ export function evaluateProperty(facts: ListingFacts): Verdict {
 				confidence: 'ei saatavilla',
 				transactions4q: 0,
 				latestQuarter: null,
-				flags: ['Huonetyyppi puuttuu. Vertailua ei voida laskea.']
+				flags: ['Huonetyyppi puuttuu, joten vertailua ei voi vielä laskea.']
 			};
 		}
 		return evaluate(facts as Required<Pick<ListingFacts, 'roomsType'>> & ListingFacts);
@@ -184,11 +184,11 @@ export function evaluateProperty(facts: ListingFacts): Verdict {
 		const houseCell = lookupHouseCell(region);
 		const listingEurM2 = Math.round(facts.priceEur / facts.livingAreaM2);
 		const flags: string[] = [
-			'Omakotitalon €/m² on karkea seula, koska tontin arvo ja talon yksilöllisyys vaihtelevat paljon.'
+			'Omakotitalon €/m² on karkea seula: tontin arvo ja talon oma luonne heiluttavat sitä paljon.'
 		];
 
 		if (!houseCell || houseCell.benchmark_eur_m2 === null) {
-			flags.push('Alueelta ei ole riittävästi kauppadataa. Vertailua ei voida laskea.');
+			flags.push('Alueelta ei löydy tarpeeksi kauppoja, joten vertailua ei voi laskea.');
 			return {
 				listingEurM2,
 				benchmarkEurM2: null,
@@ -204,7 +204,7 @@ export function evaluateProperty(facts: ListingFacts): Verdict {
 		const confidence = houseCell.n_4q >= 100 ? 'kohtalainen' : 'matala'; // houses always downgraded vs apartments
 		if (confidence !== 'kohtalainen') {
 			flags.push(
-				`Aluetaso: ${houseCell.n_4q} kauppaa viimeisen neljän tilastoneljänneksen ajalta. Pieni otos.`
+				`Alueelta vain ${houseCell.n_4q} kauppaa neljän viime neljänneksen ajalta — pieni otos, joten ota luku suuntaa näyttävänä.`
 			);
 		}
 
@@ -227,7 +227,7 @@ export function evaluateProperty(facts: ListingFacts): Verdict {
 		confidence: 'ei saatavilla',
 		transactions4q: 0,
 		latestQuarter: null,
-		flags: ['Tuntematon kohdetyyppi. Vertailua ei voida laskea.']
+		flags: ['Kohdetyyppiä ei tunnistettu, joten vertailua ei voi laskea.']
 	};
 }
 
@@ -241,7 +241,7 @@ export function evaluate(facts: ListingFacts): Verdict {
 			confidence: 'ei saatavilla',
 			transactions4q: 0,
 			latestQuarter: null,
-			flags: ['Huonetyyppi puuttuu. Vertailua ei voida laskea.']
+			flags: ['Huonetyyppi puuttuu, joten vertailua ei voi vielä laskea.']
 		};
 	}
 
@@ -251,27 +251,27 @@ export function evaluate(facts: ListingFacts): Verdict {
 
 	if (!facts.priceIsDebtFree) {
 		flags.push(
-			'Hinta syötetty myyntihintana. Jos kohteessa on yhtiölainaa, todellinen (velaton) neliöhinta on korkeampi, joten vertailu voi näyttää liian edulliselta.'
+			'Hinta on syötetty myyntihintana. Jos kohteessa on yhtiölainaa, velaton neliöhinta on todellisuudessa korkeampi — silloin vertailu näyttää kohteen liiankin edullisena.'
 		);
 	}
 	if (facts.buildYear && facts.buildYear >= 2010) {
 		flags.push(
-			'Uudehko rakennus: vertailuarvo perustuu alueen vanhojen osakeasuntojen kauppoihin, joten uudiskohde näyttää tyypillisesti selvästi vertailua kalliimmalta.'
+			'Uudehko talo: vertailuluku nojaa alueen vanhempien asuntojen kauppoihin, joten uudiskohde näyttää tyypillisesti selvästi vertailua kalliimmalta. Tämä on normaalia.'
 		);
 	}
 	if (facts.livingAreaM2 <= 30) {
-		flags.push('Pieni asunto: pienet yksiöt myydään tyypillisesti alueen keskineliöhintaa kalliimmalla.');
+		flags.push('Pieni asunto: pienestä yksiöstä maksetaan yleensä alueen keskiarvoa enemmän per neliö, joten vertailu voi näyttää kohteen kalliina.');
 	}
 	if (facts.livingAreaM2 >= 100) {
-		flags.push('Suuri asunto: suuret huoneistot myydään tyypillisesti alueen keskineliöhintaa halvemmalla.');
+		flags.push('Iso asunto: suuresta huoneistosta maksetaan yleensä alueen keskiarvoa vähemmän per neliö, joten vertailu voi näyttää kohteen edullisena.');
 	}
 	if (!facts.buildYear) {
-		flags.push('Rakennusvuosi ei tiedossa, joten ikä- ja kuntoerot eivät näy vertailussa.');
+		flags.push('Rakennusvuotta ei tiedetä, joten ikä- ja kuntoerot eivät näy vertailussa.');
 	}
 
 	if (!cell || cell.benchmark_eur_m2 === null) {
 		flags.push(
-			'Tilastokeskus ei julkaise tälle postinumero–huonetyyppi-yhdistelmälle neliöhintaa (liian vähän kauppoja). Vertailua ei voida laskea.'
+			'Tilastokeskus ei julkaise tälle postinumeron ja huonetyypin yhdistelmälle neliöhintaa, koska kauppoja on liian vähän. Vertailua ei siksi voi laskea.'
 		);
 		return {
 			listingEurM2,
@@ -288,11 +288,11 @@ export function evaluate(facts: ListingFacts): Verdict {
 	const confidence = cell.n_4q >= 100 ? 'korkea' : cell.n_4q >= 30 ? 'kohtalainen' : 'matala';
 	if (confidence !== 'korkea') {
 		flags.push(
-			`Vertailu perustuu ${cell.n_4q} kauppaan viimeisen neljän tilastoneljänneksen ajalta. Pieni otos: yksittäiset kaupat heiluttavat keskiarvoa.`
+			`Vertailu nojaa ${cell.n_4q} kauppaan neljän viime neljänneksen ajalta. Otos on pieni, joten yksittäinen kauppa heiluttaa keskiarvoa herkästi.`
 		);
 	}
 	flags.push(
-		'Postinumeroalueen keskiarvo ei erottele mikrosijaintia, kuntoa eikä taloyhtiön velkoja tai remontteja. Suuntaa antava seula, ei arvio.'
+		'Postinumeroalueen keskiarvo ei erottele mikrosijaintia, kuntoa eikä taloyhtiön velkoja tai remontteja. Pidä tätä suuntaa antavana seulana, ei arviona.'
 	);
 
 	return {
@@ -331,14 +331,14 @@ export function parseFacts(params: URLSearchParams): ApartmentFacts | { error: s
 	const buildYearRaw = params.get('yr');
 	const buildYear = buildYearRaw ? Number(buildYearRaw) : null;
 
-	if (!/^\d{5}$/.test(postalCode)) return { error: 'Postinumero puuttuu tai on virheellinen.' };
-	if (!(roomsType in TYPE_KEY)) return { error: 'Valitse huonetyyppi.' };
+	if (!/^\d{5}$/.test(postalCode)) return { error: 'Tarkistathan postinumeron — se puuttuu tai on virheellinen.' };
+	if (!(roomsType in TYPE_KEY)) return { error: 'Valitsethan huonetyypin.' };
 	if (!Number.isFinite(livingAreaM2) || livingAreaM2 < 10 || livingAreaM2 > 400)
-		return { error: 'Pinta-ala puuttuu tai on virheellinen (10–400 m²).' };
+		return { error: 'Tarkistathan pinta-alan (10–400 m²).' };
 	if (!Number.isFinite(priceEur) || priceEur < 10_000 || priceEur > 20_000_000)
-		return { error: 'Hinta puuttuu tai on virheellinen.' };
+		return { error: 'Tarkistathan hinnan.' };
 	if (buildYear !== null && (!Number.isFinite(buildYear) || buildYear < 1800 || buildYear > 2030))
-		return { error: 'Rakennusvuosi on virheellinen.' };
+		return { error: 'Tarkistathan rakennusvuoden.' };
 
 	return { postalCode, roomsType, livingAreaM2, priceEur, priceIsDebtFree, buildYear };
 }

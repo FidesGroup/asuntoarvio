@@ -275,15 +275,15 @@ export function deriveInsights(x: ExtractedListing): string[] {
 	if (x.condition) {
 		out.push(
 			/tyydyttävä|välttävä|huono/i.test(x.condition)
-				? `Kunto ilmoituksessa: ${x.condition}. Keskimääräistä heikompi kunto selittää alle markkinan olevaa hintaa.`
-				: `Kunto ilmoituksessa: ${x.condition}.`
+				? `Kunnoksi ilmoitettu ${x.condition}. Keskimääräistä heikompi kunto selittää usein sen, miksi hinta jää alle markkinan.`
+				: `Kunnoksi ilmoitettu ${x.condition}.`
 		);
 	}
 	if (x.landOwnership === 'Oma') {
-		out.push('Tontti: oma, ei tontinvuokrariskiä.');
+		out.push('Tontti on oma — ei tontinvuokran riskiä.');
 	} else if (x.landOwnership && /vuokra|valinnainen/i.test(x.landOwnership)) {
 		out.push(
-			`Tontti: ${x.landOwnership}. Vuokratontti lisää asumiskustannuksia ja vuokrankorotukset ovat riski. Tarkista vuokrasopimuksen päättymisvuosi.`
+			`Tontti: ${x.landOwnership}. Vuokratontti nostaa asumiskuluja, ja vuokrankorotukset ovat oma riskinsä. Katso sopimuksesta, milloin se päättyy.`
 		);
 	}
 
@@ -294,9 +294,9 @@ export function deriveInsights(x: ExtractedListing): string[] {
 		if (hit && (!upcoming.has(hit[1]) || r.year < upcoming.get(hit[1])!)) upcoming.set(hit[1], r.year);
 	}
 	if (upcoming.size) {
-		out.push(`Tulossa isoja remontteja: ${[...upcoming.entries()].map(([k, y]) => `${k} (${y})`).join(', ')}. Hankesuunnittelu tarkoittaa tyypillisesti merkittävää tulevaa lainaosuutta.`);
+		out.push(`Tulossa isoja remontteja: ${[...upcoming.entries()].map(([k, y]) => `${k} (${y})`).join(', ')}. Hankesuunnittelu tietää yleensä tuntuvaa lainaosuutta tulevaisuudessa.`);
 	} else if (x.renovationsUpcoming.length) {
-		out.push('Tulevissa remonteissa ei näy suuria hankkeita (putket, julkisivu, katto, ikkunat), vain tavanomaista ylläpitoa.');
+		out.push('Tulevissa remonteissa ei näy isoja hankkeita (putket, julkisivu, katto, ikkunat) — vain tavanomaista ylläpitoa.');
 	}
 
 	const doneMajor = new Map<string, number>();
@@ -306,26 +306,26 @@ export function deriveInsights(x: ExtractedListing): string[] {
 		if (hit && !doneMajor.has(hit[1])) doneMajor.set(hit[1], r.year);
 	}
 	if (doneMajor.size) {
-		out.push(`Tehdyt isot remontit: ${[...doneMajor.entries()].map(([k, y]) => `${k} ${y}`).join(', ')}.`);
+		out.push(`Isot remontit jo tehty: ${[...doneMajor.entries()].map(([k, y]) => `${k} ${y}`).join(', ')}.`);
 	}
 	if (x.buildYear && x.buildYear < 1985 && !doneMajor.has('putkiremontti')) {
-		out.push('Putkiremonttia ei näy remonttihistoriassa vaikka rakennus on yli 40 v. Varmista LVV-kuntotutkimuksesta/PTS:stä, milloin linjasaneeraus on edessä.');
+		out.push('Putkiremonttia ei näy remonttihistoriassa, vaikka talo on yli 40-vuotias. Varmista LVV-kuntotutkimuksesta tai PTS:stä, milloin linjasaneeraus on edessä.');
 	}
 
 	if (x.debtShareEur !== null && x.debtShareEur > 0 && x.livingAreaM2) {
-		out.push(`Yhtiölainaosuus ${Math.round(x.debtShareEur).toLocaleString('fi-FI')} € (${Math.round(x.debtShareEur / x.livingAreaM2)} €/m²).`);
+		out.push(`Osuus yhtiölainasta ${Math.round(x.debtShareEur).toLocaleString('fi-FI')} € (${Math.round(x.debtShareEur / x.livingAreaM2)} €/m²).`);
 	}
 	if (x.maintenanceChargeEurMo !== null && x.livingAreaM2) {
 		const perM2 = x.maintenanceChargeEurMo / x.livingAreaM2;
 		if (perM2 > 7) {
-			out.push(`Hoitovastike ${perM2.toFixed(1)} €/m²/kk on korkea (tyypillisesti 4–6 €/m²/kk). Selvitä syy tilinpäätöksestä.`);
+			out.push(`Hoitovastike ${perM2.toFixed(1)} €/m²/kk on korkeahko (tyypillisesti 4–6 €/m²/kk). Kannattaa selvittää syy tilinpäätöksestä.`);
 		}
 	}
 	if (x.mortgagesEur !== null) {
 		const perUnit = x.apartmentCount
 			? ` (~${Math.round(x.mortgagesEur / x.apartmentCount).toLocaleString('fi-FI')} €/huoneisto)`
 			: '';
-		out.push(`Taloyhtiön kiinnitykset ${Math.round(x.mortgagesEur).toLocaleString('fi-FI')} €${perUnit}. Summa kertoo panttauksen ylärajan, ei nostettua lainaa.`);
+		out.push(`Taloyhtiön kiinnitykset ${Math.round(x.mortgagesEur).toLocaleString('fi-FI')} €${perUnit}. Luku kertoo panttauksen ylärajan, ei sitä paljonko lainaa on oikeasti nostettu.`);
 	}
 	return out;
 }

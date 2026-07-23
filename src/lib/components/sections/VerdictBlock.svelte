@@ -32,7 +32,7 @@
 	const eurHeadline = $derived.by(() => {
 		if (eurDiff === null) return null;
 		const abs = fmt.format(Math.abs(eurDiff));
-		if (eurDiff === 0) return 'Pyyntihinta on linjassa alueen toteutuneiden kauppojen kanssa.';
+		if (eurDiff === 0) return 'Hintapyyntö osuu hyvin siihen, mitä alueella on oikeasti maksettu.';
 		return eurDiff > 0
 			? copy.landing.result.verdictEurOver(abs)
 			: copy.landing.result.verdictEurUnder(abs);

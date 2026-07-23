@@ -176,7 +176,7 @@
 		<Card>
 			{#snippet header()}
 				<div class="row-h">
-					<h2 class="card__h">Punaiset liput</h2>
+					<h2 class="card__h">Varoitusmerkit</h2>
 					<Chip tone="warn" size="sm">{card.red_flags.length}</Chip>
 				</div>
 			{/snippet}
@@ -237,8 +237,8 @@
 	</Card>
 {:else}
 	<Card>
-		{#snippet header()}<h2 class="card__h">Kortti on valmis, mutta sisältöä ei voitu näyttää</h2>{/snippet}
-		<p>Yritä ladata sivu uudelleen.</p>
+		{#snippet header()}<h2 class="card__h">Raportti on valmis, mutta sisältöä ei saatu näkyviin</h2>{/snippet}
+		<p>Lataathan sivun uudelleen.</p>
 	</Card>
 {/if}
 

@@ -26,7 +26,7 @@
 			<li class="ok">Ilmoituksen tarkistus</li>
 			<li class="ok">Jaettava vertailuraportti</li>
 			<li class="ok">Koko maan hintakartta</li>
-			<li class="ok">Kuntoarvio (suuntaa antava)</li>
+			<li class="ok">Kuntoarvio (suuntaa näyttävä)</li>
 			<li class="no">{copy.landing.result.asuntocardTitle.split(':')[0]}</li>
 			<li class="no">Taloyhtiön muut myynnit</li>
 		</ul>
@@ -44,7 +44,7 @@
 			<li class="ok">Remonttihistorian ristivarmistus</li>
 			<li class="ok">Saman taloyhtiön muut myynnit</li>
 			<li class="ok">Tontin ja isännöinnin varmistus</li>
-			<li class="ok">Varoitusmerkit riskikohdista</li>
+			<li class="ok">Varoitukset havaituista riskeistä</li>
 			<li class="ok">PDF-raportti lähteineen</li>
 		</ul>
 		{#if enabled}

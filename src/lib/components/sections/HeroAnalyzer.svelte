@@ -77,7 +77,7 @@
 			pending = true;
 		}}
 	>
-		<Field label="Ilmoituksen URL" htmlFor="url">
+		<Field label="Ilmoituksen linkki" htmlFor="url">
 			{#snippet children({ id })}
 				<input
 					{id}

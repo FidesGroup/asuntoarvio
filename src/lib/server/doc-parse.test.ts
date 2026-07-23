@@ -96,7 +96,7 @@ describe('deriveDocInsights — fixture facts', () => {
 	it('does not read studies or upkeep as major renovations', () => {
 		// 2011 kuntotutkimus and 2015 paikkaus/huoltomaalaus are decoys; the
 		// only done major is the 1998 ikkunaremontti.
-		const done = insights.find((s) => s.startsWith('Asiakirjojen korjaushistoria'));
+		const done = insights.find((s) => s.startsWith('Asiakirjoissa näkyvä korjaushistoria'));
 		expect(done).toContain('ikkunaremontti 1998');
 		expect(done).not.toContain('putkiremontti');
 		expect(done).not.toContain('julkisivu');

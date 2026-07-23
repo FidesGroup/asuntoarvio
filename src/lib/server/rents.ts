@@ -88,7 +88,7 @@ export function estimateRent(
 
 	if (!cell || cell.benchmark_eur_m2_kk === null || tier === null) {
 		flags.push(
-			'Tilastokeskus ei julkaise tälle postinumerolle ja huonetyypille vuokra-aineistoa. Syötä vuokra käsin.'
+			'Tilastokeskus ei julkaise tälle postinumerolle ja huonetyypille vuokra-aineistoa. Syötäthän vuokran käsin.'
 		);
 		return {
 			monthlyEurM2: null,
@@ -102,17 +102,17 @@ export function estimateRent(
 
 	if (tier === 'town') {
 		flags.push(
-			`Vuokra-arvio perustuu kunnan tasoon (${cell.benchmark_eur_m2_kk} €/m²/kk), koska postinumeroalueen aineisto on Tilastokeskuksessa salattu.`
+			`Vuokra-arvio nojaa kunnan tasoon (${cell.benchmark_eur_m2_kk} €/m²/kk), koska postinumeroalueen omaa aineistoa Tilastokeskus ei julkaise.`
 		);
 	} else if (tier === 'mk') {
 		flags.push(
-			`Vuokra-arvio perustuu maakunnan tasoon, koska tarkempaa aineistoa ei ole saatavilla.`
+			`Vuokra-arvio nojaa maakunnan tasoon, koska tarkempaa aineistoa ei ole saatavilla.`
 		);
 	}
 
 	if (cell.n_4q < 20) {
 		flags.push(
-			`Pieni otos (${cell.n_4q} havaintoa). Tilastokeskuksen salassapitoraja on 20 havaintoa.`
+			`Otos on pieni (${cell.n_4q} havaintoa). Tilastokeskuksen salassapitoraja on 20 havaintoa.`
 		);
 	}
 

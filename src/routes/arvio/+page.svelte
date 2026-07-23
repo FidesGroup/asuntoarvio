@@ -33,14 +33,14 @@
 		if (verdict.deltaPct === null) return copy.arvio.noVerdictLabel;
 		if (eurDiff !== null) {
 			const abs = fmt.format(Math.abs(eurDiff));
-			if (eurDiff === 0) return 'Pyyntihinta on linjassa alueen toteutuneiden kauppojen kanssa.';
+			if (eurDiff === 0) return 'Hintapyyntö osuu hyvin siihen, mitä alueella on oikeasti maksettu.';
 			return eurDiff > 0
 				? copy.landing.result.verdictEurOver(abs)
 				: copy.landing.result.verdictEurUnder(abs);
 		}
 		return verdict.deltaPct >= 0
-			? 'Pyyntihinta on alueen toteutuneiden kauppojen yläpuolella.'
-			: 'Pyyntihinta on alueen toteutuneiden kauppojen alapuolella.';
+			? 'Hintapyyntö on yli sen, mitä alueella on oikeasti maksettu.'
+			: 'Hintapyyntö on alle sen, mitä alueella on oikeasti maksettu.';
 	});
 	const shareUrl = $derived($page.url.toString());
 	const canonicalUrl = $derived(`${SITE_URL}${$page.url.pathname}${$page.url.search}`);

@@ -27,12 +27,12 @@
 	<title>RehtiArvio | Ilmainen markkinahinta-analyysi</title>
 	<meta
 		name="description"
-		content="Liitä myynti-ilmoitus, niin saat vertailun Tilastokeskuksen toteutuneisiin kauppoihin postinumeroalueittain. Ilmainen."
+		content="Liitä ilmoituksen linkki, niin näet heti, mitä samalta postinumeroalueelta on oikeasti maksettu. Vertailu tulee suoraan Tilastokeskuksen toteutuneista kaupoista, ei välittäjän arviosta. Ilmaiseksi."
 	/>
 	<meta property="og:title" content="RehtiArvio | Ilmainen markkinahinta-analyysi" />
 	<meta
 		property="og:description"
-		content="Liitä myynti-ilmoitus, niin saat vertailun Tilastokeskuksen toteutuneisiin kauppoihin postinumeroalueittain. Ilmainen."
+		content="Liitä ilmoituksen linkki, niin näet heti, mitä samalta postinumeroalueelta on oikeasti maksettu. Vertailu tulee suoraan Tilastokeskuksen toteutuneista kaupoista, ei välittäjän arviosta. Ilmaiseksi."
 	/>
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content={SITE_URL} />
@@ -41,7 +41,7 @@
 	<meta name="twitter:title" content="RehtiArvio | Ilmainen markkinahinta-analyysi" />
 	<meta
 		name="twitter:description"
-		content="Liitä myynti-ilmoitus, niin saat vertailun Tilastokeskuksen toteutuneisiin kauppoihin postinumeroalueittain."
+		content="Liitä ilmoituksen linkki, niin näet heti, mitä samalta postinumeroalueelta on oikeasti maksettu — suoraan Tilastokeskuksen toteutuneista kaupoista."
 	/>
 	<meta name="twitter:image" content={`${SITE_URL}/og`} />
 </svelte:head>

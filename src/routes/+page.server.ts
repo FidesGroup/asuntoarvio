@@ -54,12 +54,12 @@ export const load: PageServerLoad = async ({ url }) => {
 
 function toFacts(x: ExtractedListing): ListingFacts | { error: string } {
 	const isHouse = x.propertyClass === 'omakotitalo' || x.propertyClass === 'paritalo';
-	if (!x.postalCode) return { error: 'Postinumeroa ei löytynyt ilmoituksesta (Sijainti-kenttä).' };
+	if (!x.postalCode) return { error: 'Ilmoituksesta ei löytynyt postinumeroa (Sijainti-kenttä).' };
 	// Houses have no huonetyyppi cell; apartments/row houses need it for the benchmark.
-	if (!x.roomsType && !isHouse) return { error: 'Huonelukua ei löytynyt ilmoituksesta.' };
-	if (!x.livingAreaM2) return { error: 'Asuinpinta-alaa ei löytynyt ilmoituksesta.' };
+	if (!x.roomsType && !isHouse) return { error: 'Ilmoituksesta ei löytynyt huonelukua.' };
+	if (!x.livingAreaM2) return { error: 'Ilmoituksesta ei löytynyt asuinpinta-alaa.' };
 	const price = x.debtFreePriceEur ?? x.askingPriceEur;
-	if (!price) return { error: 'Hintaa ei löytynyt ilmoituksesta.' };
+	if (!price) return { error: 'Ilmoituksesta ei löytynyt hintaa.' };
 	return {
 		postalCode: x.postalCode,
 		roomsType: x.roomsType,
@@ -76,14 +76,14 @@ export const actions: Actions = {
 		const fd = await request.formData();
 		const email = String(fd.get('email') ?? '').trim().toLowerCase();
 		if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-			return fail(400, { waitlistError: 'Tarkista sähköpostiosoite.' });
+			return fail(400, { waitlistError: 'Tarkistathan sähköpostiosoitteen.' });
 		}
 		// Distinct from the cookie-banner's marketing category: this is the
 		// waitlist form's own, separately-consented opt-in for RehtiArvio's
 		// own emails beyond the waitlist notification itself (unchecked by default).
 		const marketingOptIn = fd.get('marketingOptIn') === 'on';
 		const ok = await addLead(email, 'landing-waitlist', marketingOptIn);
-		if (!ok) return fail(503, { waitlistError: 'Tallennus epäonnistui. Yritä hetken kuluttua uudelleen.' });
+		if (!ok) return fail(503, { waitlistError: 'Tallennus ei nyt onnistunut. Yritäthän hetken kuluttua uudelleen.' });
 		const cid = analyticsDistinctId(cookies);
 		if (cid) await trackServerEvent(cid, 'waitlist_joined', {});
 		return { joined: true };
@@ -106,7 +106,7 @@ export const actions: Actions = {
 			if (!url) {
 				return fail(400, {
 					error:
-						'Osoite ei kelpaa. Tuetut: asunnot.oikotie.fi, etuovi.com, kiinteistomaailma.fi, remax.fi (https). Voit aina liittää ilmoituksen tekstin suoraan.'
+						'Tämä osoite ei kelpaa. Toimivat: asunnot.oikotie.fi, etuovi.com, kiinteistomaailma.fi, remax.fi (https). Voit myös aina liittää ilmoituksen tekstin suoraan.'
 				});
 			}
 			try {
@@ -122,18 +122,18 @@ export const actions: Actions = {
 				sourceUrl = url.href;
 			} catch (e) {
 				return fail(502, {
-					error: `Sivun haku epäonnistui (${e instanceof Error ? e.message : 'tuntematon virhe'}). Portaali voi estää automaattisen haun. Avaa ilmoitus selaimessa, valitse kaikki (Ctrl+A), kopioi ja liitä teksti alla olevaan kenttään.`
+					error: `Sivun haku ei onnistunut (${e instanceof Error ? e.message : 'tuntematon virhe'}). Portaali voi estää automaattisen haun. Avaa ilmoitus selaimessa, valitse kaikki (Ctrl+A), kopioi ja liitä teksti alla olevaan kenttään.`
 				});
 			}
 		}
-		if (!text) return fail(400, { error: 'Liitä ilmoituksen teksti tai anna ilmoituksen osoite.' });
+		if (!text) return fail(400, { error: 'Liitä ilmoituksen teksti tai anna sen osoite, niin päästään alkuun.' });
 
 		// URL path: JSON-LD/__NEXT_DATA__ extraction fills gaps in label parsing.
 		const extracted = fetchedHtml ? parseListingHtml(fetchedHtml) : parseListingText(text);
 		const facts = toFacts(extracted);
 		if ('error' in facts) {
 			return fail(422, {
-				error: `${facts.error} ${source ? 'Sivu ei ehkä sisällä tietoja ilman selainta. Liitä ilmoituksen teksti suoraan.' : 'Tarkista, että liitit koko ilmoituksen (Ctrl+A → kopioi).'}`
+				error: `${facts.error} ${source ? 'Sivu ei ehkä näytä tietoja ilman selainta. Liitä ilmoituksen teksti suoraan.' : 'Varmistathan, että liitit koko ilmoituksen (Ctrl+A → kopioi).'}`
 			});
 		}
 
@@ -167,13 +167,13 @@ export const actions: Actions = {
 
 		const resolvedFlags = verdict.flags.filter(
 			(f) =>
-				!(extracted.condition && f.startsWith('Rakennusvuosi ei tiedossa')) &&
+				!(extracted.condition && f.startsWith('Rakennusvuotta ei tiedetä')) &&
 				!f.startsWith('Postinumeroalueen keskiarvo ei erottele')
 		);
 		resolvedFlags.push(
 			location
-				? 'Sijaintipainotettu vertailu on naapurialueiden kauppojen etäisyyspainotus (beta). Katu- ja rakennustason kauppahistoriaa se ei vielä sisällä.'
-				: 'Mikrosijaintia (katu, kerros, näkymä) vertailu ei vielä erottele. Se vaatii kauppakohtaista aineistoa.'
+				? 'Sijaintipainotettu vertailu painottaa naapurialueiden kauppoja niiden etäisyyden mukaan (beta). Katu- ja rakennustason kauppahistoriaa se ei vielä sisällä.'
+				: 'Mikrosijaintia — katua, kerrosta, näkymää — vertailu ei vielä erota. Se vaatisi kauppakohtaista aineistoa.'
 		);
 
 		await logQuery({
@@ -300,12 +300,12 @@ export const actions: Actions = {
 
 		const fd = await request.formData();
 		const raw = String(fd.get('payload') ?? '');
-		if (!raw || raw.length > 24_000) return fail(400, { reportError: 'Virheellinen pyyntö.' });
+		if (!raw || raw.length > 24_000) return fail(400, { reportError: 'Pyyntö ei kelpaa.' });
 		let payload: Record<string, unknown>;
 		try {
 			payload = JSON.parse(raw);
 		} catch {
-			return fail(400, { reportError: 'Virheellinen pyyntö.' });
+			return fail(400, { reportError: 'Pyyntö ei kelpaa.' });
 		}
 		if (
 			!/^\d{5}$/.test(String(payload?.postalCode ?? '')) ||
@@ -340,7 +340,7 @@ export const actions: Actions = {
 			listingUrl: typeof payload.sourceUrl === 'string' ? payload.sourceUrl : null,
 			facts: payload
 		});
-		if (!id) return fail(503, { reportError: 'Tallennus epäonnistui. Yritä hetken kuluttua.' });
+		if (!id) return fail(503, { reportError: 'Tallennus ei nyt onnistunut. Yritäthän hetken kuluttua.' });
 		const cid = analyticsDistinctId(cookies);
 		if (cid) {
 			await trackServerEvent(cid, 'report_ordered', {

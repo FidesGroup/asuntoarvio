@@ -1,6 +1,9 @@
 /**
  * Single source of truth for all Finnish copy on the free version.
- * Kept short, action-first, no throat-clearing.
+ * Voice: warm, plain-spoken Finnish, on the buyer's side. We are not a broker
+ * and we don't gain from the sale — so we can just tell it straight. Vary the
+ * rhythm, address the reader directly, say each caveat once like advice, not
+ * like a disclaimer. Facts, sources and mandated disclaimers stay put.
  */
 export const copy = {
 	brand: {
@@ -17,9 +20,9 @@ export const copy = {
 	},
 
 	landing: {
-		eyebrow: 'Hintavertailu tilastodatasta',
+		eyebrow: 'Todelliset kauppahinnat, suoraan tilastoista',
 		h1: 'Onko asunnon hinta kohdallaan?',
-		lede: 'Liitä myynti-ilmoitus, niin saat vertailun Tilastokeskuksen toteutuneisiin kauppoihin postinumeroalueittain.',
+		lede: 'Liitä ilmoituksen linkki, niin kerromme heti, mitä samalta postinumeroalueelta on oikeasti maksettu. Vertailu tulee suoraan Tilastokeskuksen toteutuneista kaupoista — ei välittäjän arviosta.',
 
 		tabs: {
 			url: 'Liitä linkki',
@@ -29,52 +32,52 @@ export const copy = {
 
 		urlPlaceholder: 'https://asunnot.oikotie.fi/myytavat-asunnot/helsinki/…',
 		textPlaceholder: 'Avaa ilmoitus selaimessa → valitse kaikki (Ctrl+A) → liitä tähän',
-		textPlaceholderTouch: 'Avaa ilmoitus → kopioi ilmoituksen teksti → liitä tähän',
+		textPlaceholderTouch: 'Avaa ilmoitus → kopioi sen teksti → liitä tähän',
 		analyzeCta: 'Analysoi ilmoitus',
-		manualTitle: 'Anna kohteen perustiedot',
-		supportedSources: 'Tuetut: Oikotie, Etuovi, Kiinteistömaailma, Remax (https).',
+		manualTitle: 'Kerro kohteen perustiedot',
+		supportedSources: 'Toimii näissä: Oikotie, Etuovi, Kiinteistömaailma, Remax (https).',
 		beginnerToggleOn: 'Sijoittajalle: lisää vuokra ja vastike',
 		beginnerToggleOff: 'Aloittelijalle: piilota lisäkentät',
-		debtfreeHelper: 'Velaton hinta = myyntihinta + yhtiölainaosuus. Ilmoituksissa on yleensä molemmat.',
+		debtfreeHelper: 'Velaton hinta = myyntihinta + osuus yhtiölainasta. Ilmoituksessa lukee yleensä molemmat.',
 		demoLinkCta: 'Katso esimerkkiarvio',
-		manualLink: 'tai syötä tiedot käsin',
+		manualLink: 'tai syötä tiedot itse',
 		manualLinkClose: 'piilota käsin syöttö',
 		independence:
-			'Emme ole välittäjä emmekä hyödy kaupasta. Vertailu perustuu Tilastokeskuksen toteutuneisiin kauppahintoihin.',
+			'Emme ole välittäjä emmekä hyödy kaupasta mitenkään. Siksi voimme kertoa suoraan, mitä alueella on oikeasti maksettu — luvut ovat Tilastokeskuksen toteutuneita kauppahintoja.',
 		privacyNote: 'Emme tallenna ilmoituksia emmekä osoitteita.',
 
 		result: {
 			verdictOver: 'yli alueen toteutuneiden kauppojen',
 			verdictUnder: 'alle alueen toteutuneiden kauppojen',
 			verdictEurOver: (eur: string) =>
-				`Pyyntihinta on noin ${eur} € yli alueen toteutuneiden kauppojen.`,
+				`Hintapyyntö on noin ${eur} € yli sen, mitä alueella on oikeasti maksettu.`,
 			verdictEurUnder: (eur: string) =>
-				`Pyyntihinta on noin ${eur} € alle alueen toteutuneiden kauppojen.`,
-			verdictNeutral: 'Suuntaa antava arvio',
+				`Hintapyyntö on noin ${eur} € alle sen, mitä alueella on oikeasti maksettu.`,
+			verdictNeutral: 'Suuntaa näyttävä arvio',
 			noVerdict: 'Ei vertailuarvoa',
 			noVerdictReason: 'tälle alueelle ja huonetyypille',
-			estimateReason: 'alueen kaupoista ei saatu riittävää vertailua, joten arvio perustuu kohteen kuntoon',
+			estimateReason: 'alueelta ei löytynyt tarpeeksi kauppoja vertailuun, joten arvio nojaa kohteen kuntoon',
 			confidence: {
 				korkea: 'korkea',
 				kohtalainen: 'kohtalainen',
 				matala: 'matala'
 			},
 			tier: {
-				T1: (n: number) => `Perustuu ${n} toteutuneeseen kauppaan tällä postinumeroalueella`,
-				T3: (n: number) => `Perustuu ${n} kauppaan laajemmalta alueelta, joten vertailu on karkeampi`,
-				T4: 'Ei riittävästi vertailukauppoja, joten arvio perustuu kohteen kuntoon'
+				T1: (n: number) => `Takana ${n} toteutunutta kauppaa juuri tällä postinumeroalueella`,
+				T3: (n: number) => `Takana ${n} kauppaa vähän laajemmalta alueelta, joten vertailu on karkeampi`,
+				T4: 'Vertailukauppoja on liian vähän, joten arvio nojaa kohteen kuntoon'
 			},
 			statListing: 'Kohteen neliöhinta',
 			statBenchmark: 'Alueen kaupat',
 			statConfidence: 'Luotettavuus',
-			factorsTitle: 'Miten luku muodostui?',
-			factorsToggle: 'Avaa selitykset',
-			factorsClose: 'Sulje selitykset',
-			flagsTitle: 'Tulkinnan varaukset',
-			asuntocardTitle: 'Taloyhtiöraportti: syväkatsaus taloyhtiöön',
+			factorsTitle: 'Mistä luku muodostui?',
+			factorsToggle: 'Näytä selitykset',
+			factorsClose: 'Piilota selitykset',
+			flagsTitle: 'Mitä kannattaa pitää mielessä',
+			asuntocardTitle: 'Taloyhtiöraportti: syväsukellus taloyhtiöön',
 			asuntocardBeta: 'beta',
 			asuntocardLede:
-				'Kokoaa remonttihistorian, taloyhtiön muut myynnit ja tonttitiedot julkisista lähteistä. Raportti valmistuu muutamassa minuutissa.',
+				'Kokoaa yhteen remonttihistorian, saman taloyhtiön muut myynnit ja tonttitiedot julkisista lähteistä. Saat raportin muutamassa minuutissa.',
 			asuntocardCta: 'Tilaa Taloyhtiöraportti',
 			asuntocardNoSub: 'Ei vielä tilausta?'
 		},
@@ -83,13 +86,13 @@ export const copy = {
 			eyebrow: 'Datasta',
 			title: 'Postinumeroalueiden neliöhinnat',
 			source: 'Lähde: Tilastokeskus 13mt · 4 viimeistä neljännestä',
-			hint: 'Keltainen = edullinen, punainen = kallis neliöhinta. Klikkaa aluetta esitäyttääksesi vertailun.',
+			hint: 'Keltainen on edullinen, punainen kallis. Klikkaa aluetta, niin esitäytämme vertailun sinulle.',
 			openFull: 'Avaa kartta →'
 		},
 
 		examples: {
-			eyebrow: 'Esimerkkejä eri kohdetyypeistä',
-			title: 'Miltä arvio näyttää erilaisille asunnoille?',
+			eyebrow: 'Esimerkkejä erilaisista kohteista',
+			title: 'Miltä arvio näyttää eri asunnoille?',
 			rows: {
 				area: 'Alueen kaupat',
 				priceLevel: 'Alueen hintataso',
@@ -98,33 +101,33 @@ export const copy = {
 			},
 			takes: {
 				'yksio-helsinki':
-					'Pienet yksiöt myydään usein alueen keskineliöhintaa kalliimmalla. Vertailu näyttää preemion suuruuden.',
+					'Pienestä yksiöstä maksetaan usein enemmän per neliö kuin alueella keskimäärin. Vertailu näyttää, kuinka iso tuo lisähinta on.',
 				'kaksio-tampere':
-					'Kaksiot ovat vaihdetuin kohdetyyppi, joten vertailu on niissä luotettavimmillaan.',
+					'Kaksioita vaihtaa omistajaa eniten, joten niissä vertailu osuu yleensä tarkimmilleen.',
 				'kolmio-turku':
-					'Suuret perheasunnot jäävät usein alle alueen neliökeskihinnan. Hinnoittelussa se on neuvotteluvaraa.',
+					'Iso perheasunto jää usein alueen neliökeskihinnan alle. Sen huomaa hyvin, kun istut neuvottelupöytään.',
 				'kaksio-oulu':
-					'Edullisemmilla alueilla tilastovuokra nostaa bruttotuoton selvästi kasvukeskuksia korkeammaksi.'
+					'Edullisemmalla alueella tilastovuokra nostaa bruttotuoton selvästi kasvukeskuksia korkeammaksi.'
 			} as Record<string, string>,
 			disclaimer:
 				'Luvut ovat aluetason tilastoja (Tilastokeskus 13mt ja asvu), eivät arvioita yksittäisistä kohteista. Emme ole välittäjä.'
 		},
 
 		market: {
-			eyebrow: 'Markkinat nyt',
+			eyebrow: 'Markkinat juuri nyt',
 			transactions: 'Kauppoja / 4 nelj.',
 			change12: '12 kk hintakehitys',
 			forecast12: '12 kk trendiennuste',
-			areas: 'Aluetta, joilla julkaistu hinta',
+			areas: 'Aluetta, joilta hinta julkaistu',
 			mostExpensive: 'Kallein alue',
 			cheapest: 'Edullisin alue',
 			countrySub: 'koko maa, kerrostalot',
 			source: 'Lähde: Tilastokeskus 13mt · 13mv',
-			methodToggle: 'Miten tämä lasketaan?'
+			methodToggle: 'Mistä nämä luvut lasketaan?'
 		},
 
 		report: {
-			factsTitle: 'Ilmoituksesta poimitut tiedot',
+			factsTitle: 'Mitä ilmoituksesta poimittiin',
 			factsMissing: 'ei ilmoitettu',
 			facts: {
 				address: 'Osoite',
@@ -155,34 +158,34 @@ export const copy = {
 			locationTitle: 'Sijaintipainotettu vertailu',
 			locationBeta: 'beta',
 			locationLede:
-				'Naapurialueiden toteutuneet kaupat etäisyyspainotettuna osoitteen ympäriltä.',
+				'Naapurustossa toteutuneet kaupat, painotettuna sen mukaan, kuinka lähellä osoitetta ne ovat.',
 			locationWeighted: 'Sijaintipainotettu hintataso',
 			locationDelta: 'Kohde vs. sijaintipainotettu',
 			locationCols: { area: 'Alue', price: '€/m²', dist: 'Etäisyys' },
-			estimateTitle: 'Hinta-arviohaarukka',
+			estimateTitle: 'Hinta-arvion haarukka',
 			estimateAssumptions: 'Oletukset',
-			insightsTitle: 'Poiminnat ilmoituksesta',
-			renoTitle: 'Remonttihistoria ja tulevat remontit',
+			insightsTitle: 'Poimintoja ilmoituksesta',
+			renoTitle: 'Tehdyt ja tulossa olevat remontit',
 			renoDone: 'Tehty',
 			renoUpcoming: 'Tulossa',
-			renoNone: 'Ilmoituksessa ei mainittu remontteja. Pyydä isännöitsijäntodistus ja kunnossapitotarveselvitys.',
+			renoNone: 'Ilmoituksessa ei mainittu remontteja. Pyydä isännöitsijäntodistus ja kunnossapitotarveselvitys, niin näet koko kuvan.',
 			historyLoading: 'Haetaan alueen hintahistoriaa Tilastokeskuksesta…',
 			shareCta: 'Avaa jaettava arvio →',
-			shareHint: 'Linkki sisältää arvion tiedot ilman ilmoituksen tekstiä.',
-			sourceLine: (host: string) => `Analysoitu ilmoituksesta (${host}), yksi käyttäjän pyytämä haku.`
+			shareHint: 'Linkissä on arvion luvut, mutta ei ilmoituksen tekstiä.',
+			sourceLine: (host: string) => `Analysoitu ilmoituksesta (${host}), yhtenä sinun pyytämänäsi hakuna.`
 		},
 
 		methodNote:
-			'Menetelmä: kohteen neliöhintaa verrataan alueen toteutuneiden kauppojen kauppamäärillä painotettuun keskiarvoon neljältä viimeiseltä neljännekseltä. Luotettavuusluokka määräytyy vertailukauppojen määrästä.',
+			'Näin lasketaan: kohteen neliöhintaa verrataan siihen, mitä alueella on toteutuneissa kaupoissa maksettu neljän viime neljänneksen aikana (kauppamäärillä painotettu keskiarvo). Mitä enemmän vertailukauppoja, sitä luotettavampi luku.',
 
 		waitlist: {
 			eyebrow: 'Tulossa',
 			title: 'Taloyhtiöraportti',
 			placeholder: 'nimi@esimerkki.fi',
-			cta: 'Liity jonotuslistalle',
-			success: 'Kiitos! Sähköpostisi on kirjattu.',
-			errorGeneric: 'Tallennus epäonnistui. Yritä hetken kuluttua.',
-			errorInvalid: 'Tarkista sähköpostiosoite.',
+			cta: 'Liity jonoon',
+			success: 'Kiitos! Sähköpostisi on tallessa.',
+			errorGeneric: 'Tallennus ei nyt onnistunut. Yritäthän hetken kuluttua uudelleen.',
+			errorInvalid: 'Tarkistathan sähköpostiosoitteen.',
 			marketingOptIn: 'Saan myös muuta RehtiArvion postia sähköpostiini.'
 		}
 	},
@@ -191,13 +194,13 @@ export const copy = {
 		titlePrefix: 'RehtiArvio: ',
 		copyCta: 'Kopioi linkki',
 		copied: 'Linkki kopioitu',
-		copyError: 'Kopiointi epäonnistui',
+		copyError: 'Kopiointi ei onnistunut',
 		shareOnMobile: 'Jaa',
 		transcript: 'Toteutuneet kaupat',
-		noVerdictLabel: 'Ei vertailuarvoa tälle alueelle.',
+		noVerdictLabel: 'Tälle alueelle ei ole vertailuarvoa.',
 		shareRow: {
 			title: 'Jaa arvio',
-			hint: 'Linkki sisältää kaikki arvion tiedot. Tiliä ei tarvita.'
+			hint: 'Linkissä on kaikki arvion luvut. Tiliä ei tarvita.'
 		},
 		yield: {
 			title: 'Vuokratuotto',
@@ -206,13 +209,13 @@ export const copy = {
 			net: 'Nettotuotto',
 			monthlyNet: 'Nettokassavirta / kk',
 			reserve: 'Remonttivaraus / v',
-			note: 'Sisältää varainsiirtoveron 1,5 % (vero.fi 2026). Remonttivaraus on oletusarvo.',
-			rentIsEstimate: (q?: string | null) => `Vuokra on alueen tilastollinen arvio${q ? ` (${q})` : ''}.`
+			note: 'Mukana varainsiirtovero 1,5 % (vero.fi 2026). Remonttivaraus on oletusarvo, jonka voit korvata omalla luvullasi.',
+			rentIsEstimate: (q?: string | null) => `Vuokra on alueen tilastollinen arvio${q ? ` (${q})` : ''}, ei kohteen toteutunut vuokra.`
 		},
 		quarterRange: 'Neljännesvaihtelu',
 		location: {
 			title: 'Sijainti',
-			hint: 'Postinumeroalue hintakartalla. Väri = alueen toteutunut neliöhinta.'
+			hint: 'Postinumeroalue hintakartalla. Väri kertoo alueen toteutuneen neliöhinnan.'
 		},
 		ownRent: {
 			title: 'Omistus vs. vuokraus',
@@ -223,40 +226,40 @@ export const copy = {
 			interest: 'Korkokulu',
 			vastike: 'Hoitovastike',
 			reserve: 'Remonttivaraus',
-			vastikeUnknown: 'Hoitovastiketta ei annettu. Omistuksen kulut ovat todellisuudessa suuremmat.',
-			note: 'Korko-oletus 3,5 % velattomasta hinnasta puhtaana kuluna. Ei sisällä lyhennystä eikä arvonmuutosta: lyhennys kasvattaa varallisuutta, arvonmuutos on riski molempiin suuntiin.'
+			vastikeUnknown: 'Hoitovastiketta ei annettu, joten omistuksen todelliset kulut ovat tässä näytettyä suuremmat.',
+			note: 'Korko-oletus 3,5 % velattomasta hinnasta, laskettu puhtaana kuluna. Mukana ei ole lainanlyhennystä eikä arvonmuutosta: lyhennys kasvattaa varallisuuttasi, arvonmuutos taas on riski molempiin suuntiin.'
 		},
 		notes: {
-			title: 'Huomioitavaa arviossa',
-			transferTax: (eur: string) => `Ostajan varainsiirtovero n. ${eur} € (1,5 %, vero.fi).`,
-			pipeNear: 'Rakennus lähestyy tyypillistä putkiremontti-ikää. Tarkista tehdyt remontit.',
-			pipeIn: 'Rakennus on tyypillisessä putkiremontti-iässä. Varmista, onko putkiremontti tehty.',
-			pipeDone: 'Putkiremontti on ilmoituksen mukaan tehty. Suurin yksittäinen remonttiriski on takana.',
+			title: 'Hyvä pitää mielessä',
+			transferTax: (eur: string) => `Ostajalle tulee maksettavaksi varainsiirtovero noin ${eur} € (1,5 %, vero.fi).`,
+			pipeNear: 'Talo lähestyy tyypillistä putkiremontti-ikää. Tarkista ilmoituksesta tai isännöitsijältä, mitä on jo tehty.',
+			pipeIn: 'Talo on tyypillisessä putkiremontti-iässä. Varmista, onko putkiremontti jo tehty vai vielä edessä.',
+			pipeDone: 'Putkiremontti on ilmoituksen mukaan tehty — talon suurin yksittäinen remonttiriski on siis takana.',
 			trend: (pct: string, from: number, to: number) =>
-				`Alueen keskihinnat ovat muuttuneet keskimäärin ${pct} % vuodessa (${from}–${to}).`
+				`Alueen keskihinnat ovat liikkuneet keskimäärin ${pct} % vuodessa (${from}–${to}).`
 		},
 		history: {
-			priceTitle: 'Alueen keskihintojen kehitys',
+			priceTitle: 'Miten alueen keskihinnat ovat kehittyneet',
 			priceUnit: '€/m² vuosikeskiarvo',
-			volumeTitle: 'Alueen myyntimäärien kehitys',
+			volumeTitle: 'Miten alueen myyntimäärät ovat kehittyneet',
 			volumeUnit: 'julkaistut kaupat / vuosi',
 			trendLabel: 'Keskimääräinen vuosimuutos',
-			last12Label: 'Edellisen 12 kk hintakehitys',
+			last12Label: 'Viimeisen 12 kk hintakehitys',
 			forecastLabel: 'Seuraavan 12 kk trendiennuste',
 			forecastSeries: 'Ennuste',
 			forecastNote:
-				'Trendiennuste on lineaarinen jatke alueen toteutuneista hinnoista (enintään 5 v), suuntaa antava, ei takuu tulevasta.',
+				'Ennuste jatkaa alueen toteutunutta hintakehitystä suorana viivana (enintään 5 v). Se näyttää suuntaa, ei lupaa mitään tulevasta.',
 			source: 'Lähde: Tilastokeskus 13mt',
-			partialNote: 'Viimeisin vuosi voi olla vajaa.'
+			partialNote: 'Viimeisin vuosi voi olla vielä vajaa.'
 		},
 		method: {
-			title: 'Näin luku lasketaan',
+			title: 'Näin luku syntyy',
 			items: [
 				'Kohteen neliöhinta = velaton hinta jaettuna asuinpinta-alalla.',
-				'Vertailutaso on postinumeroalueen toteutuneiden kauppojen kauppamäärillä painotettu keskihinta neljältä viimeiseltä neljännekseltä (Tilastokeskus 13mt).',
-				'Jos omalta alueelta on alle 30 kauppaa, vertailu laajenee kuntatasolle ja luotettavuusluokka laskee.',
-				'Tilastokeskus ei julkaise alle 20 kaupan soluja. Puuttuvaa arvoa ei koskaan korvata toisella luvulla.',
-				'Ero ilmoitetaan aina yhdessä luotettavuusluokan ja tulkinnan varausten kanssa, ei pelkkänä prosenttina.'
+				'Vertailutaso on se, mitä postinumeroalueella on toteutuneissa kaupoissa maksettu neljän viime neljänneksen aikana (kauppamäärillä painotettu keskihinta, Tilastokeskus 13mt).',
+				'Jos omalta alueelta löytyy alle 30 kauppaa, vertailu laajenee kuntatasolle ja luotettavuusluokka laskee.',
+				'Tilastokeskus ei julkaise alle 20 kaupan soluja. Puuttuvaa arvoa emme koskaan paikkaa toisella luvulla.',
+				'Ero näytetään aina yhdessä luotettavuusluokan ja varausten kanssa — ei koskaan pelkkänä prosenttina.'
 			]
 		},
 		back: '← Takaisin hakuun',
@@ -266,10 +269,10 @@ export const copy = {
 	kartta: {
 		title: 'Kartta',
 		h1: 'Asuntomarkkinat postinumeroalueittain',
-		lede: 'Toteutuneet neliöhinnat, 12 kuukauden hintakehitys, bruttovuokratuotot ja markkinan likviditeetti kartalla. Klikkaa aluetta esitäyttääksesi vertailun.',
+		lede: 'Toteutuneet neliöhinnat, 12 kuukauden hintakehitys, bruttovuokratuotot ja markkinan vilkkaus samalla kartalla. Klikkaa aluetta, niin esitäytämme vertailun sinulle.',
 		legendNoData: 'Katkoviivalla merkityltä alueelta ei ole julkaistua arvoa valitulle tunnusluvulle.',
 		noValue: 'ei julkaistua arvoa',
-		tapHint: 'Napauta aluetta nähdäksesi luvut.',
+		tapHint: 'Napauta aluetta, niin näet luvut.',
 		panelUse: 'Käytä vertailussa',
 		panelClose: 'Sulje tietoruutu',
 		modesLabel: 'Kartan tunnusluku',
@@ -278,7 +281,7 @@ export const copy = {
 			chg: 'Muutos 12 kk',
 			yld: 'Vuokratuotto',
 			pir: 'Hinta / tulot',
-			liq: 'Likviditeetti'
+			liq: 'Vilkkaus'
 		},
 		modeUnits: {
 			yld: 'brutto / v',
@@ -286,11 +289,11 @@ export const copy = {
 			liq: 'kauppaa / 1 000 asuntoa'
 		},
 		modeLedes: {
-			eur: 'Toteutuneiden kauppojen keskineliöhinta neljältä viimeiseltä neljännekseltä.',
-			chg: 'Neliöhintojen muutos edellisvuoden vastaavaan neljään neljännekseen. Laskettu huonetyypeittäin ja painotettu kauppamäärillä, jotta myyntirakenteen muutos ei näy hinnanmuutoksena.',
-			yld: 'Bruttovuokratuotto: alueen tilastovuokra (12 kk) suhteessa saman huonetyypin toteutuneisiin neliöhintoihin. Ei sisällä vastikkeita eikä veroja.',
-			pir: '60 m² asunnon velaton hinta suhteessa alueen aikuisväestön mediaanivuosituloihin. Mitä suurempi luku, sitä kireämpi hintataso suhteessa paikalliseen ostovoimaan.',
-			liq: 'Julkaistut kaupat neljältä neljännekseltä suhteessa alueen asuntokantaan. Ohuilla markkinoilla yksittäiset kaupat heiluttavat hintatilastoa enemmän.'
+			eur: 'Mitä alueella on keskimäärin maksettu neliöltä neljän viime neljänneksen aikana.',
+			chg: 'Paljonko neliöhinnat ovat liikkuneet vuodentakaisesta. Laskettu huonetyypeittäin ja painotettu kauppamäärillä, jottei myyntien rakenteen muutos näyttäisi hinnanmuutokselta.',
+			yld: 'Bruttovuokratuotto: alueen tilastovuokra (12 kk) suhteessa saman huonetyypin toteutuneisiin neliöhintoihin. Vastikkeet ja verot eivät ole tässä mukana.',
+			pir: '60 m² asunnon velaton hinta suhteessa alueen aikuisväestön mediaanivuosituloihin. Mitä isompi luku, sitä kireämpi hintataso paikalliseen ostovoimaan nähden.',
+			liq: 'Neljän neljänneksen kaupat suhteessa alueen asuntokantaan. Hiljaisilla alueilla yksittäinen kauppa heiluttaa hintatilastoa herkemmin.'
 		},
 		katsausTitle: 'Markkinakatsaus',
 		katsausWindow: (w: string) => `Tarkastelujakso ${w}`,
@@ -306,16 +309,16 @@ export const copy = {
 			const pct = (v: number) => `${v > 0 ? '+' : ''}${String(v).replace('.', ',')}`;
 			const out: string[] = [];
 			out.push(
-				`Tilastokeskus julkaisi neliöhinnan ${s.areas} postinumeroalueelta; julkaistuja kauppoja kirjattiin ${s.transactions} ja julkaistujen alueiden mediaanineliöhinta oli ${s.median} €/m².`
+				`Tilastokeskus julkaisi neliöhinnan ${s.areas} postinumeroalueelta. Kauppoja kirjattiin ${s.transactions}, ja näiden alueiden mediaanineliöhinta oli ${s.median} €/m².`
 			);
 			if (s.chg !== null) {
 				out.push(
-					`Vuodentakaiseen verrattuna neliöhinnat ${s.chg < 0 ? 'laskivat' : 'nousivat'} julkaistuilla alueilla keskimäärin ${pct(Math.abs(s.chg)).replace('+', '')} % (kauppamäärillä painotettu, huonetyypeittäin vakioitu).`
+					`Vuodentakaiseen verrattuna neliöhinnat ${s.chg < 0 ? 'laskivat' : 'nousivat'} keskimäärin ${pct(Math.abs(s.chg)).replace('+', '')} % (kauppamäärillä painotettu, huonetyypeittäin vakioitu).`
 				);
 			}
 			if (s.riser && s.faller) {
 				out.push(
-					`Voimakkainta nousu oli alueella ${s.riser.name} (${pct(s.riser.value)} %); suurin lasku kirjattiin alueella ${s.faller.name} (${pct(s.faller.value)} %).`
+					`Kovinta nousu oli alueella ${s.riser.name} (${pct(s.riser.value)} %), ja jyrkin lasku alueella ${s.faller.name} (${pct(s.faller.value)} %).`
 				);
 			}
 			if (s.medianYield !== null) {
@@ -326,13 +329,13 @@ export const copy = {
 			return out;
 		},
 		katsausDisclaimer:
-			'Katsaus muodostetaan automaattisesti sivun tilastoista. Se ei ole sijoitusneuvo.',
+			'Katsaus kootaan automaattisesti sivun tilastoista. Se ei ole sijoitusneuvo.',
 		countryPriceTitle: 'Koko maan hintakehitys (kerrostalot)',
 		countryVolumeTitle: 'Koko maan myyntimäärät (kerrostalot)',
 		countrySource: 'Lähde: Tilastokeskus 13mv',
 		divergence: {
-			title: 'Alueellinen eriytyminen: pääkaupunkiseutu vs. muu Suomi',
-			lede: 'Kerrostalojen toteutuneet neliöhinnat indeksoituna: sama lähtötaso vuonna 2020, joten viivojen etäisyys kertoo markkinoiden eriytymisen.',
+			title: 'Alueet erkanevat: pääkaupunkiseutu vs. muu Suomi',
+			lede: 'Kerrostalojen toteutuneet neliöhinnat indeksoituna samaan lähtötasoon vuonna 2020. Mitä kauemmas viivat karkaavat toisistaan, sitä enemmän markkinat ovat eriytyneet.',
 			unit: (base: number) => `indeksi, ${base} = 100`,
 			pks: 'PKS',
 			msu: 'Muu Suomi',
@@ -340,10 +343,10 @@ export const copy = {
 			nominal: 'Nimellinen',
 			real: 'Reaalinen',
 			realNote:
-				'Reaalinen sarja on deflatoitu kuluttajahintaindeksillä: se näyttää hintakehityksen suhteessa yleiseen hintatasoon.',
+				'Reaalisesta sarjasta on poistettu yleinen hintojen nousu kuluttajahintaindeksillä. Se näyttää, miten asuntohinnat liikkuivat suhteessa muuhun hintatasoon.',
 			source: 'Lähde: Tilastokeskus 13mv · KHI 11xs'
 		},
-		bandsTitle: 'Neliöhintojen jakauma',
+		bandsTitle: 'Miten neliöhinnat jakautuvat',
 		bandsUnit: 'postinumeroalueet hintaluokittain',
 		bandsAreas: 'aluetta',
 		bandsTransactions: 'kauppaa',
@@ -356,13 +359,13 @@ export const copy = {
 		statsYield: 'Mediaanituotto',
 		topExpensive: 'Kalleimmat alueet',
 		topCheapest: 'Edullisimmat alueet',
-		topVolume: 'Vaihdetuimmat alueet',
-		topYield: 'Korkeimmat vuokratuotot',
-		topRisers: 'Suurimmat nousijat 12 kk',
-		topFallers: 'Suurimmat laskijat 12 kk',
-		topHint: 'Vähintään 10 kauppaa neljällä neljänneksellä. Avaa alueen sivu tai esitäytä vertailu suoraan.',
+		topVolume: 'Vilkkaimmat alueet',
+		topYield: 'Parhaat vuokratuotot',
+		topRisers: 'Kovimmat nousijat 12 kk',
+		topFallers: 'Jyrkimmät laskijat 12 kk',
+		topHint: 'Mukana vähintään 10 kauppaa neljällä neljänneksellä. Avaa alueen sivu tai esitäytä vertailu suoraan.',
 		rowPrefillCta: 'Esitäytä',
-		topYieldHint: 'Bruttotuotto ennen vastikkeita ja veroja. Korkea tuotto heijastaa usein myös korkeampaa riskiä.',
+		topYieldHint: 'Bruttotuotto ennen vastikkeita ja veroja. Korkea tuotto tarkoittaa usein myös korkeampaa riskiä.',
 		colArea: 'Alue',
 		colPrice: '€/m²',
 		colN: 'Kauppoja',
@@ -379,15 +382,15 @@ export const copy = {
 	// here, so copy never grammatically inflects the {town}/{nimi} value.
 	kaupunki: {
 		eyebrow: 'Kaupunki',
-		lede: 'Toteutuneet asuntokauppojen neliöhinnat postinumeroalueittain, Tilastokeskuksen tilastoista.',
+		lede: 'Mitä asunnoista on oikeasti maksettu, postinumeroalue kerrallaan — suoraan Tilastokeskuksen tilastoista.',
 		indexEyebrow: 'Kaupungit',
 		indexH1: 'Asuntojen hinnat kaupungeittain',
-		indexLede: 'Toteutuneet asuntokauppojen neliöhinnat postinumeroalueittain, ryhmiteltynä kaupungeittain. Tilastokeskuksen tilastoista.',
+		indexLede: 'Toteutuneet neliöhinnat postinumeroalueittain, kaupungeittain koottuna. Kaikki suoraan Tilastokeskuksen tilastoista.',
 		indexMetaTitle: 'Asuntojen hinnat kaupungeittain | RehtiArvio',
-		indexMetaDescription: 'Toteutuneet asuntokauppojen neliöhinnat postinumeroalueittain, ryhmiteltynä kaupungeittain. Tilastokeskuksen tilastoista.',
+		indexMetaDescription: 'Katso, mitä asunnoista on oikeasti maksettu eri kaupungeissa — toteutuneet neliöhinnat postinumeroalueittain, suoraan Tilastokeskuksen tilastoista.',
 		metaTitle: (town: string) => `${town}: asuntojen neliöhinnat postinumeroalueittain | RehtiArvio`,
 		metaDescription: (town: string, median: string, n: number) =>
-			`${town}: asuntojen mediaanineliöhinta ${median} €/m², ${n} postinumeroaluetta. Toteutuneet kauppahinnat Tilastokeskuksen tilastoista.`,
+			`${town}: asuntojen mediaanineliöhinta ${median} €/m², ${n} postinumeroaluetta. Toteutuneet kauppahinnat suoraan Tilastokeskuksen tilastoista.`,
 		statMedian: 'Mediaanihinta',
 		statAreas: 'Postinumeroaluetta',
 		statTransactions: 'Kauppoja / 4 nelj.',
@@ -397,7 +400,7 @@ export const copy = {
 		colN: 'Kauppoja',
 		colChange: 'Muutos 12 kk',
 		colYield: 'Tuotto-%',
-		rowHint: 'Avaa alueen oma sivu tarkempiin tietoihin, tai esitäytä vertailu suoraan.',
+		rowHint: 'Avaa alueen oma sivu tarkempiin lukuihin, tai esitäytä vertailu suoraan.',
 		openArea: 'Avaa alueen sivu',
 		prefillCta: 'Esitäytä',
 		backToKartta: 'Avaa koko maan kartta →',
@@ -409,7 +412,7 @@ export const copy = {
 		eyebrow: 'Postinumeroalue',
 		metaTitle: (pc: string, nimi: string) => `${pc} ${nimi}: asuntojen neliöhinnat | RehtiArvio`,
 		metaDescription: (pc: string, nimi: string, eur: string) =>
-			`${pc} ${nimi}: toteutunut asuntokauppojen neliöhinta ${eur} €/m², Tilastokeskuksen tilastoista.`,
+			`${pc} ${nimi}: asunnoista on maksettu ${eur} €/m² — toteutuneet kauppahinnat suoraan Tilastokeskuksen tilastoista.`,
 		statPrice: 'Neliöhinta',
 		statN: 'Kauppoja / 4 nelj.',
 		statChange: 'Muutos 12 kk',
@@ -426,7 +429,7 @@ export const copy = {
 	tilaa: {
 		h1: 'Valitse itsellesi sopiva taso.',
 		lede:
-			'Ilmainen analyysi kertoo, mitä ilmoitus väittää. Taloyhtiöraportti kertoo, mitä siitä löytyy muualta, jokainen väite lähteineen.',
+			'Ilmainen analyysi kertoo, mitä ilmoitus lupaa. Taloyhtiöraportti kertoo, mitä siitä löytyy muualta — jokainen väite lähteineen.',
 		billedOnce: 'kertamaksu',
 		billedMonth: '/ kk',
 		billedYear: '/ v',
@@ -438,113 +441,113 @@ export const copy = {
 			waitlist: 'Liity odotuslistalle'
 		},
 		fineOnce: 'Maksu Stripen kautta. Ei sitoutumista.',
-		finePro: 'Vuosimaksu valittavissa seuraavassa vaiheessa.',
+		finePro: 'Vuosimaksun voit valita seuraavassa vaiheessa.',
 		faqTitle: 'Usein kysyttyä',
 		faq: [
-			{ q: 'Voinko peruuttaa?', a: 'Kyllä. Pro-tilauksen voi peruuttaa milloin tahansa. Veloitus päättyy kuluvan kauden loppuun.' },
-			{ q: 'Mitä tietoja tallennatte?', a: 'Emme tallenna ilmoituksia tai osoitteita. Ainoastaan sähköpostisi tilausta varten.' },
-			{ q: 'Toimiiko laskutus?', a: 'Laskutus menee Stripen kautta. Saat kuitin sähköpostiin.' },
-			{ q: 'Onko kokeilujakso?', a: 'Taloyhtiöraportti on kertamaksu, eikä siinä ole kokeilujaksoa. Pro-tilaukseen lisätään 14 päivän kokeilu myöhemmin.' },
-			{ q: 'Voinko viedä datan?', a: 'Kyllä. Kaikki Taloyhtiöraportit ovat PDF-muodossa, ja Pro-tilaukseen sisältyy JSON-vienti.' }
+			{ q: 'Voinko peruuttaa?', a: 'Voit. Pro-tilauksen saa poikki milloin vain, ja veloitus loppuu kuluvan kauden päätteeksi.' },
+			{ q: 'Mitä tietoja tallennatte?', a: 'Emme tallenna ilmoituksia emmekä osoitteita — vain sähköpostisi tilausta varten.' },
+			{ q: 'Miten laskutus toimii?', a: 'Laskutus kulkee Stripen kautta, ja saat kuitin suoraan sähköpostiisi.' },
+			{ q: 'Onko kokeilujaksoa?', a: 'Taloyhtiöraportti on kertamaksu, joten siinä ei ole kokeilujaksoa. Pro-tilaukseen lisätään 14 päivän kokeilu myöhemmin.' },
+			{ q: 'Saanko datani ulos?', a: 'Saat. Kaikki Taloyhtiöraportit tulevat PDF:nä, ja Pro-tilaukseen kuuluu myös JSON-vienti.' }
 		]
 	},
 
 	miksi: {
-		h1: 'Toteutuneet hinnat, ei markkinahypetystä.',
-		lede: 'RehtiArvio kertoo ilmaiseksi, mitä asunnoista on oikeasti maksettu. Hinnat tulevat Tilastokeskukselta, eivät välittäjiltä. Ei mainoksia.',
+		h1: 'Toteutuneet hinnat, ei markkinahypeä.',
+		lede: 'RehtiArvio kertoo ilmaiseksi, mitä asunnoista on oikeasti maksettu. Hinnat tulevat Tilastokeskukselta, eivät välittäjiltä. Ei mainoksia, ei kaupittelua.',
 		dataTitle: 'Mistä hinnat tulevat',
 		dataIntro:
-			'Kaikki hinnat ovat Tilastokeskuksen keräämiä tietoja oikeista, jo tehdyistä asuntokaupoista. Emme käytä pyyntihintoja emmekä välittäjien arvioita.',
+			'Jokainen hinta on Tilastokeskuksen keräämä tieto oikeasta, jo tehdystä asuntokaupasta. Emme käytä pyyntihintoja emmekä välittäjien arvioita — vain sitä, mitä kaupoissa on todella maksettu.',
 		dataRows: [
 			{ code: 'Kerros- ja rivitalot', desc: 'Toteutuneet kauppahinnat postinumeroalueittain.' },
 			{ code: 'Omakotitalot', desc: 'Toteutuneet kauppahinnat aluetasolla.' },
 			{ code: 'Vuokrat', desc: 'Keskivuokrat postinumeroalueittain.' }
 		],
 		dataNote:
-			'Hinnat päivittyvät neljä kertaa vuodessa, kun Tilastokeskus julkaisee uudet luvut. Tilastojen tunnisteet (13mt, 13mv, 15hw, asvu 13eb sekä Paavo-aluetilasto) löytyvät sivun alatunnisteesta ja Kartta-sivun lähdemerkinnöistä.',
-		howTitle: 'Miten vertailu toimii',
+			'Hinnat päivittyvät neljästi vuodessa, aina kun Tilastokeskus julkaisee tuoreet luvut. Käytetyt tilastot (13mt, 13mv, 15hw, asvu 13eb sekä Paavo-aluetilasto) näet sivun alatunnisteesta ja Kartta-sivun lähdemerkinnöistä.',
+		howTitle: 'Näin vertailu toimii',
 		howSteps: [
 			'Liität myynti-ilmoituksen linkin tai tekstin.',
-			'Työkalu poimii ilmoituksesta hinnan, pinta-alan, huoneluvun ja remontit.',
-			'Se vertaa hintaa saman postinumeroalueen kauppoihin viimeisen vuoden ajalta.',
-			'Saat euroissa tiedon, onko pyyntihinta yli vai alle alueen tason, ja kuinka moneen kauppaan vertailu perustuu.'
+			'Poimimme siitä hinnan, pinta-alan, huoneluvun ja remontit.',
+			'Vertaamme hintaa saman postinumeroalueen kauppoihin viimeisen vuoden ajalta.',
+			'Näet euroissa, onko pyyntihinta yli vai alle alueen tason — ja kuinka moneen kauppaan vertailu nojaa.'
 		],
-		howFallback: 'Jos alueelta löytyy alle 30 kauppaa, annamme hinta-arvion asunnon kunnon perusteella. Se on aina merkitty suuntaa antavaksi.',
+		howFallback: 'Jos alueelta löytyy alle 30 kauppaa, annamme sen sijaan hinta-arvion asunnon kunnon perusteella. Sen merkitsemme aina suuntaa näyttäväksi.',
 		dontTitle: 'Mitä emme tee',
 		dontItems: [
 			'Emme anna virallisia arviolausuntoja emmekä sijoitusneuvoja.',
-			'Emme tee kuntotarkastusta, se on ostajan tehtävä.',
-			'Emme näytä mainoksia emmekä myy tietojasi.',
+			'Emme tee kuntotarkastusta — se on ostajan tehtävä.',
+			'Emme näytä mainoksia emmekä myy tietojasi eteenpäin.',
 			'Emme tallenna ilmoituksia emmekä osoitteita.'
 		],
 		tierTitle: 'Kuinka luotettava vertailu on',
 		tiers: [
-			{ name: 'Tarkka vertailu', desc: 'Asunnon omalta postinumeroalueelta löytyi vähintään 30 kauppaa. Luotettavin taso.' },
+			{ name: 'Tarkka vertailu', desc: 'Asunnon omalta postinumeroalueelta löytyi vähintään 30 kauppaa. Tämä on luotettavin taso.' },
 			{ name: 'Aluevertailu', desc: 'Omalta alueelta ei löytynyt tarpeeksi kauppoja, joten vertaamme laajempaan alueeseen. Karkeampi taso.' },
-			{ name: 'Kuntoarvio', desc: 'Kauppoja on liian vähän vertailuun, joten annamme hintahaarukan asunnon kunnon perusteella. Aina suuntaa antava.' }
+			{ name: 'Kuntoarvio', desc: 'Kauppoja on liian vähän vertailuun, joten annamme hintahaarukan asunnon kunnon perusteella. Aina suuntaa näyttävä.' }
 		],
 		metricsTitle: 'Kartan tunnusluvut',
 		metricsIntro:
-			'Kartta-sivun karttatasot, taulukot ja CSV-vienti käyttävät seuraavia tunnuslukuja. Jokainen lasketaan vain, kun havaintoja on riittävästi. Muuten arvo jätetään näyttämättä sen sijaan, että tilalle keksittäisiin luku.',
+			'Kartta-sivun karttatasot, taulukot ja CSV-vienti nojaavat näihin tunnuslukuihin. Jokainen lasketaan vain, kun havaintoja on tarpeeksi. Muuten arvo jää näyttämättä — emme keksi tilalle lukua.',
 		metrics: [
 			{
 				name: 'Neliöhinta (€/m²)',
-				desc: 'Toteutuneiden kauppojen keskineliöhinta neljältä viimeiseltä neljännekseltä, painotettu kauppamäärillä (Tilastokeskus 13mt).'
+				desc: 'Toteutuneiden kauppojen keskineliöhinta neljältä viime neljännekseltä, kauppamäärillä painotettuna (Tilastokeskus 13mt).'
 			},
 			{
 				name: 'Muutos 12 kk',
-				desc: 'Neliöhintojen muutos edellisvuoden vastaavaan neljään neljännekseen. Lasketaan huonetyypeittäin ja painotetaan kauppamäärillä, jotta myyntirakenteen muutos ei näy hinnanmuutoksena. Näytetään vain, jos molemmissa jaksoissa on vähintään 10 julkaistua kauppaa.'
+				desc: 'Neliöhintojen muutos vuodentakaiseen samaan neljään neljännekseen. Laskettu huonetyypeittäin ja painotettu kauppamäärillä, jottei myyntien rakenteen muutos näyttäisi hinnanmuutokselta. Näytetään vain, kun molemmissa jaksoissa on vähintään 10 julkaistua kauppaa.'
 			},
 			{
 				name: 'Vuokratuotto (brutto)',
-				desc: 'Alueen tilastovuokra 12 kuukaudelta jaettuna saman huonetyypin toteutuneella neliöhinnalla (asvu 13eb / 13mt), painotettu kauppamäärillä. Bruttoluku: ei sisällä vastikkeita, veroja eikä tyhjiä kuukausia. Puuttuvia postinumeroalueita ei paikata kuntatason vuokrilla.'
+				desc: 'Alueen 12 kuukauden tilastovuokra jaettuna saman huonetyypin toteutuneella neliöhinnalla (asvu 13eb / 13mt), kauppamäärillä painotettuna. Bruttoluku: ei sisällä vastikkeita, veroja eikä tyhjiä kuukausia. Puuttuvia postinumeroalueita emme paikkaa kuntatason vuokrilla.'
 			},
 			{
 				name: 'Hinta / tulot',
-				desc: '60 m² asunnon hinta alueen neliöhinnalla jaettuna alueen aikuisväestön mediaanivuosituloilla (Paavo). Karkea kohtuuhintaisuuden mittari: mitä suurempi luku, sitä kireämpi hintataso suhteessa paikalliseen ostovoimaan.'
+				desc: '60 m² asunnon hinta alueen neliöhinnalla, jaettuna alueen aikuisväestön mediaanivuosituloilla (Paavo). Karkea mittari hintojen kohtuullisuudelle: mitä isompi luku, sitä kireämpi hintataso paikalliseen ostovoimaan nähden.'
 			},
 			{
-				name: 'Likviditeetti',
-				desc: 'Julkaistut kaupat neljältä neljännekseltä tuhatta asuntoa kohden (13mt / Paavo). Vähimmäisarvio: tilastosalauksen piilottamat kaupat eivät ole mukana. Ohuilla markkinoilla yksittäiset kaupat heiluttavat hintatilastoa enemmän.'
+				name: 'Vilkkaus',
+				desc: 'Neljän neljänneksen julkaistut kaupat tuhatta asuntoa kohden (13mt / Paavo). Vähimmäisarvio: tilastosalauksen piilottamat kaupat eivät ole mukana. Hiljaisilla alueilla yksittäinen kauppa heiluttaa hintatilastoa herkemmin.'
 			},
 			{
-				name: 'Alueellinen eriytyminen',
-				desc: 'Pääkaupunkiseudun ja muun Suomen kerrostalohinnat indeksisarjoina (13mv), perusvuosi 2020 = 100. Reaalinen sarja on deflatoitu kuluttajahintaindeksillä (KHI 11xs).'
+				name: 'Alueiden erkaneminen',
+				desc: 'Pääkaupunkiseudun ja muun Suomen kerrostalohinnat indeksisarjoina (13mv), perusvuosi 2020 = 100. Reaalisesta sarjasta on poistettu yleinen hintojen nousu kuluttajahintaindeksillä (KHI 11xs).'
 			}
 		],
 		limitsTitle: 'Mitä aluetilasto ei kerro',
 		limitsIntro:
-			'Aluetason tilasto on rehellinen vain, jos sen rajat sanotaan ääneen. Nämä tunnetut vinoumat on validoitu vertaamalla tilastoja eläviin myynti-ilmoituksiin:',
+			'Aluetason tilasto on rehellinen vain, jos sen rajat sanotaan ääneen. Nämä tunnetut vinoumat olemme tarkistaneet vertaamalla tilastoja eläviin myynti-ilmoituksiin:',
 		limits: [
-			'Uudiskohteet: uudistuotannon preemio alueen keskiarvoon nähden voi olla kymmeniä prosentteja, ja tiiviin uudisrakentamisen alueilla suhde voi kääntyä toisinpäin.',
-			'Huoneistokoko: pienet yksiöt myydään tyypillisesti alueen keskineliöhintaa kalliimmalla ja suuret perheasunnot halvemmalla.',
+			'Uudiskohteet: uudistuotannon lisähinta alueen keskiarvoon nähden voi olla kymmeniä prosentteja, ja tiiviin uudisrakentamisen alueilla suhde voi kääntyä toisin päin.',
+			'Huoneistokoko: pienestä yksiöstä maksetaan yleensä alueen keskiarvoa enemmän per neliö, isosta perheasunnosta vähemmän.',
 			'Alueen sisäinen hajonta: sama postinumeroalue voi sisältää sekä arvokorttelin että lähiön, eikä keskiarvo kuvaa kumpaakaan täydellisesti.',
-			'Salatut solut: Tilastokeskus ei julkaise vähäisten havaintojen soluja (vuokratilastossa raja on 20 havaintoa). Puuttuva arvo ei tarkoita nollaa, eikä salattua arvoa koskaan korvata toisella luvulla.',
-			'Vuokratilasto painottuu vapaarahoitteisiin vuokrasuhteisiin, ja yksittäisen asunnon vuokra voi poiketa alueen tilastovuokrasta selvästi.'
+			'Salatut solut: Tilastokeskus ei julkaise vähäisten havaintojen soluja (vuokratilastossa raja on 20 havaintoa). Puuttuva arvo ei tarkoita nollaa, emmekä koskaan korvaa salattua arvoa toisella luvulla.',
+			'Vuokratilasto painottuu vapaarahoitteisiin vuokrasuhteisiin, ja yksittäisen asunnon vuokra voi poiketa alueen tilastovuokrasta selvästikin.'
 		],
-		coverageTitle: 'Katettu alue',
-		coverageCount: (n: number) => `Vertailuhinnat kattavat ${n.toLocaleString('fi-FI')} postinumeroaluetta eri puolilla Suomea.`,
+		coverageTitle: 'Kuinka laajalta löytyy tietoa',
+		coverageCount: (n: number) => `Vertailuhinnat kattavat ${n.toLocaleString('fi-FI')} postinumeroaluetta eri puolilta Suomea.`,
 		faqTitle: 'Usein kysyttyä',
 		faq: [
 			{
 				q: 'Mistä RehtiArvion hintatiedot tulevat?',
-				a: 'Kaikki hinnat ovat Tilastokeskuksen keräämiä tietoja oikeista, jo tehdyistä asuntokaupoista. Emme käytä pyyntihintoja emmekä välittäjien arvioita.'
+				a: 'Jokainen hinta on Tilastokeskuksen keräämä tieto oikeasta, jo tehdystä asuntokaupasta. Emme käytä pyyntihintoja emmekä välittäjien arvioita.'
 			},
 			{
 				q: 'Kuinka luotettava hinta-arvio on?',
-				a: 'Riippuu kauppojen määrästä alueella. Vähintään 30 kauppaa omalta postinumeroalueelta antaa tarkan vertailun; harvemmalla siirrytään laajempaan aluevertailuun tai asunnon kunnon perusteella tehtyyn suuntaa antavaan kuntoarvioon.'
+				a: 'Se riippuu alueen kauppojen määrästä. Vähintään 30 kauppaa omalta postinumeroalueelta antaa tarkan vertailun; harvemmalla siirrymme laajempaan aluevertailuun tai asunnon kunnon perusteella tehtyyn suuntaa näyttävään kuntoarvioon.'
 			},
 			{
-				q: 'Miten hinta-arvio lasketaan käytännössä?',
-				a: 'Liität myynti-ilmoituksen linkin tai tekstin. Työkalu poimii hinnan, pinta-alan, huoneluvun ja remontit, ja vertaa niitä saman postinumeroalueen toteutuneisiin kauppoihin viimeisen vuoden ajalta.'
+				q: 'Miten hinta-arvio käytännössä lasketaan?',
+				a: 'Liität myynti-ilmoituksen linkin tai tekstin. Poimimme siitä hinnan, pinta-alan, huoneluvun ja remontit, ja vertaamme niitä saman postinumeroalueen toteutuneisiin kauppoihin viimeisen vuoden ajalta.'
 			},
 			{
 				q: 'Onko RehtiArvio virallinen arviolausunto?',
-				a: 'Ei. Emme anna virallisia arviolausuntoja emmekä sijoitusneuvoja, emmekä tee kuntotarkastusta — se on aina ostajan omalla vastuulla.'
+				a: 'Ei ole. Emme anna virallisia arviolausuntoja emmekä sijoitusneuvoja, emmekä tee kuntotarkastusta — se jää aina ostajan omalle vastuulle.'
 			},
 			{
 				q: 'Kuinka usein hinnat päivittyvät?',
-				a: 'Neljä kertaa vuodessa, kun Tilastokeskus julkaisee uudet luvut.'
+				a: 'Neljästi vuodessa, aina kun Tilastokeskus julkaisee tuoreet luvut.'
 			},
 			{
 				q: 'Maksaako RehtiArvion käyttö?',
@@ -554,17 +557,17 @@ export const copy = {
 	},
 
 	tili: {
-		activated: 'Tilaus aktivoitu',
-		activatedLede: 'Taloyhtiöraportit ovat käytössä tällä selaimella.',
-		active: 'Tilaus voimassa',
-		activeLede: 'Taloyhtiöraportit löytyvät ilmoitusanalyysin tuloksista.',
+		activated: 'Tilaus on aktivoitu',
+		activatedLede: 'Taloyhtiöraportit ovat nyt käytössäsi tällä selaimella.',
+		active: 'Tilaus on voimassa',
+		activeLede: 'Taloyhtiöraportit löydät ilmoitusanalyysin tuloksista.',
 		pastDue: 'Maksu odottaa',
 		pastDueLede: 'Päivitä maksutapa Stripen sähköpostilinkistä.',
-		canceled: 'Tilaus päättynyt',
+		canceled: 'Tilaus on päättynyt',
 		sessionFailed: 'Aktivointi ei onnistunut',
-		sessionFailedLede: 'Lataa sivu uudelleen hetken kuluttua.',
+		sessionFailedLede: 'Lataa sivu hetken kuluttua uudelleen.',
 		none: 'Ei aktiivista tilausta',
-		noneLede: 'Avaa tilausvahvistus samalla selaimella tai tilaa alta.',
+		noneLede: 'Avaa tilausvahvistus samalla selaimella, tai tilaa alta.',
 		ctaAnalyze: 'Siirry ilmoitusanalyysiin →',
 		ctaResubscribe: 'Tilaa uudelleen →'
 	},
@@ -572,16 +575,16 @@ export const copy = {
 	raportti: {
 		eyebrow: 'Taloyhtiöraportti',
 		pageTitle: 'Taloyhtiöraportti | RehtiArvio',
-		pendingTitle: 'Raporttia kootaan…',
-		pendingBody: 'Haemme ja ristivarmistamme taloyhtiön tietoja julkisista verkkolähteistä. Tämä kestää tyypillisesti muutaman minuutin.',
+		pendingTitle: 'Kokoamme raporttia…',
+		pendingBody: 'Haemme ja ristivarmistamme taloyhtiön tietoja julkisista verkkolähteistä. Tämä vie yleensä muutaman minuutin.',
 		failedTitle: 'Raportin kokoaminen ei onnistunut',
-		failedBody: 'Taloyhtiölle ei löytynyt riittävästi julkisia lähteitä. Yritä myöhemmin uudelleen.',
+		failedBody: 'Taloyhtiöstä ei löytynyt tarpeeksi julkisia lähteitä. Kokeilethan hetken kuluttua uudelleen.',
 		sourcesTitle: 'Lähteet ja luotettavuus',
 		talousTitle: 'Taloyhtiön talous',
 		ptsTitle: 'Kunnossapitotarveselvitys (PTS)',
 		historyTitle: 'Korjaushistoria asiakirjoista',
 		docsSource:
-			'Lähde: ostajan toimittamat asiakirjat (isännöitsijäntodistus/tilinpäätös). Asiakirjatekstiä ei ole tallennettu, vain koneellisesti poimitut luvut.',
+			'Lähde: ostajan toimittamat asiakirjat (isännöitsijäntodistus / tilinpäätös). Asiakirjan tekstiä ei ole tallennettu — vain koneellisesti poimitut luvut.',
 		talous: {
 			hoitovastike: 'Hoitovastike',
 			rahoitusvastike: 'Rahoitusvastike',
@@ -596,7 +599,7 @@ export const copy = {
 			vuokra: 'Vuokrattu'
 		},
 		fine: (conf?: number | null) =>
-			`Raportti on koottu koneellisesti julkisista verkkolähteistä${conf != null ? ` (kattavuusarvio ${Math.round(conf * 100)} %)` : ''}. Vain lähteissä näkyvät tiedot on raportoitu. Tämä ei ole arvio eikä sijoitusneuvontaa.`
+			`Raportti on koottu koneellisesti julkisista verkkolähteistä${conf != null ? ` (kattavuusarvio ${Math.round(conf * 100)} %)` : ''}. Mukana ovat vain lähteissä näkyvät tiedot. Tämä ei ole arvio eikä sijoitusneuvontaa.`
 	},
 
 	footer: {
@@ -618,7 +621,7 @@ export const copy = {
 
 	consent: {
 		bannerAriaLabel: 'Evästeasetukset',
-		lede: 'Sivulla on muutama eväste. Pakolliset pyörittävät sivua, loput käynnistyvät vain, jos hyväksyt ne.',
+		lede: 'Sivulla on muutama eväste. Välttämättömät pyörittävät sivua, loput käynnistyvät vain, jos annat niille luvan.',
 		privacyLink: 'Lue lisää evästeistä',
 		acceptAll: 'Hyväksy kaikki',
 		rejectAll: 'Hylkää valinnaiset',
@@ -629,22 +632,22 @@ export const copy = {
 		categories: {
 			necessary: {
 				title: 'Välttämättömät',
-				desc: 'Pyörittävät sivua ja tilaajan kirjautumista. Aina päällä, muuten sivu ei toimi.'
+				desc: 'Pyörittävät sivua ja tilaajan kirjautumista. Aina päällä, sillä muuten sivu ei toimi.'
 			},
 			analytics: {
 				title: 'Analytiikka',
-				desc: 'Kävijämäärät, sivujen käyttö ja se, mitä postinumeroalueita tai hintoja katsot. Näiden avulla näemme, mikä toimii ja mikä ei. Lisätietoa: /tietosuoja.'
+				desc: 'Kävijämäärät, sivujen käyttö ja se, mitä postinumeroalueita tai hintoja katsot. Näiden avulla näemme, mikä toimii ja mikä ei. Lisää: /tietosuoja.'
 			},
 			marketing: {
 				title: 'Markkinointi',
-				desc: 'Ei vielä käytössä. Varattu mahdollista mainontaa varten myöhemmin; kytkin ei tee tällä hetkellä mitään.'
+				desc: 'Ei vielä käytössä. Varattu mahdollista myöhempää mainontaa varten; kytkin ei tällä hetkellä tee mitään.'
 			}
 		}
 	},
 
 	evasteet: {
 		h1: 'Evästeet ja seurannan hallinta',
-		lede: 'Kolme ryhmää: välttämättömät ovat aina päällä, analytiikan ja markkinoinnin voit hyväksyä tai hylätä alta milloin tahansa.',
+		lede: 'Kolme ryhmää: välttämättömät ovat aina päällä, ja analytiikan sekä markkinoinnin voit hyväksyä tai hylätä alta milloin tahansa.',
 		manageTitle: 'Omat valinnat',
 		tableTitle: 'Käytössä olevat evästeet',
 		tableCols: { name: 'Nimi', group: 'Ryhmä', purpose: 'Tarkoitus', duration: 'Voimassaolo', setter: 'Asettaja' },
@@ -658,7 +661,7 @@ export const copy = {
 
 	tietosuoja: {
 		h1: 'Tietosuojaseloste',
-		lede: 'Tässä kerrotaan, mitä tietoa RehtiArvio kerää sivuston kävijöistä, miksi, ja miten pääset käsiksi omiin tietoihisi.',
+		lede: 'Tässä kerromme, mitä tietoa RehtiArvio kerää sivuston kävijöistä, miksi, ja miten pääset käsiksi omiin tietoihisi.',
 		updated: 'Päivitetty 22.7.2026 (v1).',
 		controllerTitle: 'Rekisterinpitäjä',
 		controllerBody:
@@ -673,7 +676,7 @@ export const copy = {
 			{
 				name: 'Jonotuslistan sähköposti',
 				basis: 'Oma pyyntö',
-				desc: 'Itse antamasi sähköposti Taloyhtiöraportin jonotuslistalle. Oma valintaruutunsa kertoo, saako osoitteeseen lähettää myös muuta postia.'
+				desc: 'Itse antamasi sähköposti Taloyhtiöraportin jonotuslistalle. Erillinen valintaruutu kertoo, saako osoitteeseen lähettää myös muuta postia.'
 			},
 			{
 				name: 'Tilaajatiedot',
@@ -683,7 +686,7 @@ export const copy = {
 			{
 				name: 'Taloyhtiöraportin luvut',
 				basis: 'Sopimus',
-				desc: 'Ostajan liittämistä asiakirjoista koneellisesti poimitut luvut: vastikkeet, lainaosuus, korjausvuodet. Asiakirjatekstiä tai nimiä ei tallenneta.'
+				desc: 'Ostajan liittämistä asiakirjoista koneellisesti poimitut luvut: vastikkeet, lainaosuus, korjausvuodet. Asiakirjan tekstiä tai nimiä ei tallenneta.'
 			},
 			{
 				name: 'Suostumusloki',
@@ -695,15 +698,15 @@ export const copy = {
 		retentionRows: [
 			{
 				name: 'Jonotuslistan sähköpostit',
-				period: 'Säilössä niin kauan kuin ne palvelevat tarkoitustaan (jonotuslistan ilmoitus, ja markkinointiluvan antaneilla myös muu posti). Käydään läpi kerran vuodessa.'
+				period: 'Säilytämme niin kauan kuin ne palvelevat tarkoitustaan (jonotuslistan ilmoitus, ja markkinointiluvan antaneilla myös muu posti). Käymme listan läpi kerran vuodessa.'
 			},
 			{
 				name: 'Suostumusloki',
-				period: 'Säilössä todisteena annetusta tai perutusta suostumuksesta. Katsotaan tämäkin läpi vuosittain, vaikka erillistä poistorajaa ei ole.'
+				period: 'Säilytämme todisteena annetusta tai perutusta suostumuksesta. Tämänkin katsomme läpi vuosittain, vaikka erillistä poistorajaa ei ole.'
 			},
 			{
 				name: 'Analytiikkatapahtumat',
-				period: 'Niin pitkään kuin PostHogin projektiasetuksissa on määritetty. Tällä hetkellä valittuna pisin saatavilla oleva aika.'
+				period: 'Niin pitkään kuin PostHogin projektiasetuksissa on määritetty. Tällä hetkellä valittuna on pisin saatavilla oleva aika.'
 			},
 			{
 				name: 'Tilaajatiedot ja taloyhtiöraportit',
@@ -726,17 +729,17 @@ export const copy = {
 		automatedTitle: 'Automaattinen päätöksenteko',
 		automatedBody:
 			'Hinta-arvio on tilastollinen vertailu, ei sinua koskeva päätös, jolla olisi oikeudellisia vaikutuksia (GDPR 22 artikla).',
-		cookiesLink: 'Evästekohtaiset tiedot löytyvät sivulta /evasteet.'
+		cookiesLink: 'Evästekohtaiset tiedot löydät sivulta /evasteet.'
 	},
 
 	errors: {
-		invalidEmail: 'Tarkista sähköpostiosoite.',
-		saveFailed: 'Tallennus epäonnistui. Yritä hetken kuluttua.',
+		invalidEmail: 'Tarkistathan sähköpostiosoitteen.',
+		saveFailed: 'Tallennus ei onnistunut. Yritäthän hetken kuluttua uudelleen.',
 		generic: 'Jokin meni vikaan.',
 		reportNeedSub: 'Taloyhtiöraportit kuuluvat RehtiArvio-tilaukseen. Tilaa /tilaa-sivulta, tai jos olet jo tilannut, avaa /tili samalla selaimella.',
 		reportNeedTarget:
-			'Taloyhtiöraportti tarvitsee taloyhtiön nimen tai osoitteen. Analysoi ilmoitus ensin.',
+			'Taloyhtiöraporttiin tarvitaan taloyhtiön nimi tai osoite. Analysoi ilmoitus ensin.',
 		docsUnparsed:
-			'Liittämästäsi tekstistä ei löytynyt taloyhtiön talouslukuja (vastikkeet, lainaosuus, korjaukset). Tarkista, että kopioit isännöitsijäntodistuksen tekstin, tai tyhjennä kenttä ja tilaa raportti ilman asiakirjoja.'
+			'Liittämästäsi tekstistä ei löytynyt taloyhtiön talouslukuja (vastikkeet, lainaosuus, korjaukset). Tarkista, että kopioit isännöitsijäntodistuksen tekstin — tai tyhjennä kenttä ja tilaa raportti ilman asiakirjoja.'
 	}
 };

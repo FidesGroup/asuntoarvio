@@ -19,14 +19,14 @@
 
 <svelte:head>
 	<title>Miksi RehtiArvio? | RehtiArvio</title>
-	<meta name="description" content="Miten RehtiArvio toimii, mistä hinnat tulevat ja mitä työkalu ei tee." />
+	<meta name="description" content="Mistä hinnat tulevat, miten vertailu toimii ja mitä emme edes yritä tehdä. Suoraan puhuttuna." />
 	<meta property="og:title" content="Miksi RehtiArvio? | RehtiArvio" />
-	<meta property="og:description" content="Miten RehtiArvio toimii, mistä hinnat tulevat ja mitä työkalu ei tee." />
+	<meta property="og:description" content="Mistä hinnat tulevat, miten vertailu toimii ja mitä emme edes yritä tehdä. Suoraan puhuttuna." />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content={`${SITE_URL}/miksi`} />
 	<meta name="twitter:card" content="summary" />
 	<meta name="twitter:title" content="Miksi RehtiArvio? | RehtiArvio" />
-	<meta name="twitter:description" content="Miten RehtiArvio toimii, mistä hinnat tulevat ja mitä työkalu ei tee." />
+	<meta name="twitter:description" content="Mistä hinnat tulevat, miten vertailu toimii ja mitä emme edes yritä tehdä. Suoraan puhuttuna." />
 	{@html `<script type="application/ld+json">${JSON.stringify(faqLd)}<\/script>`}
 </svelte:head>
 
